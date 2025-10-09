@@ -14,6 +14,7 @@ function App() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const handleMessage = async () => {
+    setTextInput("");
     setIsLoading(true);
     setMessages((prev) => [...prev, { role: "user", text: textInput }]);
     const response: any = await sendMessage(textInput);
@@ -23,8 +24,6 @@ function App() {
         ...prev,
         { role: "assistant", text: response.reply },
       ]);
-
-      setTextInput("");
     }
     setIsLoading(false);
   };
@@ -93,7 +92,7 @@ function App() {
             className="cursor-pointer bg-gray-800"
             size="icon-lg"
             onClick={handleMessage}
-            disabled={isLoading}
+            disabled={isLoading || !textInput}
           >
             <SendHorizontal />
           </Button>
