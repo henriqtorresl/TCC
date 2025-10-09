@@ -66,6 +66,15 @@ function App() {
             </div>
           </div>
         ))}
+        {isLoading && (
+          <div className="flex justify-start">
+            <div className="max-w-[70%] px-4 py-4 rounded-lg shadow-md text-sm font-medium bg-gray-700 text-white border border-gray-600 flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-white animate-bounce" />
+              <span className="w-2 h-2 rounded-full bg-white animate-bounce delay-150" />
+              <span className="w-2 h-2 rounded-full bg-white animate-bounce delay-300" />
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Input de envio */}
