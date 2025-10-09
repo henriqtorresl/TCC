@@ -124,3 +124,17 @@ body,
 #root {
   height: 100%;
 }
+
+/* Configurações do scroll bar globalmente */
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #364153;
+  border-radius: 20px;
+}
