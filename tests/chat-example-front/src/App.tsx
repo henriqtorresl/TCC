@@ -2,6 +2,22 @@ import { SendHorizontal } from "lucide-react";
 import { Button } from "./components/ui/button";
 
 function App() {
+  // Mensagens mockadas
+  const messages = [
+    { id: 1, role: "user", text: "Olá, estou com dor de cabeça." },
+    {
+      id: 2,
+      role: "assistant",
+      text: "Pode me contar há quanto tempo está sentindo a dor?",
+    },
+    { id: 3, role: "user", text: "Há 2 dias." },
+    {
+      id: 4,
+      role: "assistant",
+      text: "A dor começou de repente ou foi aumentando aos poucos?",
+    },
+  ];
+
   return (
     <main className="w-full h-full flex flex-col justify-between bg-black">
       {/* Header */}
@@ -18,13 +34,34 @@ function App() {
       </div>
 
       {/* Mensagens: */}
-      <div className="h-[80%]"></div>
+      <div className="h-[80%] flex flex-col gap-2 px-4 py-6 overflow-y-auto">
+        {messages.map((msg) => (
+          <div
+            key={msg.id}
+            className={`flex ${
+              msg.role === "user" ? "justify-end" : "justify-start"
+            }`}
+          >
+            <div
+              className={`max-w-[70%] px-4 py-2 rounded-lg shadow-md text-sm font-medium
+                ${
+                  msg.role === "user"
+                    ? "bg-gray-800 text-white border border-gray-700"
+                    : "bg-gray-700 text-white border border-gray-600"
+                }
+              `}
+            >
+              {msg.text}
+            </div>
+          </div>
+        ))}
+      </div>
 
       {/* Input de envio */}
       <div className="h-[10%] p-5">
         <div className="w-full rounded-lg bg-gray-700 py-2 px-4 flex flex-row justify-between items-center">
           <input
-            placeholder="Enter message..."
+            placeholder="Digite sua mensagem..."
             type="text"
             className="text-white appearance-none border-none bg-transparent outline-none shadow-none flex-1"
           />
