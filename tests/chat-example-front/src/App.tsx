@@ -1,22 +1,33 @@
 import { SendHorizontal } from "lucide-react";
 import { Button } from "./components/ui/button";
+import { sendMessage } from "./service/llmService";
+import { useState } from "react";
+
+type Messages = {
+  role: "user" | "assistant";
+  text: string;
+};
 
 function App() {
-  // Mensagens mockadas
-  const messages = [
-    { id: 1, role: "user", text: "Olá, estou com dor de cabeça." },
-    {
-      id: 2,
-      role: "assistant",
-      text: "Pode me contar há quanto tempo está sentindo a dor?",
-    },
-    { id: 3, role: "user", text: "Há 2 dias." },
-    {
-      id: 4,
-      role: "assistant",
-      text: "A dor começou de repente ou foi aumentando aos poucos?",
-    },
-  ];
+  const [textInput, setTextInput] = useState<string>("");
+  const [messages, setMessages] = useState<Messages[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const handleMessage = async () => {
+    setIsLoading(true);
+    setMessages((prev) => [...prev, { role: "user", text: textInput }]);
+    const response: any = await sendMessage(textInput);
+
+    if (response) {
+      setMessages((prev) => [
+        ...prev,
+        { role: "assistant", text: response.reply },
+      ]);
+
+      setTextInput("");
+    }
+    setIsLoading(false);
+  };
 
   return (
     <main className="w-full h-full flex flex-col justify-between bg-black">
@@ -35,9 +46,9 @@ function App() {
 
       {/* Mensagens: */}
       <div className="h-[80%] flex flex-col gap-2 px-4 py-6 overflow-y-auto">
-        {messages.map((msg) => (
+        {messages.map((msg, index) => (
           <div
-            key={msg.id}
+            key={index}
             className={`flex ${
               msg.role === "user" ? "justify-end" : "justify-start"
             }`}
@@ -64,8 +75,17 @@ function App() {
             placeholder="Digite sua mensagem..."
             type="text"
             className="text-white appearance-none border-none bg-transparent outline-none shadow-none flex-1"
+            onChange={(e) => {
+              setTextInput(e.target.value);
+            }}
+            value={textInput}
           />
-          <Button className="cursor-pointer bg-gray-800" size="icon-lg">
+          <Button
+            className="cursor-pointer bg-gray-800"
+            size="icon-lg"
+            onClick={handleMessage}
+            disabled={isLoading}
+          >
             <SendHorizontal />
           </Button>
         </div>
