@@ -1,5 +1,6 @@
 import express from "express";
 import bodyParser from "body-parser";
+import cors from "cors";
 import { HfInference } from "@huggingface/inference";
 
 process.loadEnvFile();
@@ -7,6 +8,7 @@ process.loadEnvFile();
 const hf = new HfInference(process.env.HF_TOKEN);
 
 const app = express();
+app.use(cors());
 app.use(bodyParser.json());
 
 const CHAT_MODEL = "mistralai/Mistral-7B-Instruct-v0.3"; // modelo de conversa
