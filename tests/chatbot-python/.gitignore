@@ -1,0 +1,11 @@
+# Virtualenv
+*.env
+
+# Poetry
+poetry.lock
+
+# VS Code
+.vscode/
+
+# macOS
+.DS_Store

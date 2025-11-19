@@ -1,0 +1,24 @@
+[tool.poetry]
+package-mode = false
+[project]
+name = "chatbot-python"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "Henrique Torres",email = "henriquetlandin@gmail.com"}
+]
+readme = "README.md"
+requires-python = "3.10.9"
+dependencies = [
+    "streamlit (>=1.51.0,<2.0.0)",
+    "python-dotenv (>=1.2.1,<2.0.0)",
+    "langchain (>=0.0.352,<0.0.353)",
+    "pypdf2 (>=3.0.1,<4.0.0)",
+    "faiss-cpu (>=1.13.0,<2.0.0)",
+    "streamlit-chat (>=0.1.1,<0.2.0)",
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
