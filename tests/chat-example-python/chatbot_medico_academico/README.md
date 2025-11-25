@@ -9,12 +9,10 @@ Este projeto é um exemplo de chatbot médico acadêmico em Python.
 
 ## Configuração do Ambiente
 
-### Usando pyenv (recomendado)
+### Usando pyenv
 
 1. Instale o pyenv:
-   ```zsh
-   brew install pyenv
-   ```
+   Siga as instruções em: https://github.com/pyenv-win/pyenv-win
 2. Instale a versão do Python definida em `.python-version`:
    ```zsh
    pyenv install $(cat .python-version)
@@ -31,6 +29,10 @@ Este projeto é um exemplo de chatbot médico acadêmico em Python.
    ```zsh
    source venv/bin/activate
    ```
+   ou, no Windows PowerShell:
+   ```
+   .\venv\Scripts\Activate.ps1
+   ```
 
 ### Usando apenas a versão correta do Python
 
@@ -42,6 +44,10 @@ Este projeto é um exemplo de chatbot médico acadêmico em Python.
 3. Ative o ambiente virtual:
    ```zsh
    source venv/bin/activate
+   ```
+   ou, no Windows PowerShell:
+   ```
+   .\venv\Scripts\Activate.ps1
    ```
 
 ## Instalação das Dependências
@@ -57,16 +63,7 @@ pip install -r requirements.txt
 Execute o script desejado, por exemplo:
 
 ```zsh
-python chatbot_medico_academico/ner_teste.py
-```
-
-## Estrutura do Projeto
-
-```
-chatbot_medico_academico/
-├── ner_teste.py
-├── requirements.txt
-└── .python-version
+python ner_teste.py
 ```
 
 ## Observações
