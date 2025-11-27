@@ -1,17 +1,17 @@
 import express from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
-import { HfInference } from "@huggingface/inference";
+import { InferenceClient } from "@huggingface/inference";
 
 process.loadEnvFile();
 
-const hf = new HfInference(process.env.HF_TOKEN);
+const hf = new InferenceClient(process.env.HF_TOKEN);
 
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
-const CHAT_MODEL = "mistralai/Mistral-7B-Instruct-v0.3"; // modelo de conversa
+const CHAT_MODEL = "meta-llama/Llama-3.1-8B-Instruct"; // modelo de conversa
 const NER_MODEL = "d4data/biomedical-ner-all"; // modelo de NER biomédico
 
 // armazenamento simples de histórico (substitua por DB em produção)
