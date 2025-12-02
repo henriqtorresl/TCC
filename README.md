@@ -1,4 +1,4 @@
-# TCC - 🩺 Médico Digital: Anamnese por Chat com IA
+# TCC - 🩺 Aplicação de Modelos de Linguagem de Grande Escala na Criação de um Assistente de Saúde Virtual
 
 ## Sobre o Projeto
 
