@@ -26,6 +26,7 @@ Cada parte (backend e frontend) é independente e pode ser executada separadamen
 
 - `tests/` — Testes iniciais de integração com o Hugging Face
 - `docs/` — Documentação sobre o Hugging Face e os modelos escolhidos
+- `medico_digital/` — Diretório principal contendo todo o código-fonte do projeto.
 
 ## Documentação
 
