@@ -87,6 +87,11 @@ function App() {
               setTextInput(e.target.value);
             }}
             value={textInput}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !isLoading && textInput) {
+                handleMessage();
+              }
+            }}
           />
           <Button
             className="cursor-pointer bg-gray-800"
