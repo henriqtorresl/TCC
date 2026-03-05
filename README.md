@@ -24,12 +24,33 @@ Cada parte (backend e frontend) é independente e pode ser executada separadamen
 
 ## Estrutura do Repositório
 
-- `tests/` — Testes iniciais de integração com o Hugging Face
-- `docs/` — Documentação sobre o Hugging Face e os modelos escolhidos
+- `tests/` — Testes e protótipos de integração.
+- `docs/` — Monografia do TCC em LaTeX (template FGA/UnB) e arquivos de compilação.
 - `medico_digital/` — Diretório principal contendo todo o código-fonte do projeto.
 
-## Documentação
+## Pasta `docs/` (Monografia LaTeX)
 
-Consulte a pasta `docs/` para detalhes sobre os modelos Hugging Face utilizados e decisões técnicas.
+A pasta `docs/` concentra o documento acadêmico do TCC migrado para o template novo.
+
+- `docs/latex/tcc.tex` — Arquivo principal da monografia.
+- `docs/latex/editaveis/` — Conteúdo editável (introdução, capítulos, resumo, apêndices etc.).
+- `docs/latex/fixos/` — Configuração estrutural do template (pacotes, capa, setup).
+- `docs/latex/figuras/` — Imagens usadas no documento.
+- `docs/latex/bibliografia.bib` — Base bibliográfica.
+- `docs/latex/output/` — Artefatos gerados na compilação (incluindo `tcc.pdf`).
+
+### Como compilar
+
+A partir de `docs/`:
+
+```sh
+docker compose run --rm latex bash -lc "make clean && make"
+```
+
+PDF gerado em:
+
+```txt
+docs/latex/output/tcc.pdf
+```
 
 ---
