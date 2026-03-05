@@ -23,7 +23,8 @@ aciona os modelos de IA e retorna resposta conversacional com entidades extraíd
 \begin{verbatim}
 {
   "userId": "paciente_12345",
-  "text": "Estou sentindo uma dor de cabeça muito forte e enjoo desde ontem."
+  "text": "Estou sentindo dor de cabeca muito forte",
+  "context": "com enjoo desde ontem"
 }
 \end{verbatim}
 
@@ -61,7 +62,7 @@ aciona os modelos de IA e retorna resposta conversacional com entidades extraíd
 \chapter{Código Fonte do Orquestrador (BFF)}
 
 O código do servidor Node.js utilizado no MVP está no arquivo:
-\texttt{medico\_digital/backend/src/server.js}.
+\path{medico_digital/backend/src/server.js}.
 
 Este módulo implementa:
 
