@@ -1,73 +1,47 @@
-\chapter[Considerações sobre os Elementos Textuais]{Considerações sobre os 
-Elementos Textuais}
+\chapter{Trabalhos Relacionados}
 
-\section{Introdução}
+A automação da triagem clínica e da anamnese evoluiu de sistemas de regras para modelos
+probabilísticos e, mais recentemente, para arquiteturas baseadas em Transformers.
 
-A regra mais rígida com respeito a Introdução é que a mesma, que é 
-necessariamente parte integrante do texto, não deverá fazer agradecimentos 
-a pessoas ou instituições nem comentários pessoais do autor atinentes à 
-escolha ou à relevância do tema.
+\section{A Era Pré-Neural: ELIZA e DOCTOR}
 
-A Introdução obedece a critérios do Método Cientifico e a exigências 
-didáticas. Na Introdução o leitor deve ser colocado dentro do espírito do 
-trabalho.
+O ELIZA, na década de 1960, demonstrou a viabilidade de interação conversacional em saúde
+mental com base em padrões linguísticos simples. Apesar da ausência de compreensão
+semântica, estabeleceu fundamentos de interação humano-computador em contexto clínico.
+\cite{wikipedia2025}
 
-Cabe mencionar que a Introdução de um trabalho pode, pelo menos em parte, 
-ser escrita com grande vantagem uma vez concluído o trabalho (ou o 
-Desenvolvimento e as Conclusões terem sido redigidos). Não só a pesquisa 
-costuma modificar-se durante a execução, mas também, ao fim do trabalho, o 
-autor tem melhor perspectiva ou visão de conjunto.
+\section{Sistemas de Triagem Probabilística}
 
-Por seu caráter didático, a Introdução deve, ao seu primeiro parágrafo, 
-sugerir o mais claramente possível o que pretende o autor. Em seguida deve 
-procurar situar o problema a ser examinado em relação ao desenvolvimento 
-científico e técnico do momento. Assim sendo, sempre que pertinente, os 
-seguintes pontos devem ser abordados: 
+Soluções baseadas em redes Bayesianas e grafos causais avançaram o diagnóstico computacional
+por inferência probabilística, porém com limitação de interação natural e dependência de entradas
+estruturadas \cite{richens2020}.
 
-\begin{itemize}
+\section{Agentes Conversacionais em Saúde Mental}
 
-	\item Contextualização ou apresentação do tema em linhas gerais de 
-	forma clara e objetiva;
-	\item Apresentação da justificativa e/ou relevância do tema escolhido;
-	\item Apresentação da questão ou problema de pesquisa;
-	\item Declaração dos objetivos, gerais e específicos do trabalho;
-	\item Apresentação resumida da metodologia, e
-	\item Indicação de como o trabalho estará organizado.
+Sistemas como Woebot mostraram que interfaces conversacionais podem apoiar acompanhamento
+de saúde mental com impacto mensurável, desde que o desenho conversacional priorize empatia e
+clareza \cite{fitzpatrick2017,woebot2025}.
 
-\end{itemize}
+\section{Modelos de Linguagem Biomédicos}
 
-\section{Desenvolvimento}
+Com BioBERT, observou-se ganho de desempenho em tarefas de mineração de texto clínico,
+principalmente NER, quando comparado a modelos generalistas não especializados em domínio
+biomédico \cite{lee2020}.
 
-O Desenvolvimento (Miolo ou Corpo do Trabalho) é subdividido em seções de 
-acordo com o planejamento do autor. As seções primárias são aquelas que 
-resultam da primeira divisão do texto do documento, geralmente 
-correspondendo a divisão em capítulos. Seções secundárias, terciárias, 
-etc., são aquelas que resultam da divisão do texto de uma seção primária, 
-secundária, terciária, etc., respectivamente.
+\section{Grandes Modelos de Linguagem na Clínica}
 
-As seções primárias são numeradas consecutivamente, seguindo a série 
-natural de números inteiros, a partir de 1, pela ordem de sua sucessão no 
-documento.
+\subsection{Modelos Especialistas}
 
-O Desenvolvimento é a seção mais importante do trabalho, por isso exigi-se 
-organização, objetividade e clareza. É conveniente dividi-lo em pelo menos 
-três partes:
+Modelos como Med-PaLM indicam potencial de alto desempenho em tarefas médicas específicas,
+mas exigem validação rigorosa para uso em cenário real \cite{singhal2023}.
 
-\begin{itemize}
+\subsection{Modelos Generalistas}
 
-	\item Referencial teórico, que corresponde a uma análise dos trabalhos 
-	relevantes, encontrados na pesquisa bibliográfica sobre o assunto. 
-	\item Metodologia, que é a descrição de todos os passos metodológicos 
-	utilizados no trabalho. Sugere-se que se enfatize especialmente em (1) 
-	População ou Sujeitos da pesquisa, (2) Materiais e equipamentos 
-	utilizados e (3) Procedimentos de coleta de dados.
-	\item Resultados, Discussão dos resultados e Conclusões, que é onde se 
-	apresenta os dados encontrados a análise feita pelo autor à luz do 
-	Referencial teórico e as Conclusões.
+Modelos generalistas apresentam forte capacidade de linguagem, porém trazem desafios de custo,
+governança e risco de alucinação factual em aplicações críticas.
 
-\end{itemize}
+\section{Paradigma RAG}
 
-\section{Uso de editores de texto}
-
-O uso de programas de edição eletrônica de textos é de livre escolha do autor. 
-
+A estratégia Retrieval-Augmented Generation combina geração e recuperação de conhecimento
+externo para reduzir alucinações. Esta direção fundamenta a evolução planejada do sistema no
+TCC 2 \cite{lewis2020,alura2025,aws2025}.

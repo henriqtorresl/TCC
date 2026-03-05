@@ -1,9 +1,102 @@
-\chapter*[Introdução]{Introdução}
-\addcontentsline{toc}{chapter}{Introdução}
+\chapter{Introdução}
 
-Este documento apresenta considerações gerais e preliminares relacionadas 
-à redação de relatórios de Projeto de Graduação da Faculdade UnB Gama 
-(FGA). São abordados os diferentes aspectos sobre a estrutura do trabalho, 
-uso de programas de auxilio a edição, tiragem de cópias, encadernação, etc.
+A transformação digital no setor de saúde tem avançado de forma acelerada nas últimas
+décadas, impulsionada pela necessidade de otimizar recursos, ampliar o acesso ao atendimento
+e melhorar a precisão diagnóstica. O conceito de Saúde 4.0 integra tecnologias como Internet
+das Coisas, Big Data e Inteligência Artificial para criar sistemas de saúde mais preditivos e
+personalizados. Nesse contexto, a interseção entre a Ciência da Computação e a Medicina tem
+proporcionado avanços significativos na forma como diagnósticos e triagens são realizados.
 
-Este template é uma adaptação do ABNTeX2\footnote{\url{https://github.com/abntex/abntex2/}}.
+No entanto, apesar da modernização dos equipamentos de exames e dos procedimentos
+cirúrgicos, a etapa fundamental da prática médica, a anamnese, permanece majoritariamente
+manual, analógica ou pouco estruturada. A entrevista inicial entre médico e paciente, momento
+crucial para a coleta da história clínica, consome tempo valioso que poderia ser direcionado à
+análise clínica aprofundada e à humanização do cuidado.
+
+Este trabalho propõe uma solução de engenharia de software para otimizar esse gargalo,
+utilizando Modelos de Linguagem de Grande Escala para interação em linguagem natural e
+Reconhecimento de Entidades Nomeadas para estruturação técnica dos dados coletados
+\cite{singhal2023,sang2003}.
+
+\section{Contextualização}
+
+O setor de saúde enfrenta um desafio global de sobrecarga e sustentabilidade. Segundo a
+Organização Mundial da Saúde, projeta-se um déficit global de profissionais de saúde até 2030.
+Esse cenário impõe pressão sobre os médicos em atividade, levando a burnout e aumento da
+probabilidade de erros associados à fadiga.
+
+Profissionais médicos dedicam parcela significativa de sua carga horária ao preenchimento de
+prontuários. Estudos indicam que a documentação clínica pode consumir de 35\% a 40\% do
+tempo total de uma consulta. Além disso, as queixas dos pacientes chegam aos sistemas de
+saúde de forma difusa e desorganizada, exigindo esforço cognitivo intenso para filtrar sinais
+relevantes.
+
+Paralelamente a esse cenário, observa-se uma explosão na disponibilidade de dados e na
+capacidade computacional. A evolução dos modelos generativos baseados em Transformer,
+como as famílias GPT e Llama, permitiu que sistemas computacionais interpretassem e
+gerassem linguagem natural com maior fluidez e precisão \cite{vaswani2017,metaai2024}.
+
+Contudo, a aplicação direta dessas ferramentas na saúde esbarra em desafios críticos de
+engenharia e ética: confiabilidade das informações geradas, privacidade de dados sensíveis e
+interoperabilidade com sistemas legados.
+
+\section{Definição do Problema}
+
+O problema central abordado neste trabalho é a ineficiência na coleta e estruturação dos dados
+de queixa principal dos pacientes na etapa de pré-consulta.
+
+Atualmente, o fluxo de informação apresenta uma ruptura semântica entre o relato em texto
+livre e o registro estruturado necessário para sistemas clínicos. A dependência de intervenção
+humana para traduzir narrativas em dados padronizados gera:
+
+\begin{itemize}
+\item Gargalo operacional, reduzindo a capacidade de atendimento.
+\item Perda de informação, com omissão de detalhes clínicos sutis.
+\item Dados não padronizados, dificultando interoperabilidade e análise posterior.
+\end{itemize}
+
+A questão de pesquisa que norteia este trabalho é: como uma arquitetura de software híbrida,
+combinando modelos generativos e extrativos, pode automatizar a anamnese prévia com
+fidelidade dos dados clínicos extraídos?
+
+\section{Objetivos}
+
+\subsection{Objetivo Geral}
+
+Desenvolver e validar uma arquitetura de aplicação web para realização de anamnese assistida,
+capaz de interagir com o paciente em linguagem natural e entregar ao profissional de saúde um
+relatório estruturado contendo sintomas, com abordagem baseada em microsserviços de IA.
+
+\subsection{Objetivos Específicos}
+
+\begin{itemize}
+\item Realizar levantamento bibliográfico sobre arquiteturas de LLMs, técnicas de NER e
+padrões de interoperabilidade na saúde.
+\item Projetar e implementar uma API Backend for Frontend (BFF) em Node.js para
+orquestrar inferências de forma segura e escalável.
+\item Integrar e parametrizar o modelo Llama-3.1-8B-Instruct para condução do diálogo
+clínico com técnicas de engenharia de prompt.
+\item Integrar o modelo Biomedical-NER para extração automática de entidades.
+\item Desenvolver uma interface reativa para validação do MVP.
+\item Avaliar viabilidade técnica da solução por métricas qualitativas e capacidade de extração.
+\end{itemize}
+
+\section{Justificativa}
+
+A relevância deste projeto se sustenta em três frentes.
+
+No âmbito social, ferramentas de anamnese assistida podem ampliar eficiência em triagem e
+telemedicina, especialmente em cenários de escassez de especialistas.
+
+No âmbito técnico, a arquitetura híbrida proposta aumenta confiabilidade ao separar conversa
+generativa da extração estruturada de dados, reduzindo impactos de alucinação factual.
+
+No âmbito acadêmico, a solução documenta integração de ferramentas open-source em
+arquitetura auditável e de baixo custo, contribuindo para pesquisas futuras em IA na saúde.
+
+\section{Organização do Trabalho}
+
+Este documento está organizado em cinco capítulos e apêndices. O Capítulo 1 apresenta
+contexto, problema e objetivos. O Capítulo 2 traz a fundamentação teórica. O Capítulo 3
+discute trabalhos relacionados. O Capítulo 4 detalha metodologia, arquitetura e resultados do
+MVP. O Capítulo 5 apresenta considerações finais do TCC 1 e planejamento do TCC 2.

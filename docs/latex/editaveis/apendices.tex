@@ -2,12 +2,75 @@
 
 \partapendices
 
-\chapter{Primeiro Apêndice}
+\chapter{Especificação da API REST}
 
-Texto do primeiro apêndice.
+Este apêndice documenta o contrato de interface da API Backend for Frontend (BFF)
+desenvolvida. A comunicação é realizada via HTTP utilizando JSON para troca de dados.
 
-\chapter{Segundo Apêndice}
+\section{Endpoint de Chat e Anamnese}
 
-Texto do segundo apêndice.
+\textbf{Rota:} \texttt{POST /api/message}
+
+\textbf{Descrição:} recebe mensagem do usuário, gerencia histórico da sessão em memória,
+aciona os modelos de IA e retorna resposta conversacional com entidades extraídas.
+
+\subsection{Requisição}
+
+\textbf{Content-Type:} \texttt{application/json}
+
+\textbf{Body de exemplo:}
+
+\begin{verbatim}
+{
+  "userId": "paciente_12345",
+  "text": "Estou sentindo uma dor de cabeça muito forte e enjoo desde ontem."
+}
+\end{verbatim}
+
+\subsection{Resposta}
+
+\textbf{Status Code:} \texttt{200 OK}
+
+\textbf{Body de exemplo:}
+
+\begin{verbatim}
+{
+  "reply": "Sinto muito. Você poderia descrever se essa dor é pulsante?",
+  "entities": [
+    {
+      "label": "B-Sign_symptom",
+      "text": "dor de cabeça",
+      "score": 0.98
+    },
+    {
+      "label": "B-Sign_symptom",
+      "text": "enjoo",
+      "score": 0.95
+    }
+  ]
+}
+\end{verbatim}
+
+\subsection{Códigos de Erro}
+
+\begin{itemize}
+\item \texttt{400 Bad Request}: quando \texttt{userId} ou \texttt{text} não são fornecidos.
+\item \texttt{500 Internal Server Error}: falha na comunicação com a API de inferência.
+\end{itemize}
+
+\chapter{Código Fonte do Orquestrador (BFF)}
+
+O código do servidor Node.js utilizado no MVP está no arquivo:
+\texttt{medico\_digital/backend/src/server.js}.
+
+Este módulo implementa:
+
+\begin{itemize}
+\item Inicialização do servidor Express e middlewares.
+\item Gestão de contexto em memória por \texttt{userId}.
+\item Chamada ao modelo generativo para condução da anamnese.
+\item Chamada ao modelo NER para extração de entidades clínicas.
+\item Sanitização da resposta textual e retorno unificado em JSON.
+\end{itemize}
 
 \end{apendicesenv}

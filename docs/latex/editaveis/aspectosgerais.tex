@@ -1,175 +1,87 @@
-\part{Aspectos Gerais}
+\chapter{Referencial Teórico}
 
-\chapter[Aspectos Gerais]{Aspectos Gerais}
+Este capítulo apresenta a base teórica para o desenvolvimento da solução proposta, cobrindo
+Inteligência Artificial aplicada à saúde, Processamento de Linguagem Natural, protocolos de
+triagem e aspectos éticos e legais.
 
-Estas instruções apresentam um conjunto mínimo de exigências necessárias a 
-uniformidade de apresentação do relatório de Trabalho de Conclusão de Curso 
-da FGA. Estilo, concisão e clareza ficam inteiramente sob a 
-responsabilidade do(s) aluno(s) autor(es) do relatório.
+\section{Inteligência Artificial na Medicina}
 
-As disciplinas de Trabalho de Conclusão de Curso (TCC) 01 e Trabalho de 
-Conclusão de Curso (TCC) 02 se desenvolvem de acordo com Regulamento 
-próprio aprovado pelo Colegiado da FGA. Os alunos matriculados nessas 
-disciplinas devem estar plenamente cientes de tal Regulamento. 
+A intersecção entre Medicina e Computação não é recente. Desde os sistemas especialistas da
+era simbólica até modelos de aprendizado de máquina, o objetivo central tem sido apoiar a
+decisão clínica com maior consistência e escala.
 
-\section{Composição e estrutura do trabalho}
+\subsection{Sistemas Baseados em Regras e a Era Simbólica}
 
-A formatação do trabalho como um todo considera três elementos principais: 
-(1) pré-textuais, (2) textuais e (3) pós-textuais. Cada um destes, pode se 
-subdividir em outros elementos formando a estrutura global do trabalho, 
-conforme abaixo (as entradas itálico são \textit{opcionais}; em itálico e
-negrito são \textbf{\textit{essenciais}}):
+Nas décadas de 1970 e 1980, sistemas especialistas como o MYCIN adotavam regras IF-THEN
+codificadas manualmente. Apesar de resultados promissores em cenários controlados, sua
+aplicação prática era limitada pela baixa adaptabilidade e manutenção onerosa
+\cite{shortliffe1975}.
 
-\begin{description}
-	\item [Pré-textuais] \
+\subsection{Sistemas de Apoio à Decisão Clínica Modernos}
 
-	\begin{itemize}
-		\item Capa
-		\item Folha de rosto
-		\item \textit{Dedicatória}
-		\item \textit{Agradecimentos}
-		\item \textit{Epígrafe}
-		\item Resumo
-		\item Abstract
-		\item Lista de figuras
-		\item Lista de tabelas
-		\item Lista de símbolos e
-		\item Sumário
-	\end{itemize}
+Com avanço de Machine Learning e disponibilidade de dados em saúde, os CDSS evoluíram de
+regras rígidas para modelos probabilísticos. Na triagem, o objetivo passou a incluir redução da
+sobrecarga cognitiva e ganho de eficiência documental.
 
-	\item [Textuais] \
+\section{Processamento de Linguagem Natural}
 
-	\begin{itemize}
-		\item \textbf{\textit{Introdução}}
-		\item \textbf{\textit{Desenvolvimento}}
-		\item \textbf{\textit{Conclusões}}
-	\end{itemize}
+O PLN trata da interação entre sistemas computacionais e linguagem humana. Em saúde, seu
+uso exige alta robustez, pois ambiguidades semânticas impactam diretamente a qualidade da
+informação clínica estruturada.
 
-	\item [Pós-Textuais] \
-	
-	\begin{itemize}
-		\item Referências bibliográficas
-		\item \textit{Bibliografia}
-		\item Anexos
-		\item Contracapa
-	\end{itemize}
-\end{description}
+\subsection{Representação Vetorial e Tokenização}
 
-Os aspectos específicos da formatação de cada uma dessas três partes 
-principais do relatório são tratados nos capítulos e seções seguintes.
+Modelos modernos transformam texto em representações numéricas densas. Técnicas de
+embeddings permitiram capturar semântica de termos relacionados, o que é fundamental para
+domínio biomédico.
 
-No modelo \LaTeX, os arquivos correspondentes a estas estruturas que devem
-ser editados manualmente estão na pasta \textbf{editáveis}. Os arquivos
-da pasta \textbf{fixos} tratam os elementos que não necessitam de 
-edição direta, e devem ser deixados como estão na grande maioria dos casos.
+\subsubsection{Tokenização por Subpalavras}
 
-\section{Considerações sobre formatação básica do relatório}
+Modelos como Llama utilizam tokenização por subpalavras, como BPE, para lidar com termos
+médicos complexos e raros sem explosão de vocabulário.
 
-A seguir são apresentadas as orientações básicas sobre a formatação do
-documento. O modelo \LaTeX\ \textbf{já configura todas estas opções corretamente},
-de modo que para os usuários deste modelo o texto de toda esta Seção é 
-\textbf{meramente informativo}.
+\subsection{A Revolução Transformer}
 
-\subsection{Tipo de papel, fonte e margens}
+A arquitetura Transformer substituiu processamento sequencial por mecanismos de atenção,
+permitindo paralelização e melhor captura de contexto de longo alcance \cite{vaswani2017}.
 
-Papel -- Na confecção do relatório deverá ser empregado papel branco no 
-formato padrão A4 (21 cm x 29,7cm), com 75 a 90 g/m2.
+\subsubsection{Self-Attention}
 
-Fonte -- Deve-se utilizar as fontes Arial ou Times New Roman no tamanho 12 
-pra corpo do texto, com variações para tamanho 10 permitidas para a 
-wpaginação, legendas e notas de rodapé. Em citações diretas de mais de três 
-linhas utilizar a fonte tamanho 10, sem itálicos, negritos ou aspas. Os 
-tipos itálicos são usados para nomes científicos e expressões estrangeiras, 
-exceto expressões latinas.
+No mecanismo de autoatenção, cada token pondera sua relação com os demais tokens da
+sequência. Isso melhora a interpretação contextual em relatos clínicos extensos.
 
-Margens -- As margens delimitando a região na qual todo o texto deverá estar 
-contido serão as seguintes: 
+\subsection{Modelos de Linguagem de Grande Escala}
 
-\begin{itemize}
-	\item Esquerda: 03 cm;
-	\item Direita	: 02 cm;
-	\item Superior: 03 cm;
-	\item Inferior: 02 cm. 
-\end{itemize}
+LLMs operam por previsão do próximo token e passam por ciclo de pré-treinamento e ajuste
+fino. Em saúde, o alinhamento comportamental é essencial para reduzir respostas inadequadas
+\cite{ouyang2022,singhal2023}.
 
-\subsection{Numeração de Páginas}
+\subsection{Reconhecimento de Entidades Nomeadas}
 
-A contagem sequencial para a numeração de páginas começa a partir da 
-primeira folha do trabalho que é a Folha de Rosto, contudo a numeração em 
-si só deve ser iniciada a partir da primeira folha dos elementos textuais. 
-Assim, as páginas dos elementos pré-textuais contam, mas não são numeradas 
-e os números de página aparecem a partir da primeira folha dos elementos 
-textuais, que se iniciam na Introdução. 
+NER é tarefa extrativa para identificar entidades clínicas como sintomas e medicamentos, com
+base em classificação de tokens \cite{devlin2018,sang2003}.
 
-Os números devem estar em algarismos arábicos (fonte Times ou Arial 10) no 
-canto superior direito da folha, a 02 cm da borda superior, sem traços, 
-pontos ou parênteses. 
+\subsection{Métricas para NER}
 
-A paginação de Apêndices e Anexos deve ser contínua, dando seguimento ao 
-texto principal.
+Em cenários desbalanceados, acurácia isolada não é suficiente. As métricas mais relevantes são
+Precisão, Revocação e F1-Score.
 
-\subsection{Espaços e alinhamento}
+\section{Protocolos de Classificação de Risco e Triagem}
 
-Para a monografia de TCC 01 e 02 o espaço entrelinhas do corpo do texto 
-deve ser de 1,5 cm, exceto RESUMO, CITAÇÔES de mais de três linhas, NOTAS 
-de rodapé, LEGENDAS e REFERÊNCIAS que devem possuir espaçamento simples. 
-Ainda, ao se iniciar a primeira linha de cada novo parágrafo se deve 
-tabular a distância de 1,25 cm da margem esquerda.
+\subsection{Sistema de Triagem de Manchester}
 
-Quanto aos títulos das seções primárias da monografia, estes devem começar 
-na parte superior da folha e separados do texto que o sucede, por um espaço 
-de 1,5 cm entrelinhas, assim como os títulos das seções secundárias, 
-terciárias. 
+O protocolo de Manchester classifica risco clínico por níveis de prioridade e tempos máximos
+de atendimento. Em uma arquitetura de IA, o foco está em coletar discriminadores úteis ao
+profissional de saúde, sem substituir decisão médica.
 
-A formatação de alinhamento deve ser justificado, de modo que o texto fique 
-alinhado uniformemente ao longo das margens esquerda e direita, exceto para 
-CITAÇÕES de mais de três linhas que devem ser alinhadas a 04 cm da margem 
-esquerda e REFERÊNCIAS que são alinhadas somente à margem esquerda do texto 
-diferenciando cada referência.
+\subsection{Anamnese no Modelo SOAP}
 
-\subsection{Quebra de Capítulos e Aproveitamento de Páginas}
+O método SOAP organiza o registro clínico em Subjetivo, Objetivo, Avaliação e Plano. A
+proposta deste trabalho concentra-se no componente Subjetivo, estruturando o relato do paciente
+para apoiar etapas clínicas subsequentes.
 
-Cada seção ou capítulo deverá começar numa nova pagina (recomenda-se que 
-para texto muito longos o autor divida seu documento em mais de um arquivo 
-eletrônico). 
+\section{Aspectos Éticos e Legais na Saúde Digital}
 
-Caso a última pagina de um capitulo tenha apenas um número reduzido de 
-linhas (digamos 2 ou 3), verificar a possibilidade de modificar o texto 
-(sem prejuízo do conteúdo e obedecendo as normas aqui colocadas) para 
-evitar a ocorrência de uma página pouco aproveitada.
-
-Ainda com respeito ao preenchimento das páginas, este deve ser otimizado, 
-evitando-se espaços vazios desnecessários. 
-
-Caso as dimensões de uma figura ou tabela impeçam que a mesma seja 
-posicionada ao final de uma página, o deslocamento para a página seguinte 
-não deve acarretar um vazio na pagina anterior. Para evitar tal ocorrência, 
-deve-se reposicionar os blocos de texto para o preenchimento de vazios. 
-
-Tabelas e figuras devem, sempre que possível, utilizar o espaço disponível 
-da página evitando-se a \lq\lq quebra\rq\rq\ da figura ou tabela. 
-
-\section{Cópias}
-
-Nas versões do relatório para revisão da Banca Examinadora em TCC1 e TCC2, 
-o aluno deve apresentar na Secretaria da FGA, uma cópia para cada membro da 
-Banca Examinadora.
-
-Após a aprovação em TCC2, o aluno deverá obrigatoriamente apresentar a 
-versão final de seu trabalho à Secretaria da FGA na seguinte forma:
-
-\begin{itemize}
-	\item 01 cópia encadernada para arquivo na FGA;
-	\item 01 cópia não encadernada (folhas avulsas) para arquivo na FGA;
-	\item 01 cópia em CD de todos os arquivos empregados no trabalho.
-\end{itemize}
-
-A cópia em CD deve conter, além do texto, todos os arquivos dos quais se 
-originaram os gráficos (excel, etc.) e figuras (jpg, bmp, gif, etc.) 
-contidos no trabalho. Caso o trabalho tenha gerado códigos fontes e 
-arquivos para aplicações especificas (programas em Fortran, C, Matlab, 
-etc.) estes deverão também ser gravados em CD. 
-
-O autor deverá certificar a não ocorrência de “vírus” no CD entregue a 
-secretaria. 
-
+O tratamento de dados de saúde exige conformidade com a LGPD e princípios de Privacy by
+Design. Na arquitetura proposta, o BFF atua como ponto de controle para desidentificação e
+governança antes de chamadas a serviços externos de inferência.
