@@ -1,7 +1,7 @@
 \chapter{Metodologia e Desenvolvimento}
 
-Este capítulo detalha o percurso metodológico adotado, as decisões arquiteturais e a validação
-do MVP de anamnese assistida.
+Este capítulo detalha o percurso metodológico adotado, as decisões arquiteturais e a avaliação
+do protótipo funcional de anamnese assistida.
 
 \section{Classificação da Pesquisa}
 
@@ -17,8 +17,21 @@ técnica da integração entre LLM e NER.
 
 \subsection{Quanto aos Procedimentos Técnicos}
 
-Adotou-se abordagem experimental e prototipagem, com implementação de MVP para validação
-da hipótese arquitetural.
+Adotou-se abordagem experimental e prototipação incremental, com implementação de um
+protótipo funcional para avaliação da hipótese arquitetural.
+
+\section{Metodologia de Desenvolvimento do Software}
+
+O desenvolvimento do software foi conduzido em ciclos curtos, com refinamento sucessivo dos
+artefatos de arquitetura, backend e interface. O processo foi organizado em quatro etapas:
+
+\begin{itemize}
+\item definição dos requisitos funcionais e não funcionais que orientariam a solução;
+\item implementação da camada BFF para orquestração de chamadas, gestão de estado e
+sanitização de respostas;
+\item integração dos modelos de IA e ajuste de parâmetros para o fluxo conversacional;
+\item execução de testes exploratórios e consolidação dos artefatos apresentados nos apêndices.
+\end{itemize}
 
 \section{Requisitos do Sistema}
 
@@ -40,6 +53,29 @@ da hipótese arquitetural.
 \item RNF03: Interoperabilidade com saída em JSON.
 \item RNF04: Tolerância a falhas temporárias de inferência externa.
 \end{itemize}
+
+\section{Plano de Testes}
+
+O plano de testes desta etapa concentrou-se em verificar a coerência da conversação, a
+capacidade de extração de entidades e o comportamento temporal do protótipo. Para isso,
+foram definidos cenários exploratórios com critérios de observação alinhados aos requisitos.
+
+\begin{table}[htb]
+\centering
+\caption{Cenários de teste exploratório do protótipo funcional.}
+\label{tab:plano-testes}
+\begin{tabular}{p{2.1cm}p{5.0cm}p{6.1cm}}
+\hline
+Caso & Entrada principal & Evidência esperada \\
+\hline
+CT01 & Relato de sintoma isolado & Pergunta de seguimento coerente e entidade clínica extraída \\
+CT02 & Relato com múltiplos sintomas & Priorização conversacional e registro das entidades centrais \\
+CT03 & Presença de medicação & Identificação do medicamento no retorno estruturado \\
+CT04 & Sentença com negação & Registro da limitação do modelo e análise do comportamento observado \\
+CT05 & Medição de latência & Resposta dentro do limite de cinco segundos definido em RNF01 \\
+\hline
+\end{tabular}
+\end{table}
 
 \section{Arquitetura da Solução}
 
@@ -85,6 +121,17 @@ O componente generativo usa \texttt{meta-llama/Llama-3.1-8B-Instruct} para condu
 diálogo clínico. O componente extrativo usa \texttt{d4data/biomedical-ner-all} para
 classificação de entidades.
 
+\section{Justificativa para Seleção dos Modelos}
+
+O modelo Llama-3.1-8B-Instruct foi selecionado por combinar disponibilidade aberta,
+capacidade de seguir instruções e integração direta com a infraestrutura adotada nesta etapa.
+Essa escolha foi considerada suficiente para o objetivo do trabalho, que é avaliar a viabilidade
+da arquitetura proposta, e não comparar exaustivamente famílias de modelos.
+
+O modelo \texttt{d4data/biomedical-ner-all} foi escolhido por sua aderência ao domínio
+biomédico e por oferecer uma forma direta de estruturar sintomas e medicamentos extraídos do
+texto do paciente.
+
 \section{Gestão de Estado e Sanitização}
 
 O estado de sessão é mantido em memória por \texttt{userId}, garantindo continuidade da
@@ -94,10 +141,10 @@ do retorno ao cliente.
 \section{Planejamento de Testes e Validação}
 
 Foram definidos casos de teste para sintomas únicos, negações, múltiplos sintomas e presença de
-medicação, com critérios de aceitação voltados à qualidade da pergunta do chat e precisão de
-entidades extraídas.
+medicação, com critérios de aceitação voltados à qualidade da pergunta subsequente, à
+identificação das entidades clínicas e ao atendimento do requisito de latência.
 
-\section{Resultados Preliminares do MVP}
+\section{Resultados Preliminares do Protótipo}
 
 \subsection{Análise Qualitativa da Interação}
 
@@ -106,34 +153,35 @@ Após ajuste de temperatura para 0.4 e refinamento de prompt, o modelo apresento
 
 \subsection{Desempenho da Extração de Entidades}
 
-O modelo NER identificou com boa precisão sintomas e medicamentos frequentes. A principal
-limitação observada foi desambiguação de negações complexas, indicando necessidade de módulo
-de detecção de negação no TCC 2.
+O modelo NER apresentou desempenho satisfatório na identificação de sintomas e medicamentos
+frequentes. A principal limitação observada foi a desambiguação de negações complexas,
+indicando necessidade de módulo específico na etapa subsequente do projeto.
 
 \subsection{Métricas de Latência}
 
-O tempo de resposta fim a fim oscilou entre 2.5 e 4.0 segundos, aceitável para MVP acadêmico,
-mas com espaço para otimização por streaming e melhorias de infraestrutura.
+Em medições exploratórias locais, o tempo de resposta fim a fim oscilou entre 2.5 e 4.0
+segundos, mantendo-se dentro do limite estabelecido em RNF01. Ainda assim, há espaço para
+otimização por streaming e melhorias de infraestrutura.
 
-\section{Interface do Usuário e Validação do MVP}
+\section{Interface do Usuário e Validação do Protótipo}
 
 \begin{figure}[htb]
   \centering
   \includegraphics[width=0.85\textwidth]{figuras/print-chat.eps}
-  \caption{Interface de interação do paciente com o chatbot médico.}
+  \caption{Interface de interação do paciente com o assistente virtual de anamnese.}
   \label{fig:print-chat}
 \end{figure}
 
 A interface React priorizou clareza visual, feedback de carregamento e manutenção de contexto
 conversacional.
 
-\chapter{Considerações Finais e Cronograma}
+\chapter{Considerações Finais e Cronograma da Etapa Subsequente}
 
-O TCC 1 atingiu o objetivo de validar uma arquitetura híbrida para anamnese assistida. A
-abordagem com BFF, modelo generativo e componente extrativo mostrou viabilidade técnica e
-potencial para evolução em ambiente real.
+Esta etapa do trabalho atingiu o objetivo de avaliar tecnicamente uma arquitetura híbrida para
+anamnese assistida. A abordagem com BFF, modelo generativo e componente extrativo mostrou
+viabilidade técnica e potencial para evolução em ambiente real.
 
-\section{Limitações Atuais e Trabalhos Futuros}
+\section{Limitações Atuais e Encaminhamentos}
 
 \begin{itemize}
 \item Implementação de RAG para reduzir alucinações e fundamentar respostas em base curada.
@@ -142,11 +190,11 @@ potencial para evolução em ambiente real.
 \item Validação com usuários reais para refinamento da persona e da comunicação clínica.
 \end{itemize}
 
-\section{Cronograma de Atividades (TCC 2)}
+\section{Cronograma de Atividades da Etapa Subsequente}
 
 \begin{table}[htb]
 \centering
-\caption{Cronograma de atividades previstas para o TCC 2 (4 meses).}
+\caption{Cronograma de atividades previstas para a etapa subsequente do projeto (4 meses).}
 \label{tab:cronograma-tcc2}
 \begin{tabular}{lcccc}
 \hline
@@ -161,7 +209,7 @@ Escrita da Monografia Final e Defesa&   &   & X & X \\
 \end{tabular}
 \end{table}
 
-O TCC 2 concentra dois desafios centrais: o desafio algorítmico de integração de RAG com
-garantia de segurança clínica e o desafio de engenharia full stack para consolidar o fluxo
-completo da aplicação com alta usabilidade.
+A etapa subsequente do projeto concentra dois desafios centrais: a integração de RAG com
+garantia de segurança clínica e a consolidação do fluxo completo da aplicação, incluindo
+autenticação, histórico e avaliação com usuários.
 \part{Texto e Pós Texto}

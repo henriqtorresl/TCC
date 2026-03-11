@@ -56,6 +56,19 @@ LLMs operam por previsão do próximo token e passam por ciclo de pré-treinamen
 fino. Em saúde, o alinhamento comportamental é essencial para reduzir respostas inadequadas
 \cite{ouyang2022,singhal2023}.
 
+\subsection{LLMs, SLMs e Critério de Escolha do Modelo}
+
+Neste trabalho, a sigla LLM refere-se a \textit{Large Language Model}, isto é, modelos com
+grande capacidade paramétrica e ampla competência de linguagem natural. Já a sigla SLM
+refere-se a \textit{Small Language Model}, categoria útil quando o objetivo é reduzir custo
+computacional, memória e latência em cenários mais restritos.
+
+A proposta desenvolvida nesta etapa adota um LLM por priorizar qualidade de condução
+conversacional e capacidade de manter contexto clínico ao longo da anamnese. A escolha do
+Llama-3.1-8B-Instruct foi motivada por disponibilidade aberta, integração viável com a
+infraestrutura utilizada e alinhamento com o objetivo de construir um protótipo funcional
+auditável \cite{metaai2024}.
+
 \subsection{Reconhecimento de Entidades Nomeadas}
 
 NER é tarefa extrativa para identificar entidades clínicas como sintomas e medicamentos, com

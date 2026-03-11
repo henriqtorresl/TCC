@@ -59,9 +59,9 @@ aciona os modelos de IA e retorna resposta conversacional com entidades extraíd
 \item \texttt{500 Internal Server Error}: falha na comunicação com a API de inferência.
 \end{itemize}
 
-\chapter{Código Fonte do Orquestrador (BFF)}
+\chapter{Códigos-fonte do Orquestrador (BFF)}
 
-O código do servidor Node.js utilizado no MVP está no arquivo:
+O código do servidor Node.js utilizado no protótipo funcional está no arquivo:
 \path{medico_digital/backend/src/server.js}.
 
 Este módulo implementa:
@@ -73,5 +73,36 @@ Este módulo implementa:
 \item Chamada ao modelo NER para extração de entidades clínicas.
 \item Sanitização da resposta textual e retorno unificado em JSON.
 \end{itemize}
+
+\chapter{Artefatos de Teste Exploratórios}
+
+Este apêndice consolida evidências iniciais da avaliação técnica realizada sobre o protótipo
+funcional.
+
+\section{Cenários Executados}
+
+\begin{table}[htb]
+\centering
+\caption{Resumo dos cenários exploratórios executados.}
+\label{tab:apendice-testes}
+\begin{tabular}{p{2.0cm}p{6.0cm}p{5.0cm}}
+\hline
+Caso & Objetivo & Resultado observado \\
+\hline
+CT01 & Validar condução de pergunta única por interação & Comportamento aderente na maior parte das execuções \\
+CT02 & Verificar extração de múltiplas entidades clínicas & Identificação satisfatória dos sintomas centrais \\
+CT03 & Verificar reconhecimento de medicamento informado pelo paciente & Medicamento extraído corretamente no retorno estruturado \\
+CT04 & Observar comportamento em sentenças com negação & Limitação identificada e registrada para tratamento posterior \\
+CT05 & Medir latência ponta a ponta do fluxo principal & Faixa observada entre 2.5 s e 4.0 s em ambiente local \\
+\hline
+\end{tabular}
+\end{table}
+
+\section{Síntese das Evidências}
+
+Os testes exploratórios não substituem uma validação com usuários ou um protocolo estatístico
+formal. Ainda assim, servem como evidência inicial de coerência arquitetural, aderência ao
+fluxo conversacional proposto e viabilidade de integração entre o componente generativo e o
+componente extrativo.
 
 \end{apendicesenv}
