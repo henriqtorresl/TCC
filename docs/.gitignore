@@ -22,3 +22,6 @@
 
 # output
 /outuput
+
+# local development notes (not versioned)
+/dev-notes/
