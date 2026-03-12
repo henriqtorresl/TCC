@@ -1,63 +1,101 @@
-# 🩺 Chat-Example — Assistente Médico Digital
+# Backend - Medico Digital
 
-Este projeto é um exemplo de integração Node.js com modelos Hugging Face para realizar anamnese médica via chat.
+Backend em Node.js + Express para anamnese assistida com arquitetura em camadas.
 
-## Requisitos
+## Stack
 
-- Node.js >= 18
-- Conta e token de acesso Hugging Face
-- Dependências listadas no `package.json`
-
-## Instalação e Execução
-
-1. Instale as dependências:
-   ```sh
-   cd tests/chat-example
-   npm install
-   ```
-2. Crie um arquivo `.env` com seu token Hugging Face:
-   ```env
-   HF_TOKEN=seu_token_aqui
-   ```
-3. Inicie o servidor:
-   ```sh
-   npm start
-   ```
-4. Acesse a API em `http://localhost:3000/api/message`
-
-## Exemplo de Uso
-
-Envie uma requisição POST para `/api/message`:
-
-```json
-{
-  "userId": "123",
-  "text": "Olá, estou com dor de cabeça há 2 dias."
-}
-```
-
-Resposta:
-
-```json
-{
-  "reply": "Pode me contar se a dor começou de repente ou foi aumentando aos poucos?",
-  "entities": [
-    { "label": "Symptom", "text": "dor de cabeça", "score": 0.98 },
-    { "label": "Duration", "text": "2 dias", "score": 0.95 }
-  ]
-}
-```
+- Node.js 20+
+- Express
+- Hugging Face Inference (`@huggingface/inference`)
+- PostgreSQL (`pg`)
 
 ## Estrutura
 
-- `src/server.js` — Código principal do servidor Express
-- `.env` — Token Hugging Face
-- `package.json` — Dependências do projeto
+```txt
+src/
+  app.js
+  server.js
+  config/
+    env.js
+  shared/
+    db/
+      db.js
+      migrate.js
+  modules/
+    auth/
+    chat/
+    reports/
+    users/
+migrations/
+  0001_initial_schema.sql
+```
 
-## Links Úteis
+## Modulos
 
-- [Documentação Hugging Face Inference](https://huggingface.co/docs/inference)
-- [Modelos utilizados](https://huggingface.co/models)
-- [Express.js](https://expressjs.com/pt/)
+- `auth`: registro/login e sessao
+- `chat`: endpoint de conversa (`/api/message`) e extracao de entidades
+- `reports`: geracao e consulta de relatorios
+- `users`: consulta de usuario por id
 
----
+## Variaveis de ambiente
+
+Use `.env` com:
+
+```env
+HF_TOKEN=seu_token_huggingface
+PORT=3000
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/medico_digital
+```
+
+Se `DATABASE_URL` nao estiver configurada, rotas dependentes de banco retornam erro `503`,
+mas a API ainda sobe.
+
+## Execucao
+
+Instalar dependencias:
+
+```sh
+npm install
+```
+
+Subir banco local (PostgreSQL), apenas para ambiente de desenvolvimento:
+
+```sh
+npm run db:dev:up
+```
+
+Parar banco local de desenvolvimento:
+
+```sh
+npm run db:dev:down
+```
+
+Executar migrations:
+
+```sh
+npm run migrate
+```
+
+Subir servidor (prod-like):
+
+```sh
+npm start
+```
+
+Subir servidor em desenvolvimento (auto-reload):
+
+```sh
+npm run dev
+```
+
+## Endpoints base
+
+- `GET /api/health`
+- `GET /api/openapi.json`
+- `GET /api/docs`
+- `POST /api/message`
+- `POST /api/auth/register`
+- `POST /api/auth/login`
+- `GET /api/users/:id`
+- `POST /api/reports/generate`
+- `GET /api/reports/:id`
