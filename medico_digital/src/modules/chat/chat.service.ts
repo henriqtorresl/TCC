@@ -16,7 +16,7 @@ export class ChatService {
 
   constructor(
     private readonly hfClient: InferenceClient,
-    private readonly chatRepository: ChatRepository | null = null
+    private readonly chatRepository: ChatRepository | null = null,
   ) {}
 
   async sendMessage({ userId, text }: ChatRequest): Promise<ChatResponse> {
@@ -49,13 +49,9 @@ Não dê diagnóstico final; seu papel é exclusivamente coletar as informaçõe
     const completion = await this.hfClient.chatCompletion({
       model: CHAT_MODEL,
       messages,
-      parameters: {
-        max_new_tokens: 150,
-        do_sample: true,
-        temperature: 0.4,
-        repetition_penalty: 1.15,
-        top_p: 0.95,
-      },
+      max_tokens: 150,
+      temperature: 0.4,
+      top_p: 0.95,
     });
 
     const rawBotText = completion?.choices?.[0]?.message?.content ?? "";
@@ -73,7 +69,7 @@ Não dê diagnóstico final; seu papel é exclusivamente coletar as informaçõe
     });
 
     const entities: ChatEntity[] = nerResult.map((entity) => ({
-      label: entity.entity ?? "unknown",
+      label: entity.entity_group ?? entity.entity ?? "unknown",
       text: entity.word ?? "",
       score: entity.score ?? 0,
     }));
@@ -103,7 +99,7 @@ Não dê diagnóstico final; seu papel é exclusivamente coletar as informaçõe
     userId: string,
     userText: string,
     assistantText: string,
-    entities: ChatEntity[]
+    entities: ChatEntity[],
   ): Promise<void> {
     if (!this.chatRepository) {
       return;
@@ -122,7 +118,7 @@ Não dê diagnóstico final; seu papel é exclusivamente coletar as informaçõe
         conversationId,
         "assistant",
         assistantText,
-        entities
+        entities,
       );
     } catch (error) {
       console.warn("Could not persist chat messages:", error);
