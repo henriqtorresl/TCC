@@ -1,3 +1,5 @@
+import { ChatScreen } from "@/app/_components/chat-screen";
+
 export default function Home() {
-  return <>Olá mundo</>;
+  return <ChatScreen />;
 }
