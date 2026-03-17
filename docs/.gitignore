@@ -25,3 +25,6 @@
 
 # local development notes (not versioned)
 /dev-notes/
+
+# agents
+AGENTS.md
