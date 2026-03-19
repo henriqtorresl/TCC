@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getDbPool } from "@/lib/server/db";
 import { AuthRepository } from "@/modules/auth/auth.repository";
+import { validateRegisterBody } from "@/modules/auth/schemas";
 import { AuthService } from "@/modules/auth/auth.service";
 
 export const runtime = "nodejs";
@@ -12,18 +13,36 @@ const authService = new AuthService(authRepository);
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
-    const payload = await authService.register({
-      fullName: body?.fullName,
-      email: body?.email,
-      password: body?.password,
-    });
+    let body: unknown;
+    try {
+      body = await request.json();
+    } catch {
+      return NextResponse.json(
+        {
+          error: {
+            code: "invalid_json_body",
+            message:
+              "JSON invalido no corpo da requisicao. Envie: fullName, email e password.",
+            details: {
+              requiredFields: ["fullName", "email", "password"],
+            },
+          },
+        },
+        { status: 400 }
+      );
+    }
+
+    const parsed = validateRegisterBody(body);
+    if (!parsed.success) {
+      return NextResponse.json({ error: parsed.error }, { status: 400 });
+    }
+
+    const payload = await authService.register(parsed.data);
     return NextResponse.json(payload, { status: 201 });
   } catch (error) {
     if (
       error instanceof Error &&
-      (error.message === "fullName, email and password are required" ||
-        error.message === "email_already_in_use")
+      error.message === "email_already_in_use"
     ) {
       return NextResponse.json({ error: error.message }, { status: 400 });
     }
