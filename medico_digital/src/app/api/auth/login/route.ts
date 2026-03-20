@@ -38,7 +38,17 @@ export async function POST(request: Request) {
     }
 
     const payload = await authService.login(parsed.data);
-    return NextResponse.json(payload);
+    const response = NextResponse.json(payload);
+    response.cookies.set({
+      name: "md_refresh_token",
+      value: payload.refreshToken,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      maxAge: 60 * 60 * 24 * 7,
+    });
+    return response;
   } catch (error) {
     if (error instanceof Error && error.message === "invalid_credentials") {
       return NextResponse.json({ error: error.message }, { status: 401 });
