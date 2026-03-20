@@ -2,17 +2,20 @@ import { NextRequest, NextResponse } from "next/server";
 
 const AUTH_COOKIE_NAME = "md_refresh_token";
 
+const publicRoutes = [
+  "/api/auth",
+  "/api/docs",
+  "/api/openapi.json",
+  "/api/health",
+];
+
 export function handleApiGuard(request: NextRequest): NextResponse | null {
   const { pathname } = request.nextUrl;
+  const isApiRoute = pathname.startsWith("/api");
+  const isPublicRoute = publicRoutes.some((path) => pathname.startsWith(path));
 
-  if (
-    pathname.startsWith("/api/auth") ||
-    pathname.startsWith("/api/docs") ||
-    pathname.startsWith("/api/openapi.json") ||
-    pathname.startsWith("/api/health") ||
-    !pathname.startsWith("/api")
-  ) {
-    return null;
+  if (isPublicRoute || !isApiRoute) {
+    return null; // Retorna null para o middleware continuar avaliando os proximos guards.
   }
 
   const authCookie = request.cookies.get(AUTH_COOKIE_NAME)?.value;
