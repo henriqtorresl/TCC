@@ -12,6 +12,12 @@ type CreateSessionInput = {
   expiresAt: Date;
 };
 
+type AuthSession = {
+  id: number;
+  user_id: number;
+  expires_at: string;
+};
+
 export class AuthRepository {
   constructor(private readonly db: Pool) {}
 
@@ -50,5 +56,24 @@ export class AuthRepository {
       [userId, refreshTokenHash, expiresAt]
     );
     return result.rows[0];
+  }
+
+  async findValidSessionByRefreshTokenHash(
+    refreshTokenHash: string,
+  ): Promise<AuthSession | null> {
+    const result = await this.db.query<AuthSession>(
+      `
+      SELECT id, user_id, expires_at
+      FROM auth_sessions
+      WHERE refresh_token_hash = $1
+        AND revoked_at IS NULL
+        AND expires_at > NOW()
+      ORDER BY created_at DESC
+      LIMIT 1;
+      `,
+      [refreshTokenHash],
+    );
+
+    return result.rows[0] ?? null;
   }
 }
