@@ -1,6 +1,7 @@
 "use client";
 
 import { SendHorizontal, Stethoscope } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 
@@ -14,6 +15,7 @@ type ChatApiResponse = {
 };
 
 export function ChatScreen() {
+  const router = useRouter();
   const [textInput, setTextInput] = useState("");
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -40,10 +42,14 @@ export function ChatScreen() {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({
-          userId: "1",
           text,
         }),
       });
+
+      if (response.status === 401) {
+        router.replace("/login?next=%2F");
+        return;
+      }
 
       if (!response.ok) {
         throw new Error("Não foi possível enviar a mensagem.");
