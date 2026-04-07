@@ -33,12 +33,14 @@ export class ChatRepository {
     content: string,
     entities: unknown = null
   ): Promise<void> {
+    const entitiesJson = entities === null ? null : JSON.stringify(entities);
+
     await this.db.query(
       `
       INSERT INTO messages (conversation_id, role, content, entities)
       VALUES ($1, $2, $3, $4);
       `,
-      [conversationId, role, content, entities]
+      [conversationId, role, content, entitiesJson]
     );
   }
 }
