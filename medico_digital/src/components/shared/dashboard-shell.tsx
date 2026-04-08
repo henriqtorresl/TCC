@@ -2,9 +2,16 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, MessageSquareText, Users, X } from "lucide-react";
+import { Menu, MessageSquareText, Users } from "lucide-react";
 import { ReactNode, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 
 type DashboardShellProps = {
   children: ReactNode;
@@ -67,34 +74,29 @@ export function DashboardShell({ children }: DashboardShellProps) {
           <p className="text-xs text-zinc-400">Médico Virtual</p>
           <h1 className="text-sm font-semibold">{currentSection}</h1>
         </div>
-        <Button
-          variant="outline"
-          size="icon"
-          className="border-zinc-700 bg-zinc-900 text-zinc-100 hover:bg-zinc-800"
-          aria-label="Abrir menu"
-          onClick={() => setIsMobileMenuOpen((value) => !value)}
-        >
-          {isMobileMenuOpen ? <X /> : <Menu />}
-        </Button>
-      </header>
-
-      {isMobileMenuOpen && (
-        <div className="fixed inset-0 z-20 md:hidden">
-          <button
-            type="button"
-            className="absolute inset-0 bg-zinc-950/70"
-            aria-label="Fechar menu"
-            onClick={() => setIsMobileMenuOpen(false)}
-          />
-          <aside className="relative z-10 h-full w-72 border-r border-zinc-800 bg-zinc-950 p-4">
+        <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
+          <SheetTrigger asChild>
+            <Button
+              variant="outline"
+              size="icon"
+              className="border-zinc-700 bg-zinc-900 text-zinc-100 hover:bg-zinc-800"
+              aria-label="Abrir menu"
+            >
+              <Menu />
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="left" className="w-72 border-zinc-800 bg-zinc-950 p-4">
+            <SheetHeader>
+              <SheetTitle className="sr-only">Menu de navegação</SheetTitle>
+            </SheetHeader>
             <p className="pb-4 text-xs text-zinc-400">Navegação</p>
             <NavLinks
               pathname={pathname}
               onNavigate={() => setIsMobileMenuOpen(false)}
             />
-          </aside>
-        </div>
-      )}
+          </SheetContent>
+        </Sheet>
+      </header>
 
       <div className="mx-auto flex min-h-[calc(100dvh-57px)] w-full max-w-[1600px] md:min-h-dvh">
         <aside className="hidden w-64 border-r border-zinc-800 bg-zinc-950 p-4 md:block">

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 import { Stethoscope } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 type ErrorPayload = {
   error?: string | { message?: string };
@@ -93,10 +94,10 @@ export default function RegisterPage() {
         <form className="space-y-4" onSubmit={(event) => void handleSubmit(event)}>
           <label className="block space-y-2">
             <span className="text-sm text-zinc-300">Nome completo</span>
-            <input
+            <Input
               type="text"
               autoComplete="name"
-              className="h-11 w-full rounded-lg border border-zinc-700 bg-zinc-950 px-3 text-sm outline-none ring-emerald-400/40 placeholder:text-zinc-500 focus:ring-2"
+              className="h-11 w-full border-zinc-700 bg-zinc-950 text-sm ring-emerald-400/40 placeholder:text-zinc-500 focus-visible:ring-2"
               placeholder="Seu nome"
               value={fullName}
               onChange={(event) => setFullName(event.target.value)}
@@ -107,10 +108,10 @@ export default function RegisterPage() {
 
           <label className="block space-y-2">
             <span className="text-sm text-zinc-300">Email</span>
-            <input
+            <Input
               type="email"
               autoComplete="email"
-              className="h-11 w-full rounded-lg border border-zinc-700 bg-zinc-950 px-3 text-sm outline-none ring-emerald-400/40 placeholder:text-zinc-500 focus:ring-2"
+              className="h-11 w-full border-zinc-700 bg-zinc-950 text-sm ring-emerald-400/40 placeholder:text-zinc-500 focus-visible:ring-2"
               placeholder="voce@email.com"
               value={email}
               onChange={(event) => setEmail(event.target.value)}
@@ -121,10 +122,10 @@ export default function RegisterPage() {
 
           <label className="block space-y-2">
             <span className="text-sm text-zinc-300">Senha</span>
-            <input
+            <Input
               type="password"
               autoComplete="new-password"
-              className="h-11 w-full rounded-lg border border-zinc-700 bg-zinc-950 px-3 text-sm outline-none ring-emerald-400/40 placeholder:text-zinc-500 focus:ring-2"
+              className="h-11 w-full border-zinc-700 bg-zinc-950 text-sm ring-emerald-400/40 placeholder:text-zinc-500 focus-visible:ring-2"
               placeholder="Crie sua senha"
               value={password}
               onChange={(event) => setPassword(event.target.value)}

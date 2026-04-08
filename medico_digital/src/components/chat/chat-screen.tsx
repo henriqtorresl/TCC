@@ -23,6 +23,7 @@ export function ChatScreen() {
   const [selectedAttendanceId, setSelectedAttendanceId] = useState<
     number | null
   >(null);
+  const [isAttendancesLoading, setIsAttendancesLoading] = useState(false);
   const [isHistoryLoading, setIsHistoryLoading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isStartingAttendance, setIsStartingAttendance] = useState(false);
@@ -42,38 +43,43 @@ export function ChatScreen() {
 
   const loadAttendances = useCallback(
     async (preserveSelection = true) => {
-      const response = await fetch("/api/attendances");
-      if (response.status === 401) {
-        router.replace("/login?next=%2F");
-        return;
-      }
-      if (!response.ok) {
-        throw new Error("Não foi possível carregar os atendimentos salvos.");
-      }
-
-      const data = (await response.json()) as AttendanceListResponse;
-      setAttendances(data.attendances);
-
-      if (data.attendances.length === 0) {
-        setSelectedAttendanceId(null);
-        setMessages([]);
-        return;
-      }
-
-      setSelectedAttendanceId((currentId) => {
-        if (
-          preserveSelection &&
-          currentId &&
-          data.attendances.some((attendance) => attendance.id === currentId)
-        ) {
-          return currentId;
+      setIsAttendancesLoading(true);
+      try {
+        const response = await fetch("/api/attendances");
+        if (response.status === 401) {
+          router.replace("/login?next=%2F");
+          return;
+        }
+        if (!response.ok) {
+          throw new Error("Não foi possível carregar os atendimentos salvos.");
         }
 
-        const activeAttendance = data.attendances.find(
-          (attendance) => attendance.status === "active",
-        );
-        return activeAttendance?.id ?? data.attendances[0].id;
-      });
+        const data = (await response.json()) as AttendanceListResponse;
+        setAttendances(data.attendances);
+
+        if (data.attendances.length === 0) {
+          setSelectedAttendanceId(null);
+          setMessages([]);
+          return;
+        }
+
+        setSelectedAttendanceId((currentId) => {
+          if (
+            preserveSelection &&
+            currentId &&
+            data.attendances.some((attendance) => attendance.id === currentId)
+          ) {
+            return currentId;
+          }
+
+          const activeAttendance = data.attendances.find(
+            (attendance) => attendance.status === "active",
+          );
+          return activeAttendance?.id ?? data.attendances[0].id;
+        });
+      } finally {
+        setIsAttendancesLoading(false);
+      }
     },
     [router],
   );
@@ -248,6 +254,7 @@ export function ChatScreen() {
           attendances={attendances}
           selectedAttendanceId={selectedAttendanceId}
           onSelectAttendance={setSelectedAttendanceId}
+          isLoading={isAttendancesLoading}
         />
 
         <div className="flex w-full flex-col">
