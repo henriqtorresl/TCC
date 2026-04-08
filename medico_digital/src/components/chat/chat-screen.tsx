@@ -2,10 +2,10 @@
 
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { AttendancesPanel } from "@/app/_components/chat/attendances-panel";
-import { ChatComposer } from "@/app/_components/chat/chat-composer";
-import { ChatHeader } from "@/app/_components/chat/chat-header";
-import { ChatMessages } from "@/app/_components/chat/chat-messages";
+import { AttendancesPanel } from "@/components/chat/attendances-panel";
+import { ChatComposer } from "@/components/chat/chat-composer";
+import { ChatHeader } from "@/components/chat/chat-header";
+import { ChatMessages } from "@/components/chat/chat-messages";
 import {
   AttendanceListResponse,
   AttendanceMessagesResponse,
@@ -13,7 +13,7 @@ import {
   ChatApiResponse,
   ChatMessage,
   StartAttendanceResponse,
-} from "@/app/_components/chat/types";
+} from "@/components/chat/types";
 
 export function ChatScreen() {
   const router = useRouter();

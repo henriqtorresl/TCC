@@ -1,4 +1,4 @@
-import { AttendanceSummary } from "@/app/_components/chat/types";
+import { AttendanceSummary } from "@/components/chat/types";
 
 export function formatAttendanceLabel(attendance: AttendanceSummary): string {
   const date = new Date(attendance.started_at);

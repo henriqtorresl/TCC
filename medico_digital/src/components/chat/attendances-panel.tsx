@@ -1,8 +1,8 @@
 import {
   formatAttendanceLabel,
   getAttendanceStatusLabel,
-} from "@/app/_components/chat/attendance-utils";
-import { AttendanceSummary } from "@/app/_components/chat/types";
+} from "@/components/chat/attendance-utils";
+import { AttendanceSummary } from "@/components/chat/types";
 
 type AttendancesPanelProps = {
   attendances: AttendanceSummary[];
