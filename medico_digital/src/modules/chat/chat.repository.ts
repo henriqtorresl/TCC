@@ -20,41 +20,51 @@ type AttendanceMessageRow = {
 export class ChatRepository {
   constructor(private readonly db: Pool) {}
 
-  async createConversation(userId: number): Promise<number> {
+  async createConversation(patientId: number): Promise<number> {
     const created = await this.db.query<{ id: number }>(
-      "INSERT INTO conversations (user_id) VALUES ($1) RETURNING id;",
-      [userId]
+      `
+      INSERT INTO conversations (user_id, patient_id)
+      SELECT user_id, id
+      FROM patients
+      WHERE id = $1
+      RETURNING id;
+      `,
+      [patientId]
     );
+
+    if (!created.rows[0]) {
+      throw new Error("patient_not_found");
+    }
 
     return created.rows[0].id;
   }
 
-  async ensureActiveConversation(userId: number): Promise<number> {
+  async ensureActiveConversation(patientId: number): Promise<number> {
     const existing = await this.db.query<{ id: number }>(
       `
       SELECT id
       FROM conversations
-      WHERE user_id = $1 AND status = 'active'
+      WHERE patient_id = $1 AND status = 'active'
       ORDER BY started_at DESC
       LIMIT 1
       `,
-      [userId]
+      [patientId]
     );
 
     if (existing.rowCount && existing.rowCount > 0) {
       return existing.rows[0].id;
     }
 
-    return this.createConversation(userId);
+    return this.createConversation(patientId);
   }
 
-  async closeLatestActiveConversation(userId: number): Promise<number | null> {
+  async closeLatestActiveConversation(patientId: number): Promise<number | null> {
     const result = await this.db.query<{ id: number }>(
       `
       WITH latest_active AS (
         SELECT id
         FROM conversations
-        WHERE user_id = $1 AND status = 'active'
+        WHERE patient_id = $1 AND status = 'active'
         ORDER BY started_at DESC
         LIMIT 1
       )
@@ -63,13 +73,13 @@ export class ChatRepository {
       WHERE id IN (SELECT id FROM latest_active)
       RETURNING id;
       `,
-      [userId]
+      [patientId]
     );
 
     return result.rows[0]?.id ?? null;
   }
 
-  async listAttendancesByUser(userId: number): Promise<AttendanceSummaryRow[]> {
+  async listAttendancesByPatient(patientId: number): Promise<AttendanceSummaryRow[]> {
     const result = await this.db.query<AttendanceSummaryRow>(
       `
       SELECT
@@ -82,28 +92,28 @@ export class ChatRepository {
         COUNT(m.id)::text AS message_count
       FROM conversations c
       LEFT JOIN messages m ON m.conversation_id = c.id
-      WHERE c.user_id = $1
+      WHERE c.patient_id = $1
       GROUP BY c.id
       ORDER BY c.started_at DESC;
       `,
-      [userId],
+      [patientId],
     );
 
     return result.rows;
   }
 
   async listMessagesByAttendance(
-    userId: number,
+    patientId: number,
     attendanceId: number,
   ): Promise<AttendanceMessageRow[] | null> {
     const attendance = await this.db.query<{ id: number }>(
       `
       SELECT id
       FROM conversations
-      WHERE id = $1 AND user_id = $2
+      WHERE id = $1 AND patient_id = $2
       LIMIT 1;
       `,
-      [attendanceId, userId],
+      [attendanceId, patientId],
     );
 
     if (!attendance.rows[0]) {

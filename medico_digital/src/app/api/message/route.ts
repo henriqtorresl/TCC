@@ -3,12 +3,16 @@ import { getDbPool } from "@/lib/server/db";
 import { getSessionUserId } from "@/lib/server/auth-session";
 import { AuthRepository } from "@/modules/auth/auth.repository";
 import { chatService } from "@/modules/chat/chat.container";
+import { PatientsRepository } from "@/modules/patients/patients.repository";
+import { PatientsService } from "@/modules/patients/patients.service";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 const db = getDbPool();
 const authRepository = db ? new AuthRepository(db) : null;
+const patientsRepository = db ? new PatientsRepository(db) : null;
+const patientsService = new PatientsService(patientsRepository);
 
 export async function POST(request: Request) {
   try {
@@ -58,12 +62,36 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: sessionUser.error }, { status: 401 });
     }
 
+    const patient = await patientsService.getMe(sessionUser.userId);
+
     const payload = await chatService.sendMessage({
-      userId: String(sessionUser.userId),
+      patientId: String(patient.id),
       text,
     });
     return NextResponse.json(payload);
   } catch (error) {
+    if (
+      error instanceof Error &&
+      (error.message === "patientId e text são obrigatórios" ||
+        error.message === "required_fields_missing")
+    ) {
+      return NextResponse.json({ error: error.message }, { status: 400 });
+    }
+    if (error instanceof Error && error.message === "database_not_configured") {
+      return NextResponse.json({ error: error.message }, { status: 503 });
+    }
+    if (
+      error instanceof Error &&
+      error.message === "invalid_user_id"
+    ) {
+      return NextResponse.json({ error: error.message }, { status: 400 });
+    }
+    if (
+      error instanceof Error &&
+      (error.message === "user_not_found" || error.message === "patient_not_found")
+    ) {
+      return NextResponse.json({ error: error.message }, { status: 404 });
+    }
     console.error("Unhandled error in /api/message:", error);
     return NextResponse.json({ error: "internal_server_error" }, { status: 500 });
   }

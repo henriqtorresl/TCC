@@ -1,5 +1,5 @@
 export type ChatRequest = {
-  userId: string;
+  patientId: string;
   text: string;
 };
 

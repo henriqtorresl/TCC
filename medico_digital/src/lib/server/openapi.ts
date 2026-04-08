@@ -15,6 +15,7 @@ export function buildOpenApiSpec() {
       { name: "Chat" },
       { name: "Auth" },
       { name: "Users" },
+      { name: "Patients" },
       { name: "Reports" },
     ],
     paths: {
@@ -208,6 +209,100 @@ export function buildOpenApiSpec() {
         },
       },
       "/api/users/{id}": { get: { tags: ["Users"], summary: "Get user by id" } },
+      "/api/patients/me": {
+        get: {
+          tags: ["Patients"],
+          summary: "Get authenticated patient profile",
+          responses: {
+            200: {
+              description: "Patient profile",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/PatientResponse" },
+                },
+              },
+            },
+            401: {
+              description: "Invalid or missing session",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/ErrorStringResponse" },
+                },
+              },
+            },
+            404: {
+              description: "User not found",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/ErrorStringResponse" },
+                },
+              },
+            },
+            503: {
+              description: "Database not configured",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/ErrorStringResponse" },
+                },
+              },
+            },
+          },
+        },
+        put: {
+          tags: ["Patients"],
+          summary: "Update authenticated patient profile",
+          requestBody: {
+            required: true,
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/UpdatePatientRequest" },
+              },
+            },
+          },
+          responses: {
+            200: {
+              description: "Updated patient profile",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/PatientResponse" },
+                },
+              },
+            },
+            400: {
+              description: "Validation error or invalid JSON body",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/ErrorObjectResponse" },
+                },
+              },
+            },
+            401: {
+              description: "Invalid or missing session",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/ErrorStringResponse" },
+                },
+              },
+            },
+            404: {
+              description: "User or patient not found",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/ErrorStringResponse" },
+                },
+              },
+            },
+            503: {
+              description: "Database not configured",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/ErrorStringResponse" },
+                },
+              },
+            },
+          },
+        },
+      },
       "/api/reports/generate": {
         post: { tags: ["Reports"], summary: "Generate report from conversation" },
       },
@@ -400,6 +495,56 @@ export function buildOpenApiSpec() {
             },
           },
           required: ["messages"],
+        },
+        Patient: {
+          type: "object",
+          properties: {
+            id: { type: "integer" },
+            user_id: { type: "integer" },
+            email: { type: "string", format: "email" },
+            full_name: { type: "string" },
+            birth_date: { type: ["string", "null"], format: "date" },
+            cpf: { type: ["string", "null"] },
+            phone: { type: ["string", "null"] },
+            gender: {
+              type: ["string", "null"],
+              enum: ["male", "female", "other", "unknown", null],
+            },
+            created_at: { type: "string", format: "date-time" },
+            updated_at: { type: "string", format: "date-time" },
+          },
+          required: [
+            "id",
+            "user_id",
+            "email",
+            "full_name",
+            "birth_date",
+            "cpf",
+            "phone",
+            "gender",
+            "created_at",
+            "updated_at",
+          ],
+        },
+        PatientResponse: {
+          type: "object",
+          properties: {
+            patient: { $ref: "#/components/schemas/Patient" },
+          },
+          required: ["patient"],
+        },
+        UpdatePatientRequest: {
+          type: "object",
+          properties: {
+            fullName: { type: "string" },
+            birthDate: { type: ["string", "null"], format: "date" },
+            cpf: { type: ["string", "null"] },
+            phone: { type: ["string", "null"] },
+            gender: {
+              type: ["string", "null"],
+              enum: ["male", "female", "other", "unknown", null],
+            },
+          },
         },
         User: {
           type: "object",

@@ -19,13 +19,13 @@ export class ChatService {
     private readonly chatRepository: ChatRepository | null = null,
   ) {}
 
-  async sendMessage({ userId, text }: ChatRequest): Promise<ChatResponse> {
-    if (!userId || !text) {
-      throw new Error("userId e text são obrigatórios");
+  async sendMessage({ patientId, text }: ChatRequest): Promise<ChatResponse> {
+    if (!patientId || !text) {
+      throw new Error("patientId e text são obrigatórios");
     }
 
-    this.conversations[userId] = this.conversations[userId] ?? [];
-    this.conversations[userId].push({ role: "user", text, ts: Date.now() });
+    this.conversations[patientId] = this.conversations[patientId] ?? [];
+    this.conversations[patientId].push({ role: "user", text, ts: Date.now() });
 
     const systemPrompt = `Você é um assistente médico virtual especializado em conduzir uma anamnese.
 Seu objetivo é coletar informações como queixa principal, início, evolução, fatores de melhora/piora, antecedentes e hábitos.
@@ -40,7 +40,7 @@ Não dê diagnóstico final; seu papel é exclusivamente coletar as informaçõe
 
     const messages = [
       { role: "system" as const, content: systemPrompt },
-      ...this.conversations[userId].slice(-10).map((entry) => ({
+      ...this.conversations[patientId].slice(-10).map((entry) => ({
         role: entry.role,
         content: entry.text,
       })),
@@ -57,7 +57,7 @@ Não dê diagnóstico final; seu papel é exclusivamente coletar as informaçõe
     const rawBotText = completion?.choices?.[0]?.message?.content ?? "";
     const botText = this.sanitizeBotText(rawBotText);
 
-    this.conversations[userId].push({
+    this.conversations[patientId].push({
       role: "assistant",
       text: botText,
       ts: Date.now(),
@@ -74,26 +74,26 @@ Não dê diagnóstico final; seu papel é exclusivamente coletar as informaçõe
       score: entity.score ?? 0,
     }));
 
-    await this.persistIfPossible(userId, text, botText, entities);
+    await this.persistIfPossible(patientId, text, botText, entities);
 
     return { reply: botText, entities };
   }
 
-  async startNewAttendance(userId: string): Promise<{ conversationId: number }> {
+  async startNewAttendance(patientId: string): Promise<{ conversationId: number }> {
     if (!this.chatRepository) {
       throw new Error("database_not_configured");
     }
 
-    const numericUserId = Number(userId);
-    if (!Number.isFinite(numericUserId) || numericUserId <= 0) {
-      throw new Error("invalid_user_id");
+    const numericPatientId = Number(patientId);
+    if (!Number.isFinite(numericPatientId) || numericPatientId <= 0) {
+      throw new Error("invalid_patient_id");
     }
 
-    await this.chatRepository.closeLatestActiveConversation(numericUserId);
+    await this.chatRepository.closeLatestActiveConversation(numericPatientId);
     const conversationId = await this.chatRepository.createConversation(
-      numericUserId,
+      numericPatientId,
     );
-    this.conversations[userId] = [];
+    this.conversations[patientId] = [];
 
     return { conversationId };
   }
@@ -115,7 +115,7 @@ Não dê diagnóstico final; seu papel é exclusivamente coletar as informaçõe
   }
 
   private async persistIfPossible(
-    userId: string,
+    patientId: string,
     userText: string,
     assistantText: string,
     entities: ChatEntity[],
@@ -124,14 +124,14 @@ Não dê diagnóstico final; seu papel é exclusivamente coletar as informaçõe
       return;
     }
 
-    const numericUserId = Number(userId);
-    if (!Number.isFinite(numericUserId) || numericUserId <= 0) {
+    const numericPatientId = Number(patientId);
+    if (!Number.isFinite(numericPatientId) || numericPatientId <= 0) {
       return;
     }
 
     try {
       const conversationId =
-        await this.chatRepository.ensureActiveConversation(numericUserId);
+        await this.chatRepository.ensureActiveConversation(numericPatientId);
       await this.chatRepository.saveMessage(conversationId, "user", userText);
       await this.chatRepository.saveMessage(
         conversationId,
