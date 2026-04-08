@@ -1,10 +1,5 @@
-import { PlaceholderPage } from "@/components/patients/patients-placeholder-page";
+import { PatientsProfileForm } from "@/components/patients/patients-profile-form";
 
 export default function PatientsPage() {
-  return (
-    <PlaceholderPage
-      title="Patients"
-      description="Base page for patient profile management and demographic records."
-    />
-  );
+  return <PatientsProfileForm />;
 }
