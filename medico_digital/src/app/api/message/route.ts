@@ -1,21 +1,14 @@
-import crypto from "node:crypto";
-import { InferenceClient } from "@huggingface/inference";
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
 import { getDbPool } from "@/lib/server/db";
-import { env } from "@/lib/server/env";
+import { getSessionUserId } from "@/lib/server/auth-session";
 import { AuthRepository } from "@/modules/auth/auth.repository";
-import { ChatRepository } from "@/modules/chat/chat.repository";
-import { ChatService } from "@/modules/chat/chat.service";
+import { chatService } from "@/modules/chat/chat.container";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 const db = getDbPool();
-const chatRepository = db ? new ChatRepository(db) : null;
 const authRepository = db ? new AuthRepository(db) : null;
-const hf = new InferenceClient(env.hfToken || undefined);
-const chatService = new ChatService(hf, chatRepository);
 
 export async function POST(request: Request) {
   try {
@@ -57,30 +50,16 @@ export async function POST(request: Request) {
       );
     }
 
-    if (!authRepository) {
-      return NextResponse.json({ error: "database_not_configured" }, { status: 503 });
-    }
-
-    const refreshToken = (await cookies()).get("md_refresh_token")?.value;
-    if (!refreshToken) {
-      return NextResponse.json({ error: "invalid_session" }, { status: 401 });
-    }
-
-    const refreshTokenHash = crypto
-      .createHash("sha256")
-      .update(refreshToken)
-      .digest("hex");
-
-    const session = await authRepository.findValidSessionByRefreshTokenHash(
-      refreshTokenHash,
-    );
-
-    if (!session) {
-      return NextResponse.json({ error: "invalid_session" }, { status: 401 });
+    const sessionUser = await getSessionUserId(authRepository);
+    if (!sessionUser.success) {
+      if (sessionUser.error === "database_not_configured") {
+        return NextResponse.json({ error: sessionUser.error }, { status: 503 });
+      }
+      return NextResponse.json({ error: sessionUser.error }, { status: 401 });
     }
 
     const payload = await chatService.sendMessage({
-      userId: String(session.user_id),
+      userId: String(sessionUser.userId),
       text,
     });
     return NextResponse.json(payload);

@@ -79,6 +79,25 @@ Não dê diagnóstico final; seu papel é exclusivamente coletar as informaçõe
     return { reply: botText, entities };
   }
 
+  async startNewAttendance(userId: string): Promise<{ conversationId: number }> {
+    if (!this.chatRepository) {
+      throw new Error("database_not_configured");
+    }
+
+    const numericUserId = Number(userId);
+    if (!Number.isFinite(numericUserId) || numericUserId <= 0) {
+      throw new Error("invalid_user_id");
+    }
+
+    await this.chatRepository.closeLatestActiveConversation(numericUserId);
+    const conversationId = await this.chatRepository.createConversation(
+      numericUserId,
+    );
+    this.conversations[userId] = [];
+
+    return { conversationId };
+  }
+
   private sanitizeBotText(botText: string): string {
     let value = botText.replace(/\(\?:\n\n\)\??/g, "");
     const metadataPatterns = [

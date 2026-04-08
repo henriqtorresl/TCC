@@ -34,7 +34,86 @@ export function buildOpenApiSpec() {
           },
         },
       },
-      "/api/message": { post: { tags: ["Chat"], summary: "Send chat message" } },
+      "/api/message": {
+        post: {
+          tags: ["Chat"],
+          summary: "Send chat message",
+          requestBody: {
+            required: true,
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/ChatMessageRequest" },
+              },
+            },
+          },
+          responses: {
+            200: {
+              description: "Chat response",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/ChatMessageResponse" },
+                },
+              },
+            },
+            400: {
+              description: "Invalid payload",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/ErrorObjectResponse" },
+                },
+              },
+            },
+            401: {
+              description: "Invalid or missing session",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/ErrorStringResponse" },
+                },
+              },
+            },
+            503: {
+              description: "Database not configured",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/ErrorStringResponse" },
+                },
+              },
+            },
+          },
+        },
+      },
+      "/api/message/attendance/start": {
+        post: {
+          tags: ["Chat"],
+          summary: "Start a new attendance",
+          responses: {
+            201: {
+              description: "New attendance started",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/StartAttendanceResponse" },
+                },
+              },
+            },
+            401: {
+              description: "Invalid or missing session",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/ErrorStringResponse" },
+                },
+              },
+            },
+            503: {
+              description: "Database not configured",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/ErrorStringResponse" },
+                },
+              },
+            },
+          },
+        },
+      },
       "/api/auth/register": {
         post: {
           tags: ["Auth"],
@@ -135,6 +214,94 @@ export function buildOpenApiSpec() {
       "/api/reports/{id}": {
         get: { tags: ["Reports"], summary: "Get report by id" },
       },
+      "/api/attendances": {
+        get: {
+          tags: ["Chat"],
+          summary: "List attendances for authenticated user",
+          responses: {
+            200: {
+              description: "Attendances list",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/AttendancesListResponse" },
+                },
+              },
+            },
+            401: {
+              description: "Invalid or missing session",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/ErrorStringResponse" },
+                },
+              },
+            },
+            503: {
+              description: "Database not configured",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/ErrorStringResponse" },
+                },
+              },
+            },
+          },
+        },
+      },
+      "/api/attendances/{id}/messages": {
+        get: {
+          tags: ["Chat"],
+          summary: "Get attendance messages for authenticated user",
+          parameters: [
+            {
+              in: "path",
+              name: "id",
+              required: true,
+              schema: { type: "integer" },
+            },
+          ],
+          responses: {
+            200: {
+              description: "Attendance messages",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/AttendanceMessagesResponse" },
+                },
+              },
+            },
+            400: {
+              description: "Invalid attendance id",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/ErrorStringResponse" },
+                },
+              },
+            },
+            401: {
+              description: "Invalid or missing session",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/ErrorStringResponse" },
+                },
+              },
+            },
+            404: {
+              description: "Attendance not found for authenticated user",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/ErrorStringResponse" },
+                },
+              },
+            },
+            503: {
+              description: "Database not configured",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/ErrorStringResponse" },
+                },
+              },
+            },
+          },
+        },
+      },
     },
     components: {
       schemas: {
@@ -148,6 +315,91 @@ export function buildOpenApiSpec() {
             },
           },
           required: ["status", "database"],
+        },
+        ChatEntity: {
+          type: "object",
+          properties: {
+            label: { type: "string" },
+            text: { type: "string" },
+            score: { type: "number" },
+          },
+          required: ["label", "text", "score"],
+        },
+        ChatMessageRequest: {
+          type: "object",
+          properties: {
+            text: { type: "string" },
+          },
+          required: ["text"],
+        },
+        ChatMessageResponse: {
+          type: "object",
+          properties: {
+            reply: { type: "string" },
+            entities: {
+              type: "array",
+              items: { $ref: "#/components/schemas/ChatEntity" },
+            },
+          },
+          required: ["reply", "entities"],
+        },
+        StartAttendanceResponse: {
+          type: "object",
+          properties: {
+            conversationId: { type: "integer" },
+          },
+          required: ["conversationId"],
+        },
+        AttendanceSummary: {
+          type: "object",
+          properties: {
+            id: { type: "integer" },
+            title: { type: ["string", "null"] },
+            status: { type: "string" },
+            started_at: { type: "string", format: "date-time" },
+            ended_at: { type: ["string", "null"], format: "date-time" },
+            last_message_at: { type: ["string", "null"], format: "date-time" },
+            message_count: { type: "string" },
+          },
+          required: [
+            "id",
+            "title",
+            "status",
+            "started_at",
+            "ended_at",
+            "last_message_at",
+            "message_count",
+          ],
+        },
+        AttendancesListResponse: {
+          type: "object",
+          properties: {
+            attendances: {
+              type: "array",
+              items: { $ref: "#/components/schemas/AttendanceSummary" },
+            },
+          },
+          required: ["attendances"],
+        },
+        AttendanceMessage: {
+          type: "object",
+          properties: {
+            id: { type: "integer" },
+            role: { type: "string" },
+            content: { type: "string" },
+            created_at: { type: "string", format: "date-time" },
+          },
+          required: ["id", "role", "content", "created_at"],
+        },
+        AttendanceMessagesResponse: {
+          type: "object",
+          properties: {
+            messages: {
+              type: "array",
+              items: { $ref: "#/components/schemas/AttendanceMessage" },
+            },
+          },
+          required: ["messages"],
         },
         User: {
           type: "object",
