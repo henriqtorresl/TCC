@@ -4,6 +4,31 @@ import { GenerateReportInput } from "@/modules/reports/types";
 export class ReportsRepository {
   constructor(private readonly db: Pool) {}
 
+  async findConversationWithPatientByIdForUser(
+    conversationId: number,
+    userId: number,
+  ) {
+    const result = await this.db.query(
+      `
+      SELECT
+        c.id,
+        c.status,
+        c.started_at,
+        c.ended_at,
+        p.id AS patient_id,
+        p.full_name AS patient_full_name
+      FROM conversations c
+      LEFT JOIN patients p ON p.id = c.patient_id
+      WHERE c.id = $1
+        AND c.user_id = $2
+      LIMIT 1;
+      `,
+      [conversationId, userId],
+    );
+
+    return result.rows[0] ?? null;
+  }
+
   async findConversationByIdForUser(conversationId: number, userId: number) {
     const result = await this.db.query(
       `
