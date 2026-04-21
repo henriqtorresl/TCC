@@ -595,6 +595,62 @@ export function buildOpenApiSpec() {
           },
         },
       },
+      "/api/reports/availability": {
+        get: {
+          tags: ["Reports"],
+          summary: "Check if a conversation has an up-to-date downloadable report",
+          parameters: [
+            {
+              in: "query",
+              name: "conversationId",
+              required: true,
+              schema: { type: "integer" },
+            },
+          ],
+          responses: {
+            200: {
+              description: "Report availability",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/ReportAvailabilityResponse" },
+                },
+              },
+            },
+            400: {
+              description: "Invalid ids",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/ErrorStringResponse" },
+                },
+              },
+            },
+            401: {
+              description: "Invalid or missing session",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/ErrorStringResponse" },
+                },
+              },
+            },
+            404: {
+              description: "Conversation not found",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/ErrorStringResponse" },
+                },
+              },
+            },
+            503: {
+              description: "Database not configured",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/ErrorStringResponse" },
+                },
+              },
+            },
+          },
+        },
+      },
       "/api/attendances": {
         get: {
           tags: ["Chat"],
@@ -1025,6 +1081,16 @@ export function buildOpenApiSpec() {
             ended_at: { type: ["string", "null"], format: "date-time" },
           },
           required: ["attendanceId", "status", "ended_at"],
+        },
+        ReportAvailabilityResponse: {
+          type: "object",
+          properties: {
+            conversationId: { type: "integer" },
+            hasReport: { type: "boolean" },
+            canDownload: { type: "boolean" },
+            reportId: { type: ["integer", "null"] },
+          },
+          required: ["conversationId", "hasReport", "canDownload", "reportId"],
         },
         Patient: {
           type: "object",
