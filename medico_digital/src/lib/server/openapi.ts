@@ -72,6 +72,14 @@ export function buildOpenApiSpec() {
                 },
               },
             },
+            404: {
+              description: "User or patient not found",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/ErrorStringResponse" },
+                },
+              },
+            },
             503: {
               description: "Database not configured",
               content: {
@@ -98,6 +106,22 @@ export function buildOpenApiSpec() {
             },
             401: {
               description: "Invalid or missing session",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/ErrorStringResponse" },
+                },
+              },
+            },
+            400: {
+              description: "Invalid user id or patient id",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/ErrorStringResponse" },
+                },
+              },
+            },
+            404: {
+              description: "User or patient not found",
               content: {
                 "application/json": {
                   schema: { $ref: "#/components/schemas/ErrorStringResponse" },
@@ -208,7 +232,54 @@ export function buildOpenApiSpec() {
           },
         },
       },
-      "/api/users/{id}": { get: { tags: ["Users"], summary: "Get user by id" } },
+      "/api/users/{id}": {
+        get: {
+          tags: ["Users"],
+          summary: "Get user by id",
+          parameters: [
+            {
+              in: "path",
+              name: "id",
+              required: true,
+              schema: { type: "integer" },
+            },
+          ],
+          responses: {
+            200: {
+              description: "User",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/User" },
+                },
+              },
+            },
+            400: {
+              description: "Invalid user id",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/ErrorStringResponse" },
+                },
+              },
+            },
+            404: {
+              description: "User not found",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/ErrorStringResponse" },
+                },
+              },
+            },
+            503: {
+              description: "Database not configured",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/ErrorStringResponse" },
+                },
+              },
+            },
+          },
+        },
+      },
       "/api/patients/me": {
         get: {
           tags: ["Patients"],
@@ -404,6 +475,62 @@ export function buildOpenApiSpec() {
           },
         },
       },
+      "/api/reports/readiness": {
+        get: {
+          tags: ["Reports"],
+          summary: "Get report readiness preview for a conversation",
+          parameters: [
+            {
+              in: "query",
+              name: "conversationId",
+              required: true,
+              schema: { type: "integer" },
+            },
+          ],
+          responses: {
+            200: {
+              description: "Conversation readiness preview",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/ReportReadinessResponse" },
+                },
+              },
+            },
+            400: {
+              description: "Invalid ids or conversation without messages",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/ErrorStringResponse" },
+                },
+              },
+            },
+            401: {
+              description: "Invalid or missing session",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/ErrorStringResponse" },
+                },
+              },
+            },
+            404: {
+              description: "Conversation not found for authenticated user",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/ErrorStringResponse" },
+                },
+              },
+            },
+            503: {
+              description: "Database not configured",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/ErrorStringResponse" },
+                },
+              },
+            },
+          },
+        },
+      },
       "/api/attendances": {
         get: {
           tags: ["Chat"],
@@ -419,6 +546,22 @@ export function buildOpenApiSpec() {
             },
             401: {
               description: "Invalid or missing session",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/ErrorStringResponse" },
+                },
+              },
+            },
+            400: {
+              description: "Invalid user id or patient id",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/ErrorStringResponse" },
+                },
+              },
+            },
+            404: {
+              description: "User or patient not found",
               content: {
                 "application/json": {
                   schema: { $ref: "#/components/schemas/ErrorStringResponse" },
@@ -475,6 +618,134 @@ export function buildOpenApiSpec() {
             },
             404: {
               description: "Attendance not found for authenticated user",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/ErrorStringResponse" },
+                },
+              },
+            },
+            503: {
+              description: "Database not configured",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/ErrorStringResponse" },
+                },
+              },
+            },
+          },
+        },
+      },
+      "/api/attendances/{id}/finalize": {
+        post: {
+          tags: ["Chat"],
+          summary: "Finalize an active attendance for authenticated user",
+          parameters: [
+            {
+              in: "path",
+              name: "id",
+              required: true,
+              schema: { type: "integer" },
+            },
+          ],
+          responses: {
+            200: {
+              description: "Attendance finalized",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/FinalizeAttendanceResponse" },
+                },
+              },
+            },
+            400: {
+              description: "Invalid attendance id",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/ErrorStringResponse" },
+                },
+              },
+            },
+            401: {
+              description: "Invalid or missing session",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/ErrorStringResponse" },
+                },
+              },
+            },
+            404: {
+              description: "Attendance not found for authenticated user",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/ErrorStringResponse" },
+                },
+              },
+            },
+            409: {
+              description: "Attendance already completed or conflict on close",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/ErrorStringResponse" },
+                },
+              },
+            },
+            503: {
+              description: "Database not configured",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/ErrorStringResponse" },
+                },
+              },
+            },
+          },
+        },
+      },
+      "/api/attendances/{id}/resume": {
+        post: {
+          tags: ["Chat"],
+          summary: "Resume a completed attendance for authenticated user",
+          parameters: [
+            {
+              in: "path",
+              name: "id",
+              required: true,
+              schema: { type: "integer" },
+            },
+          ],
+          responses: {
+            200: {
+              description: "Attendance resumed",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/FinalizeAttendanceResponse" },
+                },
+              },
+            },
+            400: {
+              description: "Invalid attendance id",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/ErrorStringResponse" },
+                },
+              },
+            },
+            401: {
+              description: "Invalid or missing session",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/ErrorStringResponse" },
+                },
+              },
+            },
+            404: {
+              description: "Attendance not found for authenticated user",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/ErrorStringResponse" },
+                },
+              },
+            },
+            409: {
+              description: "Attendance already active or conflict on reopen",
               content: {
                 "application/json": {
                   schema: { $ref: "#/components/schemas/ErrorStringResponse" },
@@ -639,6 +910,57 @@ export function buildOpenApiSpec() {
             },
           },
           required: ["error", "details"],
+        },
+        ReportReadinessResponse: {
+          type: "object",
+          properties: {
+            conversationId: { type: "integer" },
+            conversationStatus: { type: "string" },
+            messageCount: { type: "integer" },
+            readiness: {
+              type: "object",
+              properties: {
+                is_ready: { type: "boolean" },
+                score: { type: "integer" },
+                required_score: { type: "integer" },
+                criteria: {
+                  type: "object",
+                  additionalProperties: { type: "boolean" },
+                },
+                missing_criteria: {
+                  type: "array",
+                  items: { type: "string" },
+                },
+              },
+              required: [
+                "is_ready",
+                "score",
+                "required_score",
+                "criteria",
+                "missing_criteria",
+              ],
+            },
+            sections: {
+              type: "object",
+              additionalProperties: { type: ["string", "null"] },
+            },
+          },
+          required: [
+            "conversationId",
+            "conversationStatus",
+            "messageCount",
+            "readiness",
+            "sections",
+          ],
+        },
+        FinalizeAttendanceResponse: {
+          type: "object",
+          properties: {
+            attendanceId: { type: "integer" },
+            status: { type: "string", example: "completed" },
+            ended_at: { type: ["string", "null"], format: "date-time" },
+          },
+          required: ["attendanceId", "status", "ended_at"],
         },
         Patient: {
           type: "object",
