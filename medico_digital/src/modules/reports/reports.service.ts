@@ -106,7 +106,34 @@ const CONVERSATION_SIGNALS: ConversationSignal[] = [
 ];
 
 export class ReportsService {
-  constructor(private readonly reportsRepository: ReportsRepository | null = null) {}
+  constructor(
+    private readonly reportsRepository: ReportsRepository | null = null,
+  ) {}
+
+  async assessConversation({
+    userId,
+    conversationId,
+  }: {
+    userId: number;
+    conversationId: number;
+  }) {
+    const { conversation, messages, numericConversationId } =
+      await this.loadConversationContext({
+        userId,
+        conversationId,
+      });
+
+    const sections = this.extractSections(messages);
+    const readiness = this.calculateReadiness(sections);
+
+    return {
+      conversationId: numericConversationId,
+      conversationStatus: conversation.status,
+      messageCount: messages.length,
+      readiness,
+      sections,
+    };
+  }
 
   async generate({
     userId,
@@ -121,32 +148,11 @@ export class ReportsService {
       throw new Error("database_not_configured");
     }
 
-    const numericUserId = Number(userId);
-    const numericConversationId = Number(conversationId);
-    if (
-      !Number.isFinite(numericUserId) ||
-      numericUserId <= 0 ||
-      !Number.isFinite(numericConversationId) ||
-      numericConversationId <= 0
-    ) {
-      throw new Error("invalid_ids");
-    }
-
-    const conversation = await this.reportsRepository.findConversationByIdForUser(
-      numericConversationId,
-      numericUserId,
-    );
-    if (!conversation) {
-      throw new Error("conversation_not_found");
-    }
-
-    const messages = (await this.reportsRepository.getConversationMessages(
-      numericConversationId,
-    )) as ConversationMessage[];
-
-    if (messages.length === 0) {
-      throw new Error("conversation_without_messages");
-    }
+    const { conversation, messages, numericConversationId, numericUserId } =
+      await this.loadConversationContext({
+        userId,
+        conversationId,
+      });
 
     if (conversation.status !== "completed" && !allowIncomplete) {
       throw new Error("conversation_not_completed");
@@ -170,9 +176,11 @@ export class ReportsService {
 
     const metadata: ConversationMetadata = {
       message_count: messages.length,
-      user_message_count: messages.filter((message) => message.role === "user").length,
-      assistant_message_count: messages.filter((message) => message.role === "assistant")
+      user_message_count: messages.filter((message) => message.role === "user")
         .length,
+      assistant_message_count: messages.filter(
+        (message) => message.role === "assistant",
+      ).length,
       readiness,
       sections,
       generation: {
@@ -207,7 +215,9 @@ export class ReportsService {
     return report;
   }
 
-  private extractSections(messages: ConversationMessage[]): ConversationSections {
+  private extractSections(
+    messages: ConversationMessage[],
+  ): ConversationSections {
     const userMessages = messages
       .filter((message) => message.role === "user")
       .map((message) => this.normalizeSpaces(message.content));
@@ -307,5 +317,51 @@ export class ReportsService {
 
   private normalizeSpaces(value: string): string {
     return value.replace(/\s+/g, " ").trim();
+  }
+
+  private async loadConversationContext({
+    userId,
+    conversationId,
+  }: {
+    userId: number;
+    conversationId: number;
+  }) {
+    if (!this.reportsRepository) {
+      throw new Error("database_not_configured");
+    }
+
+    const numericUserId = Number(userId);
+    const numericConversationId = Number(conversationId);
+    if (
+      !Number.isFinite(numericUserId) ||
+      numericUserId <= 0 ||
+      !Number.isFinite(numericConversationId) ||
+      numericConversationId <= 0
+    ) {
+      throw new Error("invalid_ids");
+    }
+
+    const conversation =
+      await this.reportsRepository.findConversationByIdForUser(
+        numericConversationId,
+        numericUserId,
+      );
+    if (!conversation) {
+      throw new Error("conversation_not_found");
+    }
+
+    const messages = (await this.reportsRepository.getConversationMessages(
+      numericConversationId,
+    )) as ConversationMessage[];
+    if (messages.length === 0) {
+      throw new Error("conversation_without_messages");
+    }
+
+    return {
+      conversation,
+      messages,
+      numericConversationId,
+      numericUserId,
+    };
   }
 }
