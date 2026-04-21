@@ -1,3 +1,7 @@
+import fs from "node:fs/promises";
+import path from "node:path";
+import ejs from "ejs";
+import { chromium } from "playwright";
 import { ReportsRepository } from "@/modules/reports/reports.repository";
 
 const REQUIRED_CRITERIA_SCORE = 7;
@@ -213,6 +217,99 @@ export class ReportsService {
     }
 
     return report;
+  }
+
+  async generatePdfById({
+    reportId,
+    userId,
+  }: {
+    reportId: string;
+    userId: number;
+  }) {
+    if (!this.reportsRepository) {
+      throw new Error("database_not_configured");
+    }
+
+    const numericReportId = Number(reportId);
+    const numericUserId = Number(userId);
+    if (
+      !Number.isFinite(numericReportId) ||
+      numericReportId <= 0 ||
+      !Number.isFinite(numericUserId) ||
+      numericUserId <= 0
+    ) {
+      throw new Error("invalid_ids");
+    }
+
+    const report = await this.reportsRepository.findReportById(numericReportId);
+    if (!report || Number(report.user_id) !== numericUserId) {
+      throw new Error("report_not_found");
+    }
+
+    const conversation =
+      await this.reportsRepository.findConversationWithPatientByIdForUser(
+        Number(report.conversation_id),
+        numericUserId,
+      );
+
+    if (!conversation) {
+      throw new Error("conversation_not_found");
+    }
+
+    const templatePath = path.join(
+      process.cwd(),
+      "public",
+      "assets",
+      "report-template.ejs",
+    );
+
+    let html: string;
+    try {
+      const template = await fs.readFile(templatePath, "utf8");
+      html = ejs.render(template, {
+        report,
+        attendance: {
+          id: conversation.id,
+          status: conversation.status,
+          started_at: conversation.started_at,
+          ended_at: conversation.ended_at,
+        },
+        patient: {
+          id: conversation.patient_id,
+          full_name: conversation.patient_full_name,
+        },
+      });
+    } catch {
+      throw new Error("report_template_render_failed");
+    }
+
+    try {
+      const browser = await chromium.launch({
+        headless: true,
+        args: ["--no-sandbox", "--disable-setuid-sandbox"],
+      });
+      const page = await browser.newPage();
+      await page.setContent(html, { waitUntil: "networkidle" });
+      const pdf = await page.pdf({
+        format: "A4",
+        printBackground: true,
+        margin: {
+          top: "12mm",
+          right: "10mm",
+          bottom: "12mm",
+          left: "10mm",
+        },
+      });
+      await browser.close();
+
+      return {
+        pdf,
+        reportId: numericReportId,
+        conversationId: Number(report.conversation_id),
+      };
+    } catch {
+      throw new Error("report_pdf_generation_failed");
+    }
   }
 
   private extractSections(
