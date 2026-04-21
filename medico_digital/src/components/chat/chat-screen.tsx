@@ -364,6 +364,29 @@ export function ChatScreen() {
     });
   }
 
+  async function downloadReportPdf(reportId: number): Promise<void> {
+    const response = await fetch(`/api/reports/${reportId}/download`);
+
+    if (response.status === 401) {
+      router.replace("/login?next=%2F");
+      return;
+    }
+
+    if (!response.ok) {
+      throw new Error("Relatório gerado, mas não foi possível baixar o PDF.");
+    }
+
+    const blob = await response.blob();
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = `relatorio-${reportId}.pdf`;
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+    URL.revokeObjectURL(url);
+  }
+
   async function finalizeAttendance(attendanceId: number): Promise<Response> {
     return fetch(`/api/attendances/${attendanceId}/finalize`, {
       method: "POST",
@@ -607,11 +630,12 @@ export function ChatScreen() {
         const payload = (await response.json()) as ReportGenerateResponse;
         const score = payload.metadata?.readiness?.score;
         const required = payload.metadata?.readiness?.required_score;
+        await downloadReportPdf(payload.id);
 
         setStatusMessage(
           score && required
-            ? `Relatório #${payload.id} gerado com sucesso (${score}/${required}).`
-            : `Relatório #${payload.id} gerado com sucesso.`,
+            ? `Relatório #${payload.id} gerado e baixado com sucesso (${score}/${required}).`
+            : `Relatório #${payload.id} gerado e baixado com sucesso.`,
         );
         return;
       }
@@ -652,8 +676,9 @@ export function ChatScreen() {
 
         const fallbackPayload =
           (await fallbackResponse.json()) as ReportGenerateResponse;
+        await downloadReportPdf(fallbackPayload.id);
         setStatusMessage(
-          `Relatório #${fallbackPayload.id} gerado em modo incompleto.`,
+          `Relatório #${fallbackPayload.id} (incompleto) gerado e baixado.`,
         );
         return;
       }
