@@ -4,6 +4,19 @@ import { GenerateReportInput } from "@/modules/reports/types";
 export class ReportsRepository {
   constructor(private readonly db: Pool) {}
 
+  async findConversationByIdForUser(conversationId: number, userId: number) {
+    const result = await this.db.query(
+      `
+      SELECT id, status, started_at, ended_at
+      FROM conversations
+      WHERE id = $1 AND user_id = $2
+      LIMIT 1;
+      `,
+      [conversationId, userId]
+    );
+    return result.rows[0] ?? null;
+  }
+
   async getConversationMessages(conversationId: number) {
     const result = await this.db.query(
       `
