@@ -17,6 +17,12 @@ type AttendanceMessageRow = {
   created_at: string;
 };
 
+type AttendanceRow = {
+  id: number;
+  status: string;
+  ended_at: string | null;
+};
+
 export class ChatRepository {
   constructor(private readonly db: Pool) {}
 
@@ -131,6 +137,61 @@ export class ChatRepository {
     );
 
     return messages.rows;
+  }
+
+  async findAttendanceById(
+    patientId: number,
+    attendanceId: number,
+  ): Promise<AttendanceRow | null> {
+    const result = await this.db.query<AttendanceRow>(
+      `
+      SELECT id, status, ended_at
+      FROM conversations
+      WHERE id = $1 AND patient_id = $2
+      LIMIT 1;
+      `,
+      [attendanceId, patientId],
+    );
+
+    return result.rows[0] ?? null;
+  }
+
+  async closeAttendanceById(
+    patientId: number,
+    attendanceId: number,
+  ): Promise<AttendanceRow | null> {
+    const result = await this.db.query<AttendanceRow>(
+      `
+      UPDATE conversations
+      SET status = 'completed', ended_at = NOW()
+      WHERE id = $1
+        AND patient_id = $2
+        AND status = 'active'
+      RETURNING id, status, ended_at;
+      `,
+      [attendanceId, patientId],
+    );
+
+    return result.rows[0] ?? null;
+  }
+
+  async reopenAttendanceById(
+    patientId: number,
+    attendanceId: number,
+  ): Promise<AttendanceRow | null> {
+    const result = await this.db.query<AttendanceRow>(
+      `
+      UPDATE conversations
+      SET status = 'active', ended_at = NULL
+      WHERE id = $1
+        AND patient_id = $2
+        AND status <> 'active'
+      RETURNING id, status, ended_at;
+      `,
+      [attendanceId, patientId],
+    );
+
+    return result.rows[0] ?? null;
   }
 
   async saveMessage(

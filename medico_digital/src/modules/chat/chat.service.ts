@@ -98,6 +98,136 @@ Não dê diagnóstico final; seu papel é exclusivamente coletar as informaçõe
     return { conversationId };
   }
 
+  async listAttendances(patientId: string) {
+    if (!this.chatRepository) {
+      throw new Error("database_not_configured");
+    }
+
+    const numericPatientId = Number(patientId);
+    if (!Number.isFinite(numericPatientId) || numericPatientId <= 0) {
+      throw new Error("invalid_patient_id");
+    }
+
+    return this.chatRepository.listAttendancesByPatient(numericPatientId);
+  }
+
+  async listAttendanceMessages(patientId: string, attendanceId: string) {
+    if (!this.chatRepository) {
+      throw new Error("database_not_configured");
+    }
+
+    const numericPatientId = Number(patientId);
+    if (!Number.isFinite(numericPatientId) || numericPatientId <= 0) {
+      throw new Error("invalid_patient_id");
+    }
+
+    const numericAttendanceId = Number(attendanceId);
+    if (!Number.isFinite(numericAttendanceId) || numericAttendanceId <= 0) {
+      throw new Error("invalid_attendance_id");
+    }
+
+    const messages = await this.chatRepository.listMessagesByAttendance(
+      numericPatientId,
+      numericAttendanceId,
+    );
+
+    if (!messages) {
+      throw new Error("attendance_not_found");
+    }
+
+    return messages;
+  }
+
+  async finalizeAttendance(patientId: string, attendanceId: string) {
+    if (!this.chatRepository) {
+      throw new Error("database_not_configured");
+    }
+
+    const numericPatientId = Number(patientId);
+    if (!Number.isFinite(numericPatientId) || numericPatientId <= 0) {
+      throw new Error("invalid_patient_id");
+    }
+
+    const numericAttendanceId = Number(attendanceId);
+    if (!Number.isFinite(numericAttendanceId) || numericAttendanceId <= 0) {
+      throw new Error("invalid_attendance_id");
+    }
+
+    const attendance = await this.chatRepository.findAttendanceById(
+      numericPatientId,
+      numericAttendanceId,
+    );
+
+    if (!attendance) {
+      throw new Error("attendance_not_found");
+    }
+
+    if (attendance.status !== "active") {
+      throw new Error("attendance_already_completed");
+    }
+
+    const closed = await this.chatRepository.closeAttendanceById(
+      numericPatientId,
+      numericAttendanceId,
+    );
+
+    if (!closed) {
+      throw new Error("attendance_close_failed");
+    }
+
+    return {
+      attendanceId: closed.id,
+      status: closed.status,
+      ended_at: closed.ended_at,
+    };
+  }
+
+  async resumeAttendance(patientId: string, attendanceId: string) {
+    if (!this.chatRepository) {
+      throw new Error("database_not_configured");
+    }
+
+    const numericPatientId = Number(patientId);
+    if (!Number.isFinite(numericPatientId) || numericPatientId <= 0) {
+      throw new Error("invalid_patient_id");
+    }
+
+    const numericAttendanceId = Number(attendanceId);
+    if (!Number.isFinite(numericAttendanceId) || numericAttendanceId <= 0) {
+      throw new Error("invalid_attendance_id");
+    }
+
+    const attendance = await this.chatRepository.findAttendanceById(
+      numericPatientId,
+      numericAttendanceId,
+    );
+
+    if (!attendance) {
+      throw new Error("attendance_not_found");
+    }
+
+    if (attendance.status === "active") {
+      throw new Error("attendance_already_active");
+    }
+
+    await this.chatRepository.closeLatestActiveConversation(numericPatientId);
+
+    const reopened = await this.chatRepository.reopenAttendanceById(
+      numericPatientId,
+      numericAttendanceId,
+    );
+
+    if (!reopened) {
+      throw new Error("attendance_reopen_failed");
+    }
+
+    return {
+      attendanceId: reopened.id,
+      status: reopened.status,
+      ended_at: reopened.ended_at,
+    };
+  }
+
   private sanitizeBotText(botText: string): string {
     let value = botText.replace(/\(\?:\n\n\)\??/g, "");
     const metadataPatterns = [
