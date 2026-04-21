@@ -58,6 +58,17 @@ type ConversationSignal = {
   patterns: RegExp[];
 };
 
+const REPORT_CRITERIA_LABELS: Record<ReportCriterionKey, string> = {
+  queixa_principal: "queixa principal",
+  inicio_duracao: "início e duração",
+  evolucao: "evolução",
+  fatores_melhora_piora: "fatores de melhora/piora",
+  sintomas_associados: "sintomas associados",
+  antecedentes: "antecedentes",
+  medicacoes_alergias: "medicações e alergias",
+  habitos_contexto: "hábitos e contexto",
+};
+
 const CONVERSATION_SIGNALS: ConversationSignal[] = [
   {
     key: "queixa_principal",
@@ -391,7 +402,9 @@ export class ReportsService {
       `Hábitos e contexto: ${sections.habitos_contexto ?? "Não informado."}`,
       "",
       readiness.missing_criteria.length > 0
-        ? `Pendências: ${readiness.missing_criteria.join(", ")}`
+        ? `Pendências: ${readiness.missing_criteria
+            .map((criterion) => REPORT_CRITERIA_LABELS[criterion] ?? criterion)
+            .join(", ")}`
         : "Pendências: nenhuma.",
       "",
       "Observação: este relatório representa triagem/anamnese e não substitui diagnóstico médico.",

@@ -130,13 +130,24 @@
   </head>
   <body>
     <% 
+      const missingCriteriaMapper = {
+        queixa_principal: 'Queixa principal',
+        inicio_duracao: 'Início e duração',
+        evolucao: 'Evolução',
+        fatores_melhora_piora: 'Fatores de melhora/piora',
+        sintomas_associados: 'Sintomas associados',
+        antecedentes: 'Antecedentes',
+        medicacoes_alergias: 'Medicações e alergias',
+        habitos_contexto: 'Hábitos e contexto',
+      };
+
       const reportData = typeof report !== 'undefined' ? report : {};
       const metadata = reportData.metadata || {};
       const readiness = metadata.readiness || {};
       const sections = metadata.sections || {};
       const patientData = typeof patient !== 'undefined' ? patient : {};
       const attendanceData = typeof attendance !== 'undefined' ? attendance : {};
-      const missingCriteria = Array.isArray(readiness.missing_criteria) ? readiness.missing_criteria : [];
+      const missingCriteria = Array.isArray(readiness.missing_criteria) ? readiness.missing_criteria.map((c) => missingCriteriaMapper[c] || c) : [];
       const score = typeof readiness.score === 'number' ? readiness.score : null;
       const requiredScore = typeof readiness.required_score === 'number' ? readiness.required_score : null;
       const readinessOk = readiness.is_ready === true;
