@@ -475,6 +475,70 @@ export function buildOpenApiSpec() {
           },
         },
       },
+      "/api/reports/{id}/download": {
+        get: {
+          tags: ["Reports"],
+          summary: "Download report as PDF",
+          parameters: [
+            {
+              in: "path",
+              name: "id",
+              required: true,
+              schema: { type: "integer" },
+            },
+          ],
+          responses: {
+            200: {
+              description: "PDF file",
+              content: {
+                "application/pdf": {
+                  schema: { type: "string", format: "binary" },
+                },
+              },
+            },
+            400: {
+              description: "Invalid report id",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/ErrorStringResponse" },
+                },
+              },
+            },
+            401: {
+              description: "Invalid or missing session",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/ErrorStringResponse" },
+                },
+              },
+            },
+            404: {
+              description: "Report or conversation not found",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/ErrorStringResponse" },
+                },
+              },
+            },
+            500: {
+              description: "Template render or PDF generation error",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/ErrorStringResponse" },
+                },
+              },
+            },
+            503: {
+              description: "Database not configured",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/ErrorStringResponse" },
+                },
+              },
+            },
+          },
+        },
+      },
       "/api/reports/readiness": {
         get: {
           tags: ["Reports"],
