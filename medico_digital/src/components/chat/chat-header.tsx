@@ -3,14 +3,30 @@ import { Button } from "@/components/ui/button";
 
 type ChatHeaderProps = {
   onStartNewAttendance: () => void;
+  onAttendanceAction: () => void;
+  onGenerateReport: () => void;
   isStartingAttendance: boolean;
+  isAttendanceActionLoading: boolean;
+  isGeneratingReport: boolean;
   disableNewAttendance: boolean;
+  disableAttendanceAction: boolean;
+  attendanceActionLabel: string;
+  disableGenerateReport: boolean;
+  readinessHint: string | null;
 };
 
 export function ChatHeader({
   onStartNewAttendance,
+  onAttendanceAction,
+  onGenerateReport,
   isStartingAttendance,
+  isAttendanceActionLoading,
+  isGeneratingReport,
   disableNewAttendance,
+  disableAttendanceAction,
+  attendanceActionLabel,
+  disableGenerateReport,
+  readinessHint,
 }: ChatHeaderProps) {
   return (
     <header className="flex items-center gap-3 border-b border-zinc-800 px-4 py-4 md:px-6">
@@ -22,6 +38,23 @@ export function ChatHeader({
         <p className="text-xs text-zinc-400 md:text-sm">Assistente de anamnese</p>
       </div>
       <div className="ml-auto flex items-center gap-2">
+        <Button
+          variant="outline"
+          className="border-amber-700/70 bg-amber-950/40 text-amber-100 hover:bg-amber-900/55"
+          onClick={onAttendanceAction}
+          disabled={disableAttendanceAction}
+        >
+          {isAttendanceActionLoading ? "Processando..." : attendanceActionLabel}
+        </Button>
+        <Button
+          variant="outline"
+          className="border-emerald-700/70 bg-emerald-950/50 text-emerald-200 hover:bg-emerald-900/60"
+          onClick={onGenerateReport}
+          disabled={disableGenerateReport}
+          title={readinessHint ?? undefined}
+        >
+          {isGeneratingReport ? "Gerando relatório..." : "Gerar relatório"}
+        </Button>
         <Button
           variant="outline"
           className="border-zinc-700 bg-zinc-900 text-zinc-100 hover:bg-zinc-800"

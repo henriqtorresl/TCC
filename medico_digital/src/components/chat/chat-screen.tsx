@@ -12,6 +12,10 @@ import {
   AttendanceSummary,
   ChatApiResponse,
   ChatMessage,
+  ConversationNotReadyErrorResponse,
+  FinalizeAttendanceResponse,
+  ReportGenerateResponse,
+  ReportReadinessResponse,
   StartAttendanceResponse,
 } from "@/components/chat/types";
 
@@ -27,7 +31,14 @@ export function ChatScreen() {
   const [isHistoryLoading, setIsHistoryLoading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isStartingAttendance, setIsStartingAttendance] = useState(false);
+  const [isFinalizingAttendance, setIsFinalizingAttendance] = useState(false);
+  const [isResumingAttendance, setIsResumingAttendance] = useState(false);
+  const [isGeneratingReport, setIsGeneratingReport] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [statusMessage, setStatusMessage] = useState<string | null>(null);
+  const [readinessIssue, setReadinessIssue] = useState<string | null>(null);
+  const [readinessPreview, setReadinessPreview] =
+    useState<ReportReadinessResponse | null>(null);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
   const activeAttendanceId = useMemo(
@@ -36,6 +47,36 @@ export function ChatScreen() {
       null,
     [attendances],
   );
+
+  const selectedAttendance = useMemo(
+    () =>
+      selectedAttendanceId
+        ? attendances.find((attendance) => attendance.id === selectedAttendanceId) ??
+          null
+        : null,
+    [attendances, selectedAttendanceId],
+  );
+
+  const readinessHint = useMemo(() => {
+    if (readinessIssue) {
+      return readinessIssue;
+    }
+
+    if (!selectedAttendance || !readinessPreview) {
+      return null;
+    }
+
+    const score = readinessPreview.readiness.score;
+    const required = readinessPreview.readiness.required_score;
+    const missing = readinessPreview.readiness.missing_criteria;
+
+    if (missing.length === 0) {
+      return `Prontidão do relatório: ${score}/${required} (completo).`;
+    }
+
+    const translatedMissing = missing.map(getMissingCriteriaLabel).join(", ");
+    return `Prontidão do relatório: ${score}/${required}. Faltam: ${translatedMissing}.`;
+  }, [selectedAttendance, readinessIssue, readinessPreview]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -116,6 +157,44 @@ export function ChatScreen() {
     [router],
   );
 
+  const loadReadinessPreview = useCallback(
+    async (attendanceId: number) => {
+      const response = await fetch(
+        `/api/reports/readiness?conversationId=${attendanceId}`,
+      );
+
+      if (response.status === 401) {
+        router.replace("/login?next=%2F");
+        return null;
+      }
+
+      if (response.status === 400 || response.status === 404) {
+        setReadinessPreview(null);
+        if (response.status === 400) {
+          const payload = (await response.json()) as { error?: string };
+          if (payload.error === "conversation_without_messages") {
+            setReadinessIssue(
+              "Prontidão do relatório: envie mais informações no chat para avaliar completude.",
+            );
+            return null;
+          }
+        }
+        setReadinessIssue(null);
+        return null;
+      }
+
+      if (!response.ok) {
+        throw new Error("Não foi possível verificar a prontidão do relatório.");
+      }
+
+      const payload = (await response.json()) as ReportReadinessResponse;
+      setReadinessPreview(payload);
+      setReadinessIssue(null);
+      return payload;
+    },
+    [router],
+  );
+
   useEffect(() => {
     void (async () => {
       try {
@@ -132,12 +211,15 @@ export function ChatScreen() {
 
   useEffect(() => {
     if (!selectedAttendanceId) {
+      setReadinessPreview(null);
+      setReadinessIssue(null);
       return;
     }
 
     void (async () => {
       try {
         await loadAttendanceMessages(selectedAttendanceId);
+        await loadReadinessPreview(selectedAttendanceId);
       } catch (requestError) {
         setError(
           requestError instanceof Error
@@ -146,11 +228,18 @@ export function ChatScreen() {
         );
       }
     })();
-  }, [selectedAttendanceId, loadAttendanceMessages]);
+  }, [selectedAttendanceId, loadAttendanceMessages, loadReadinessPreview]);
 
   async function handleSendMessage() {
     const text = textInput.trim();
-    if (!text || isLoading || isHistoryLoading) {
+    if (
+      !text ||
+      isLoading ||
+      isHistoryLoading ||
+      isFinalizingAttendance ||
+      isResumingAttendance ||
+      isGeneratingReport
+    ) {
       return;
     }
 
@@ -167,6 +256,7 @@ export function ChatScreen() {
 
     setTextInput("");
     setError(null);
+    setStatusMessage(null);
     setIsLoading(true);
     setMessages((prev) => [...prev, { role: "user", text }]);
 
@@ -191,6 +281,9 @@ export function ChatScreen() {
       const data = (await response.json()) as ChatApiResponse;
       setMessages((prev) => [...prev, { role: "assistant", text: data.reply }]);
       await loadAttendances(true);
+      if (selectedAttendanceId) {
+        await loadReadinessPreview(selectedAttendanceId);
+      }
     } catch (requestError) {
       setError(
         requestError instanceof Error
@@ -203,7 +296,14 @@ export function ChatScreen() {
   }
 
   async function handleStartNewAttendance() {
-    if (isLoading || isStartingAttendance || isHistoryLoading) {
+    if (
+      isLoading ||
+      isStartingAttendance ||
+      isHistoryLoading ||
+      isFinalizingAttendance ||
+      isResumingAttendance ||
+      isGeneratingReport
+    ) {
       return;
     }
 
@@ -215,6 +315,7 @@ export function ChatScreen() {
     }
 
     setError(null);
+    setStatusMessage(null);
     setIsStartingAttendance(true);
 
     try {
@@ -235,6 +336,8 @@ export function ChatScreen() {
       setMessages([]);
       setTextInput("");
       setSelectedAttendanceId(data.conversationId);
+      setReadinessPreview(null);
+      setReadinessIssue(null);
       await loadAttendances(false);
     } catch (requestError) {
       setError(
@@ -244,6 +347,336 @@ export function ChatScreen() {
       );
     } finally {
       setIsStartingAttendance(false);
+    }
+  }
+
+  async function generateReport(
+    attendanceId: number,
+    allowIncomplete: boolean,
+  ): Promise<Response> {
+    return fetch("/api/reports/generate", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        conversationId: attendanceId,
+        allowIncomplete,
+      }),
+    });
+  }
+
+  async function finalizeAttendance(attendanceId: number): Promise<Response> {
+    return fetch(`/api/attendances/${attendanceId}/finalize`, {
+      method: "POST",
+    });
+  }
+
+  async function resumeAttendance(attendanceId: number): Promise<Response> {
+    return fetch(`/api/attendances/${attendanceId}/resume`, {
+      method: "POST",
+    });
+  }
+
+  function getMissingCriteriaLabel(key: string): string {
+    const labels: Record<string, string> = {
+      queixa_principal: "queixa principal",
+      inicio_duracao: "início e duração",
+      evolucao: "evolução",
+      fatores_melhora_piora: "fatores de melhora/piora",
+      sintomas_associados: "sintomas associados",
+      antecedentes: "antecedentes",
+      medicacoes_alergias: "medicações e alergias",
+      habitos_contexto: "hábitos e contexto",
+    };
+
+    return labels[key] ?? key;
+  }
+
+  function formatMissingCriteria(missingCriteria: string[]): string {
+    return missingCriteria.map(getMissingCriteriaLabel).join(", ");
+  }
+
+  async function ensureReadinessPreview(
+    attendanceId: number,
+  ): Promise<ReportReadinessResponse | null> {
+    if (readinessPreview?.conversationId === attendanceId) {
+      return readinessPreview;
+    }
+
+    return loadReadinessPreview(attendanceId);
+  }
+
+  async function handleFinalizeAttendance() {
+    if (
+      !selectedAttendance ||
+      selectedAttendance.status !== "active" ||
+      isFinalizingAttendance ||
+      isLoading ||
+      isHistoryLoading ||
+      isGeneratingReport ||
+      isStartingAttendance
+    ) {
+      return;
+    }
+
+    setError(null);
+    setStatusMessage(null);
+    setIsFinalizingAttendance(true);
+
+    try {
+      const readiness = await ensureReadinessPreview(selectedAttendance.id);
+      if (readinessIssue) {
+        const shouldFinalizeWithoutData = window.confirm(
+          `${readinessIssue} Deseja finalizar mesmo assim?`,
+        );
+        if (!shouldFinalizeWithoutData) {
+          setError(
+            "Atendimento mantido em aberto para continuar a coleta de informações.",
+          );
+          return;
+        }
+      }
+
+      if (readiness && !readiness.readiness.is_ready) {
+        const shouldFinalize = window.confirm(
+          `Ainda faltam informações para um relatório completo: ${formatMissingCriteria(
+            readiness.readiness.missing_criteria,
+          )}. Deseja finalizar o atendimento mesmo assim?`,
+        );
+
+        if (!shouldFinalize) {
+          setError(
+            "Atendimento mantido em aberto. Continue a conversa para completar os tópicos pendentes.",
+          );
+          return;
+        }
+      }
+
+      const response = await finalizeAttendance(selectedAttendance.id);
+
+      if (response.status === 401) {
+        router.replace("/login?next=%2F");
+        return;
+      }
+
+      if (response.status === 409) {
+        await loadAttendances(true);
+        throw new Error("Este atendimento já foi finalizado.");
+      }
+
+      if (!response.ok) {
+        throw new Error("Não foi possível finalizar o atendimento.");
+      }
+
+      const payload = (await response.json()) as FinalizeAttendanceResponse;
+      await loadAttendances(true);
+      await loadReadinessPreview(payload.attendanceId);
+      setStatusMessage(
+        "Atendimento finalizado. Agora você já pode gerar o relatório.",
+      );
+    } catch (requestError) {
+      setError(
+        requestError instanceof Error
+          ? requestError.message
+          : "Erro inesperado ao finalizar atendimento.",
+      );
+    } finally {
+      setIsFinalizingAttendance(false);
+    }
+  }
+
+  async function handleResumeAttendance() {
+    if (
+      !selectedAttendance ||
+      selectedAttendance.status === "active" ||
+      isResumingAttendance ||
+      isFinalizingAttendance ||
+      isLoading ||
+      isHistoryLoading ||
+      isGeneratingReport ||
+      isStartingAttendance
+    ) {
+      return;
+    }
+
+    setError(null);
+    setStatusMessage(null);
+    setIsResumingAttendance(true);
+
+    try {
+      const response = await resumeAttendance(selectedAttendance.id);
+
+      if (response.status === 401) {
+        router.replace("/login?next=%2F");
+        return;
+      }
+
+      if (!response.ok) {
+        throw new Error("Não foi possível retomar o atendimento.");
+      }
+
+      const payload = (await response.json()) as FinalizeAttendanceResponse;
+      await loadAttendances(true);
+      await loadReadinessPreview(payload.attendanceId);
+      setStatusMessage(
+        "Atendimento retomado. Continue a anamnese e finalize quando estiver completo.",
+      );
+    } catch (requestError) {
+      setError(
+        requestError instanceof Error
+          ? requestError.message
+          : "Erro inesperado ao retomar atendimento.",
+      );
+    } finally {
+      setIsResumingAttendance(false);
+    }
+  }
+
+  async function handleAttendanceAction() {
+    if (!selectedAttendance) {
+      return;
+    }
+
+    if (selectedAttendance.status === "active") {
+      await handleFinalizeAttendance();
+      return;
+    }
+
+    await handleResumeAttendance();
+  }
+
+  async function handleGenerateReport() {
+    if (
+      !selectedAttendance ||
+      isGeneratingReport ||
+      isLoading ||
+      isHistoryLoading ||
+      isStartingAttendance ||
+      isFinalizingAttendance ||
+      isResumingAttendance
+    ) {
+      return;
+    }
+
+    if (selectedAttendance.status === "active") {
+      setError(
+        "Para gerar relatório, finalize o atendimento atual no botão \"Finalizar atendimento\".",
+      );
+      setStatusMessage(null);
+      return;
+    }
+
+    setError(null);
+    setStatusMessage(null);
+    setIsGeneratingReport(true);
+
+    try {
+      const readiness = await ensureReadinessPreview(selectedAttendance.id);
+      let allowIncomplete = false;
+
+      if (readinessIssue) {
+        throw new Error(
+          "Ainda não há informações suficientes no atendimento para gerar relatório.",
+        );
+      }
+
+      if (readiness && !readiness.readiness.is_ready) {
+        const shouldGenerateIncomplete = window.confirm(
+          `O relatório ainda está incompleto. Faltam: ${formatMissingCriteria(
+            readiness.readiness.missing_criteria,
+          )}. Deseja gerar mesmo assim?`,
+        );
+
+        if (!shouldGenerateIncomplete) {
+          setError(
+            "Relatório não gerado. Complete os tópicos pendentes para exportar com completude.",
+          );
+          return;
+        }
+
+        allowIncomplete = true;
+      }
+
+      const response = await generateReport(selectedAttendance.id, allowIncomplete);
+
+      if (response.status === 401) {
+        router.replace("/login?next=%2F");
+        return;
+      }
+
+      if (response.ok) {
+        const payload = (await response.json()) as ReportGenerateResponse;
+        const score = payload.metadata?.readiness?.score;
+        const required = payload.metadata?.readiness?.required_score;
+
+        setStatusMessage(
+          score && required
+            ? `Relatório #${payload.id} gerado com sucesso (${score}/${required}).`
+            : `Relatório #${payload.id} gerado com sucesso.`,
+        );
+        return;
+      }
+
+      const payload = (await response.json()) as
+        | { error?: string }
+        | ConversationNotReadyErrorResponse;
+
+      if (
+        response.status === 400 &&
+        "error" in payload &&
+        payload.error === "conversation_not_ready" &&
+        "details" in payload
+      ) {
+        const missingCriteria = payload.details?.missingCriteria ?? [];
+        const missingLabels = missingCriteria.map(getMissingCriteriaLabel);
+        const shouldGenerateIncomplete = window.confirm(
+          `Ainda faltam informações para completar a anamnese: ${missingLabels.join(
+            ", ",
+          )}. Deseja gerar o relatório incompleto mesmo assim?`,
+        );
+
+        if (!shouldGenerateIncomplete) {
+          setError(
+            "Relatório não gerado. Complete os tópicos pendentes para exportar com completude.",
+          );
+          return;
+        }
+
+        const fallbackResponse = await generateReport(selectedAttendance.id, true);
+        if (fallbackResponse.status === 401) {
+          router.replace("/login?next=%2F");
+          return;
+        }
+        if (!fallbackResponse.ok) {
+          throw new Error("Não foi possível gerar o relatório incompleto.");
+        }
+
+        const fallbackPayload =
+          (await fallbackResponse.json()) as ReportGenerateResponse;
+        setStatusMessage(
+          `Relatório #${fallbackPayload.id} gerado em modo incompleto.`,
+        );
+        return;
+      }
+
+      if ("error" in payload && typeof payload.error === "string") {
+        if (payload.error === "conversation_not_completed") {
+          throw new Error(
+            "Este atendimento ainda está ativo. Encerre-o antes de gerar o relatório.",
+          );
+        }
+
+        throw new Error(payload.error);
+      }
+
+      throw new Error("Não foi possível gerar o relatório.");
+    } catch (requestError) {
+      setError(
+        requestError instanceof Error
+          ? requestError.message
+          : "Erro inesperado ao gerar relatório.",
+      );
+    } finally {
+      setIsGeneratingReport(false);
     }
   }
 
@@ -260,8 +693,45 @@ export function ChatScreen() {
         <div className="flex w-full flex-col">
           <ChatHeader
             onStartNewAttendance={() => void handleStartNewAttendance()}
+            onAttendanceAction={() => void handleAttendanceAction()}
+            onGenerateReport={() => void handleGenerateReport()}
             isStartingAttendance={isStartingAttendance}
-            disableNewAttendance={isLoading || isStartingAttendance || isHistoryLoading}
+            isAttendanceActionLoading={
+              isFinalizingAttendance || isResumingAttendance
+            }
+            isGeneratingReport={isGeneratingReport}
+            disableNewAttendance={
+              isLoading ||
+              isStartingAttendance ||
+              isHistoryLoading ||
+              isGeneratingReport ||
+              isFinalizingAttendance ||
+              isResumingAttendance
+            }
+            disableAttendanceAction={
+              !selectedAttendance ||
+              isLoading ||
+              isHistoryLoading ||
+              isStartingAttendance ||
+              isGeneratingReport ||
+              isFinalizingAttendance ||
+              isResumingAttendance
+            }
+            attendanceActionLabel={
+              selectedAttendance?.status === "active"
+                ? "Finalizar atendimento"
+                : "Retomar atendimento"
+            }
+            disableGenerateReport={
+              !selectedAttendance ||
+              isLoading ||
+              isHistoryLoading ||
+              isStartingAttendance ||
+              isGeneratingReport ||
+              isFinalizingAttendance ||
+              isResumingAttendance
+            }
+            readinessHint={readinessHint}
           />
           <ChatMessages
             messages={messages}
@@ -276,6 +746,7 @@ export function ChatScreen() {
             isLoading={isLoading}
             isHistoryLoading={isHistoryLoading}
             error={error}
+            statusMessage={statusMessage}
           />
         </div>
       </div>

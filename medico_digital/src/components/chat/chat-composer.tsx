@@ -10,6 +10,7 @@ type ChatComposerProps = {
   onChange: (value: string) => void;
   onSend: () => void;
   error: string | null;
+  statusMessage: string | null;
 };
 
 export function ChatComposer({
@@ -19,6 +20,7 @@ export function ChatComposer({
   onChange,
   onSend,
   error,
+  statusMessage,
 }: ChatComposerProps) {
   const isDisabled = isLoading || isHistoryLoading;
 
@@ -51,6 +53,7 @@ export function ChatComposer({
         </Button>
       </div>
       {error && <p className="pt-2 text-sm text-red-400">{error}</p>}
+      {statusMessage && <p className="pt-2 text-sm text-emerald-400">{statusMessage}</p>}
     </footer>
   );
 }
