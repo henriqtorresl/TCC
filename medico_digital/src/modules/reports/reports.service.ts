@@ -58,6 +58,16 @@ type ConversationSignal = {
   patterns: RegExp[];
 };
 
+type ConversationRef = {
+  status: string;
+  ended_at: string | null;
+};
+
+type ReportRef = {
+  id: number | string;
+  generated_at: string;
+};
+
 const REPORT_CRITERIA_LABELS: Record<ReportCriterionKey, string> = {
   queixa_principal: "queixa principal",
   inicio_duracao: "início e duração",
@@ -169,6 +179,15 @@ export class ReportsService {
         conversationId,
       });
 
+    const latestValidReport = await this.getLatestValidReportForConversation({
+      userId: numericUserId,
+      conversationId: numericConversationId,
+    });
+
+    if (latestValidReport) {
+      return latestValidReport;
+    }
+
     if (conversation.status !== "completed" && !allowIncomplete) {
       throw new Error("conversation_not_completed");
     }
@@ -210,6 +229,52 @@ export class ReportsService {
       summary,
       metadata,
     });
+  }
+
+  async getReportAvailability({
+    userId,
+    conversationId,
+  }: {
+    userId: number;
+    conversationId: number;
+  }) {
+    if (!this.reportsRepository) {
+      throw new Error("database_not_configured");
+    }
+
+    const numericUserId = Number(userId);
+    const numericConversationId = Number(conversationId);
+    if (
+      !Number.isFinite(numericUserId) ||
+      numericUserId <= 0 ||
+      !Number.isFinite(numericConversationId) ||
+      numericConversationId <= 0
+    ) {
+      throw new Error("invalid_ids");
+    }
+
+    const conversation = await this.reportsRepository.findConversationByIdForUser(
+      numericConversationId,
+      numericUserId,
+    );
+    if (!conversation) {
+      throw new Error("conversation_not_found");
+    }
+
+    const latestReport =
+      await this.reportsRepository.findLatestReportByConversationForUser(
+        numericConversationId,
+        numericUserId,
+      );
+
+    const canDownload = this.isReportUpToDate(conversation, latestReport);
+
+    return {
+      conversationId: numericConversationId,
+      hasReport: Boolean(latestReport),
+      canDownload,
+      reportId: canDownload ? Number(latestReport.id) : null,
+    };
   }
 
   async getById(reportId: string) {
@@ -473,5 +538,63 @@ export class ReportsService {
       numericConversationId,
       numericUserId,
     };
+  }
+
+  private async getLatestValidReportForConversation({
+    userId,
+    conversationId,
+  }: {
+    userId: number;
+    conversationId: number;
+  }) {
+    if (!this.reportsRepository) {
+      return null;
+    }
+
+    const conversation = await this.reportsRepository.findConversationByIdForUser(
+      conversationId,
+      userId,
+    );
+    if (!conversation) {
+      return null;
+    }
+
+    const latestReport =
+      await this.reportsRepository.findLatestReportByConversationForUser(
+        conversationId,
+        userId,
+      );
+
+    if (!this.isReportUpToDate(conversation, latestReport)) {
+      return null;
+    }
+
+    return latestReport;
+  }
+
+  private isReportUpToDate(
+    conversation: ConversationRef | null,
+    report: ReportRef | null,
+  ): boolean {
+    if (!conversation || !report) {
+      return false;
+    }
+
+    if (conversation.status !== "completed") {
+      return false;
+    }
+
+    if (!conversation.ended_at || !report.generated_at) {
+      return false;
+    }
+
+    const endedAt = new Date(conversation.ended_at).getTime();
+    const generatedAt = new Date(report.generated_at).getTime();
+
+    if (!Number.isFinite(endedAt) || !Number.isFinite(generatedAt)) {
+      return false;
+    }
+
+    return generatedAt >= endedAt;
   }
 }

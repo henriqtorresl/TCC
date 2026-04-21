@@ -84,4 +84,23 @@ export class ReportsRepository {
     );
     return result.rows[0] ?? null;
   }
+
+  async findLatestReportByConversationForUser(
+    conversationId: number,
+    userId: number,
+  ) {
+    const result = await this.db.query(
+      `
+      SELECT id, user_id, conversation_id, summary, status, metadata, generated_at
+      FROM reports
+      WHERE conversation_id = $1
+        AND user_id = $2
+      ORDER BY generated_at DESC
+      LIMIT 1;
+      `,
+      [conversationId, userId],
+    );
+
+    return result.rows[0] ?? null;
+  }
 }
