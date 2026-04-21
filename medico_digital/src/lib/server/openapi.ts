@@ -304,10 +304,105 @@ export function buildOpenApiSpec() {
         },
       },
       "/api/reports/generate": {
-        post: { tags: ["Reports"], summary: "Generate report from conversation" },
+        post: {
+          tags: ["Reports"],
+          summary: "Generate report from conversation",
+          requestBody: {
+            required: true,
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/GenerateReportRequest" },
+              },
+            },
+          },
+          responses: {
+            201: {
+              description: "Report generated",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/Report" },
+                },
+              },
+            },
+            400: {
+              description: "Invalid payload or conversation not ready",
+              content: {
+                "application/json": {
+                  schema: {
+                    oneOf: [
+                      { $ref: "#/components/schemas/ErrorStringResponse" },
+                      { $ref: "#/components/schemas/ConversationNotReadyResponse" },
+                    ],
+                  },
+                },
+              },
+            },
+            401: {
+              description: "Invalid or missing session",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/ErrorStringResponse" },
+                },
+              },
+            },
+            503: {
+              description: "Database not configured",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/ErrorStringResponse" },
+                },
+              },
+            },
+          },
+        },
       },
       "/api/reports/{id}": {
-        get: { tags: ["Reports"], summary: "Get report by id" },
+        get: {
+          tags: ["Reports"],
+          summary: "Get report by id",
+          parameters: [
+            {
+              in: "path",
+              name: "id",
+              required: true,
+              schema: { type: "integer" },
+            },
+          ],
+          responses: {
+            200: {
+              description: "Report",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/Report" },
+                },
+              },
+            },
+            400: {
+              description: "Invalid report id",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/ErrorStringResponse" },
+                },
+              },
+            },
+            404: {
+              description: "Report not found",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/ErrorStringResponse" },
+                },
+              },
+            },
+            503: {
+              description: "Database not configured",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/ErrorStringResponse" },
+                },
+              },
+            },
+          },
+        },
       },
       "/api/attendances": {
         get: {
@@ -495,6 +590,55 @@ export function buildOpenApiSpec() {
             },
           },
           required: ["messages"],
+        },
+        GenerateReportRequest: {
+          type: "object",
+          properties: {
+            conversationId: { type: "integer" },
+            allowIncomplete: { type: "boolean", default: false },
+          },
+          required: ["conversationId"],
+        },
+        Report: {
+          type: "object",
+          properties: {
+            id: { type: "integer" },
+            user_id: { type: "integer" },
+            conversation_id: { type: "integer" },
+            summary: { type: "string" },
+            status: { type: "string", example: "draft" },
+            metadata: {
+              type: "object",
+              additionalProperties: true,
+            },
+            generated_at: { type: "string", format: "date-time" },
+          },
+          required: [
+            "id",
+            "user_id",
+            "conversation_id",
+            "summary",
+            "status",
+            "metadata",
+            "generated_at",
+          ],
+        },
+        ConversationNotReadyResponse: {
+          type: "object",
+          properties: {
+            error: { type: "string", enum: ["conversation_not_ready"] },
+            details: {
+              type: "object",
+              properties: {
+                missingCriteria: {
+                  type: "array",
+                  items: { type: "string" },
+                },
+              },
+              required: ["missingCriteria"],
+            },
+          },
+          required: ["error", "details"],
         },
         Patient: {
           type: "object",
