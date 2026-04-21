@@ -12,6 +12,7 @@ type ChatHeaderProps = {
   disableAttendanceAction: boolean;
   attendanceActionLabel: string;
   disableGenerateReport: boolean;
+  reportActionLabel: string;
   readinessHint: string | null;
 };
 
@@ -26,6 +27,7 @@ export function ChatHeader({
   disableAttendanceAction,
   attendanceActionLabel,
   disableGenerateReport,
+  reportActionLabel,
   readinessHint,
 }: ChatHeaderProps) {
   return (
@@ -53,7 +55,7 @@ export function ChatHeader({
           disabled={disableGenerateReport}
           title={readinessHint ?? undefined}
         >
-          {isGeneratingReport ? "Gerando relatório..." : "Gerar relatório"}
+          {isGeneratingReport ? "Processando..." : reportActionLabel}
         </Button>
         <Button
           variant="outline"

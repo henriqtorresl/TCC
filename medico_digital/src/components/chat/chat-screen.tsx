@@ -14,6 +14,7 @@ import {
   ChatMessage,
   ConversationNotReadyErrorResponse,
   FinalizeAttendanceResponse,
+  ReportAvailabilityResponse,
   ReportGenerateResponse,
   ReportReadinessResponse,
   StartAttendanceResponse,
@@ -39,6 +40,9 @@ export function ChatScreen() {
   const [readinessIssue, setReadinessIssue] = useState<string | null>(null);
   const [readinessPreview, setReadinessPreview] =
     useState<ReportReadinessResponse | null>(null);
+  const [downloadableReportId, setDownloadableReportId] = useState<number | null>(
+    null,
+  );
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
   const activeAttendanceId = useMemo(
@@ -195,6 +199,33 @@ export function ChatScreen() {
     [router],
   );
 
+  const loadReportAvailability = useCallback(
+    async (attendanceId: number) => {
+      const response = await fetch(
+        `/api/reports/availability?conversationId=${attendanceId}`,
+      );
+
+      if (response.status === 401) {
+        router.replace("/login?next=%2F");
+        return null;
+      }
+
+      if (response.status === 400 || response.status === 404) {
+        setDownloadableReportId(null);
+        return null;
+      }
+
+      if (!response.ok) {
+        throw new Error("Não foi possível verificar disponibilidade do relatório.");
+      }
+
+      const payload = (await response.json()) as ReportAvailabilityResponse;
+      setDownloadableReportId(payload.canDownload ? payload.reportId : null);
+      return payload;
+    },
+    [router],
+  );
+
   useEffect(() => {
     void (async () => {
       try {
@@ -213,6 +244,7 @@ export function ChatScreen() {
     if (!selectedAttendanceId) {
       setReadinessPreview(null);
       setReadinessIssue(null);
+      setDownloadableReportId(null);
       return;
     }
 
@@ -220,6 +252,7 @@ export function ChatScreen() {
       try {
         await loadAttendanceMessages(selectedAttendanceId);
         await loadReadinessPreview(selectedAttendanceId);
+        await loadReportAvailability(selectedAttendanceId);
       } catch (requestError) {
         setError(
           requestError instanceof Error
@@ -228,7 +261,12 @@ export function ChatScreen() {
         );
       }
     })();
-  }, [selectedAttendanceId, loadAttendanceMessages, loadReadinessPreview]);
+  }, [
+    selectedAttendanceId,
+    loadAttendanceMessages,
+    loadReadinessPreview,
+    loadReportAvailability,
+  ]);
 
   async function handleSendMessage() {
     const text = textInput.trim();
@@ -283,6 +321,7 @@ export function ChatScreen() {
       await loadAttendances(true);
       if (selectedAttendanceId) {
         await loadReadinessPreview(selectedAttendanceId);
+        await loadReportAvailability(selectedAttendanceId);
       }
     } catch (requestError) {
       setError(
@@ -338,6 +377,7 @@ export function ChatScreen() {
       setSelectedAttendanceId(data.conversationId);
       setReadinessPreview(null);
       setReadinessIssue(null);
+      setDownloadableReportId(null);
       await loadAttendances(false);
     } catch (requestError) {
       setError(
@@ -493,6 +533,7 @@ export function ChatScreen() {
       const payload = (await response.json()) as FinalizeAttendanceResponse;
       await loadAttendances(true);
       await loadReadinessPreview(payload.attendanceId);
+      await loadReportAvailability(payload.attendanceId);
       setStatusMessage(
         "Atendimento finalizado. Agora você já pode gerar o relatório.",
       );
@@ -540,6 +581,7 @@ export function ChatScreen() {
       const payload = (await response.json()) as FinalizeAttendanceResponse;
       await loadAttendances(true);
       await loadReadinessPreview(payload.attendanceId);
+      setDownloadableReportId(null);
       setStatusMessage(
         "Atendimento retomado. Continue a anamnese e finalize quando estiver completo.",
       );
@@ -588,6 +630,25 @@ export function ChatScreen() {
       return;
     }
 
+    if (downloadableReportId) {
+      try {
+        setError(null);
+        setStatusMessage(null);
+        setIsGeneratingReport(true);
+        await downloadReportPdf(downloadableReportId);
+        setStatusMessage(`Relatório #${downloadableReportId} baixado com sucesso.`);
+      } catch (requestError) {
+        setError(
+          requestError instanceof Error
+            ? requestError.message
+            : "Erro inesperado ao baixar relatório.",
+        );
+      } finally {
+        setIsGeneratingReport(false);
+      }
+      return;
+    }
+
     setError(null);
     setStatusMessage(null);
     setIsGeneratingReport(true);
@@ -630,12 +691,12 @@ export function ChatScreen() {
         const payload = (await response.json()) as ReportGenerateResponse;
         const score = payload.metadata?.readiness?.score;
         const required = payload.metadata?.readiness?.required_score;
-        await downloadReportPdf(payload.id);
+        setDownloadableReportId(payload.id);
 
         setStatusMessage(
           score && required
-            ? `Relatório #${payload.id} gerado e baixado com sucesso (${score}/${required}).`
-            : `Relatório #${payload.id} gerado e baixado com sucesso.`,
+            ? `Relatório #${payload.id} gerado com sucesso (${score}/${required}).`
+            : `Relatório #${payload.id} gerado com sucesso.`,
         );
         return;
       }
@@ -676,9 +737,9 @@ export function ChatScreen() {
 
         const fallbackPayload =
           (await fallbackResponse.json()) as ReportGenerateResponse;
-        await downloadReportPdf(fallbackPayload.id);
+        setDownloadableReportId(fallbackPayload.id);
         setStatusMessage(
-          `Relatório #${fallbackPayload.id} (incompleto) gerado e baixado.`,
+          `Relatório #${fallbackPayload.id} (incompleto) gerado com sucesso.`,
         );
         return;
       }
@@ -755,6 +816,9 @@ export function ChatScreen() {
               isGeneratingReport ||
               isFinalizingAttendance ||
               isResumingAttendance
+            }
+            reportActionLabel={
+              downloadableReportId ? "Baixar relatório" : "Gerar relatório"
             }
             readinessHint={readinessHint}
           />

@@ -76,3 +76,10 @@ export type FinalizeAttendanceResponse = {
   status: string;
   ended_at: string | null;
 };
+
+export type ReportAvailabilityResponse = {
+  conversationId: number;
+  hasReport: boolean;
+  canDownload: boolean;
+  reportId: number | null;
+};
