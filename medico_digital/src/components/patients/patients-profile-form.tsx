@@ -57,7 +57,10 @@ function toFormState(patient: Patient): FormState {
   };
 }
 
-function getErrorMessage(payload: ErrorPayload | null, fallback: string): string {
+function getErrorMessage(
+  payload: ErrorPayload | null,
+  fallback: string,
+): string {
   if (!payload?.error) {
     return fallback;
   }
@@ -115,7 +118,10 @@ export function PatientsProfileForm() {
 
         if (!response.ok) {
           throw new Error(
-            getErrorMessage(payload as ErrorPayload, "Não foi possível carregar os dados do paciente."),
+            getErrorMessage(
+              payload as ErrorPayload,
+              "Não foi possível carregar os dados do paciente.",
+            ),
           );
         }
 
@@ -171,7 +177,10 @@ export function PatientsProfileForm() {
 
       if (!response.ok) {
         throw new Error(
-          getErrorMessage(payload as ErrorPayload, "Não foi possível salvar os dados."),
+          getErrorMessage(
+            payload as ErrorPayload,
+            "Não foi possível salvar os dados.",
+          ),
         );
       }
 
@@ -183,7 +192,9 @@ export function PatientsProfileForm() {
       setSuccess("Dados atualizados com sucesso.");
     } catch (saveError) {
       setError(
-        saveError instanceof Error ? saveError.message : "Erro ao salvar dados.",
+        saveError instanceof Error
+          ? saveError.message
+          : "Erro ao salvar dados.",
       );
     } finally {
       setIsSaving(false);
@@ -199,7 +210,7 @@ export function PatientsProfileForm() {
           </div>
           <div>
             <h1 className="text-xl font-semibold text-zinc-100 md:text-2xl">
-              Patient Profile
+              Perfil do Paciente
             </h1>
             <p className="text-sm text-zinc-400">
               Dados cadastrais básicos vinculados à conta autenticada.
@@ -215,14 +226,20 @@ export function PatientsProfileForm() {
             <div className="h-11 animate-pulse rounded-lg border border-zinc-800 bg-zinc-900/70" />
           </div>
         ) : (
-          <form className="space-y-5" onSubmit={(event) => void handleSubmit(event)}>
+          <form
+            className="space-y-5"
+            onSubmit={(event) => void handleSubmit(event)}
+          >
             <div className="grid gap-4 md:grid-cols-2">
               <label className="space-y-2">
                 <span className="text-sm text-zinc-300">Nome completo</span>
                 <Input
                   value={form.fullName}
                   onChange={(event) =>
-                    setForm((prev) => ({ ...prev, fullName: event.target.value }))
+                    setForm((prev) => ({
+                      ...prev,
+                      fullName: event.target.value,
+                    }))
                   }
                   className="h-11 border-zinc-700 bg-zinc-950 text-zinc-100"
                   placeholder="Nome completo"
@@ -231,12 +248,17 @@ export function PatientsProfileForm() {
               </label>
 
               <label className="space-y-2">
-                <span className="text-sm text-zinc-300">Data de nascimento</span>
+                <span className="text-sm text-zinc-300">
+                  Data de nascimento
+                </span>
                 <Input
                   type="date"
                   value={form.birthDate}
                   onChange={(event) =>
-                    setForm((prev) => ({ ...prev, birthDate: event.target.value }))
+                    setForm((prev) => ({
+                      ...prev,
+                      birthDate: event.target.value,
+                    }))
                   }
                   className="h-11 border-zinc-700 bg-zinc-950 text-zinc-100"
                 />
@@ -273,7 +295,10 @@ export function PatientsProfileForm() {
                   onValueChange={(value) =>
                     setForm((prev) => ({
                       ...prev,
-                      gender: value === "unspecified" ? "" : (value as FormState["gender"]),
+                      gender:
+                        value === "unspecified"
+                          ? ""
+                          : (value as FormState["gender"]),
                     }))
                   }
                 >
@@ -306,7 +331,9 @@ export function PatientsProfileForm() {
                   </p>
                 )}
                 {error && <p className="text-sm text-red-400">{error}</p>}
-                {success && <p className="text-sm text-emerald-400">{success}</p>}
+                {success && (
+                  <p className="text-sm text-emerald-400">{success}</p>
+                )}
               </div>
 
               <Button
