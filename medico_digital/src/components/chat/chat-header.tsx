@@ -31,7 +31,7 @@ export function ChatHeader({
   readinessHint,
 }: ChatHeaderProps) {
   return (
-    <header className="flex items-center gap-3 border-b border-zinc-800 px-4 py-4 md:px-6">
+    <header className="flex flex-wrap items-center gap-3 border-b border-zinc-800 px-4 py-4 md:px-6">
       <div className="flex size-10 items-center justify-center rounded-full bg-zinc-800">
         <Stethoscope className="size-5 text-emerald-400" />
       </div>
@@ -39,7 +39,7 @@ export function ChatHeader({
         <h1 className="text-base font-semibold md:text-lg">Médico Virtual</h1>
         <p className="text-xs text-zinc-400 md:text-sm">Assistente de anamnese</p>
       </div>
-      <div className="ml-auto flex items-center gap-2">
+      <div className="ml-auto flex w-full flex-wrap items-center justify-end gap-2 md:w-auto">
         <Button
           variant="outline"
           className="border-amber-700/70 bg-amber-950/40 text-amber-100 hover:bg-amber-900/55"

@@ -1,6 +1,6 @@
 "use client";
 
-import { Clock3, Filter, MessageSquareMore, Stethoscope } from "lucide-react";
+import { CalendarDays, ChevronDown, Clock3, Filter, MessageSquareMore, Stethoscope } from "lucide-react";
 import { useMemo, useState } from "react";
 import {
   formatAttendanceLabel,
@@ -109,6 +109,7 @@ export function AttendancesPanel({
   const [query, setQuery] = useState("");
   const [filterMode, setFilterMode] = useState<FilterMode>("all");
   const [isMobileSheetOpen, setIsMobileSheetOpen] = useState(false);
+  const [isDateFilterOpen, setIsDateFilterOpen] = useState(false);
 
   const selectedAttendance = useMemo(
     () => attendances.find((attendance) => attendance.id === selectedAttendanceId) ?? null,
@@ -150,22 +151,22 @@ export function AttendancesPanel({
   return (
     <>
       <aside className="hidden w-80 flex-col border-r border-zinc-800/80 bg-zinc-950/70 backdrop-blur md:flex">
-        <div className="space-y-3 border-b border-zinc-800/80 px-4 py-4">
+        <div className="space-y-4 border-b border-zinc-800/80 px-4 py-4">
           <div>
-            <h2 className="text-sm font-semibold text-zinc-100">Atendimentos</h2>
-            <p className="text-xs text-zinc-400">
+            <h2 className="text-base font-semibold text-zinc-100">Atendimentos</h2>
+            <p className="mt-0.5 text-xs text-zinc-400">
               {totalAttendances} no histórico
             </p>
           </div>
 
           <Input
-            placeholder="Buscar por id ou status..."
+            placeholder="Buscar por ID ou status..."
             className="h-9 border-zinc-700 bg-zinc-900/70 text-zinc-100 placeholder:text-zinc-500"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
           />
 
-          <div className="flex gap-1">
+          <div className="flex flex-wrap gap-1">
             {filters.map((filter) => (
               <Button
                 key={filter.id}
@@ -184,42 +185,72 @@ export function AttendancesPanel({
             ))}
           </div>
 
-          <div className="grid grid-cols-2 gap-2">
-            <Input
-              type="date"
-              value={dateFrom}
-              onChange={(event) => onDateFromChange(event.target.value)}
-              className="h-9 border-zinc-700 bg-zinc-900/70 text-zinc-100"
-            />
-            <Input
-              type="date"
-              value={dateTo}
-              onChange={(event) => onDateToChange(event.target.value)}
-              className="h-9 border-zinc-700 bg-zinc-900/70 text-zinc-100"
-            />
-          </div>
-          <div className="flex gap-2">
+          <div className="space-y-2">
             <Button
               type="button"
-              size="sm"
-              className="bg-emerald-600 text-zinc-950 hover:bg-emerald-500"
-              onClick={onApplyDateFilter}
-            >
-              Aplicar datas
-            </Button>
-            <Button
-              type="button"
-              size="sm"
               variant="outline"
-              className="border-zinc-700 bg-zinc-900 text-zinc-200 hover:bg-zinc-800"
-              onClick={onClearDateFilter}
+              className="h-9 w-full justify-between border-zinc-700 bg-zinc-900 text-zinc-200 hover:bg-zinc-800"
+              onClick={() => setIsDateFilterOpen((current) => !current)}
             >
-              Limpar
+              <span className="inline-flex items-center gap-2">
+                <CalendarDays className="size-4 text-emerald-400" />
+                Filtrar por data
+              </span>
+              <ChevronDown
+                className={`size-4 text-zinc-400 transition-transform ${
+                  isDateFilterOpen ? "rotate-180" : ""
+                }`}
+              />
             </Button>
+
+            {isDateFilterOpen && (
+              <div className="rounded-lg border border-zinc-800 bg-zinc-900/40 p-3">
+                <p className="mb-2 text-xs font-medium text-zinc-300">Período de início</p>
+                <div className="space-y-2">
+                  <div className="min-w-0">
+                    <p className="mb-1 text-[11px] text-zinc-500">De</p>
+                    <Input
+                      type="date"
+                      value={dateFrom}
+                      onChange={(event) => onDateFromChange(event.target.value)}
+                      className="date-input-highlight h-9 w-full min-w-0 border-zinc-700 bg-zinc-900/70 text-zinc-100"
+                    />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="mb-1 text-[11px] text-zinc-500">Até</p>
+                    <Input
+                      type="date"
+                      value={dateTo}
+                      onChange={(event) => onDateToChange(event.target.value)}
+                      className="date-input-highlight h-9 w-full min-w-0 border-zinc-700 bg-zinc-900/70 text-zinc-100"
+                    />
+                  </div>
+                </div>
+                <div className="mt-3 grid grid-cols-2 gap-2">
+                  <Button
+                    type="button"
+                    size="sm"
+                    className="w-full bg-emerald-600 text-zinc-950 hover:bg-emerald-500"
+                    onClick={onApplyDateFilter}
+                  >
+                    Aplicar filtro
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    className="w-full border-zinc-700 bg-zinc-900 text-zinc-200 hover:bg-zinc-800"
+                    onClick={onClearDateFilter}
+                  >
+                    Limpar
+                  </Button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
-        <div className="flex-1 space-y-2 overflow-y-auto px-3 py-3">
+        <div className="scrollbar-slim flex-1 space-y-2 overflow-y-auto px-3 py-3">
           {isLoading && (
             <>
               <div className="h-24 animate-pulse rounded-xl border border-zinc-800 bg-zinc-900/70" />
@@ -328,7 +359,7 @@ export function AttendancesPanel({
               </div>
             </div>
 
-            <div className="space-y-2 overflow-y-auto px-3 pb-4">
+            <div className="scrollbar-slim space-y-2 overflow-y-auto px-3 pb-4">
               {isLoading && (
                 <>
                   <div className="h-24 animate-pulse rounded-xl border border-zinc-800 bg-zinc-900/70" />

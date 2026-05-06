@@ -15,7 +15,7 @@ export function ChatMessages({
   messagesEndRef,
 }: ChatMessagesProps) {
   return (
-    <section className="flex-1 space-y-3 overflow-y-auto px-4 py-6 md:px-6">
+    <section className="scrollbar-slim flex-1 space-y-3 overflow-y-auto px-4 py-6 md:px-6">
       {isHistoryLoading && (
         <div className="rounded-xl border border-zinc-800 bg-zinc-900/70 p-4 text-sm text-zinc-300">
           Carregando histórico do atendimento...

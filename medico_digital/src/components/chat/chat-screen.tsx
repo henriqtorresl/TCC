@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AttendancesPanel } from "@/components/chat/attendances-panel";
+import { getAttendanceStatusLabel } from "@/components/chat/attendance-utils";
 import { ChatComposer } from "@/components/chat/chat-composer";
 import { ChatHeader } from "@/components/chat/chat-header";
 import { ChatMessages } from "@/components/chat/chat-messages";
@@ -30,7 +31,7 @@ export function ChatScreen() {
   >(null);
   const [isAttendancesLoading, setIsAttendancesLoading] = useState(false);
   const [attendancesPage, setAttendancesPage] = useState(1);
-  const [attendancesPageSize] = useState(10);
+  const [attendancesPageSize] = useState(5);
   const [attendancesTotal, setAttendancesTotal] = useState(0);
   const [attendancesTotalPages, setAttendancesTotalPages] = useState(1);
   const [dateFromFilterInput, setDateFromFilterInput] = useState("");
@@ -902,8 +903,9 @@ export function ChatScreen() {
           {selectedAttendance && (
             <section className="border-b border-zinc-800/80 bg-zinc-900/50 px-4 py-3 text-xs text-zinc-300">
               <p>
-                Atendimento #{selectedAttendance.id} · Status: {selectedAttendance.status} ·
-                Início: {new Date(selectedAttendance.started_at).toLocaleString("pt-BR")}
+                Atendimento #{selectedAttendance.id} · Status:{" "}
+                {getAttendanceStatusLabel(selectedAttendance.status)} · Início:{" "}
+                {new Date(selectedAttendance.started_at).toLocaleString("pt-BR")}
               </p>
               <p>
                 Mensagens: {selectedAttendance.message_count}

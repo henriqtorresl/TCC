@@ -25,7 +25,7 @@ type NavItem = {
 
 const navItems: NavItem[] = [
   { href: "/chat", label: "Chat", icon: <MessageSquareText className="size-4" /> },
-  { href: "/patients", label: "Patients", icon: <Users className="size-4" /> },
+  { href: "/patients", label: "Pacientes", icon: <Users className="size-4" /> },
 ];
 
 function NavLinks({
