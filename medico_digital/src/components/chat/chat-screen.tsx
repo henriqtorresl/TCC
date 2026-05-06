@@ -901,13 +901,13 @@ export function ChatScreen() {
             readinessHint={readinessHint}
           />
           {selectedAttendance && (
-            <section className="border-b border-zinc-800/80 bg-zinc-900/50 px-4 py-3 text-xs text-zinc-300">
-              <p>
+            <section className="border-b border-zinc-800/80 bg-zinc-900/50 px-4 py-3 text-sm text-zinc-200">
+              <p className="leading-6">
                 Atendimento #{selectedAttendance.id} · Status:{" "}
                 {getAttendanceStatusLabel(selectedAttendance.status)} · Início:{" "}
                 {new Date(selectedAttendance.started_at).toLocaleString("pt-BR")}
               </p>
-              <p>
+              <p className="leading-6 text-zinc-300">
                 Mensagens: {selectedAttendance.message_count}
                 {selectedAttendance.ended_at
                   ? ` · Encerrado em: ${new Date(selectedAttendance.ended_at).toLocaleString("pt-BR")}`

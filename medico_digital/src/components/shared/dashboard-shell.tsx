@@ -71,8 +71,8 @@ export function DashboardShell({ children }: DashboardShellProps) {
     <div className="min-h-dvh bg-zinc-950 text-zinc-100">
       <header className="sticky top-0 z-30 flex items-center justify-between border-b border-zinc-800 bg-zinc-950/95 px-4 py-3 backdrop-blur md:hidden">
         <div>
-          <p className="text-xs text-zinc-400">Médico Virtual</p>
-          <h1 className="text-sm font-semibold">{currentSection}</h1>
+          <p className="text-sm text-zinc-300">Médico Virtual</p>
+          <h1 className="text-base font-semibold">{currentSection}</h1>
         </div>
         <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
           <SheetTrigger asChild>
@@ -101,8 +101,8 @@ export function DashboardShell({ children }: DashboardShellProps) {
       <div className="mx-auto flex min-h-[calc(100dvh-57px)] w-full max-w-[1600px] md:min-h-dvh">
         <aside className="hidden w-64 border-r border-zinc-800 bg-zinc-950 p-4 md:block">
           <div className="mb-6">
-            <p className="text-xs text-zinc-400">Médico Virtual</p>
-            <h2 className="text-sm font-semibold text-zinc-100">Painel</h2>
+            <p className="text-sm text-zinc-300">Médico Virtual</p>
+            <h2 className="text-base font-semibold text-zinc-100">Painel</h2>
           </div>
           <NavLinks pathname={pathname} />
         </aside>

@@ -79,7 +79,7 @@ function AttendanceCard({
           {formatAttendanceLabel(attendance)}
         </p>
 
-        <p className="flex items-center gap-1.5 text-xs text-zinc-500">
+        <p className="flex items-center gap-1.5 text-sm text-zinc-400">
           <MessageSquareMore className="size-3.5" />
           {attendance.message_count} mensagens ·{" "}
           {formatAttendanceRelativeTime(attendance.last_message_at)}
@@ -154,7 +154,7 @@ export function AttendancesPanel({
         <div className="space-y-4 border-b border-zinc-800/80 px-4 py-4">
           <div>
             <h2 className="text-base font-semibold text-zinc-100">Atendimentos</h2>
-            <p className="mt-0.5 text-xs text-zinc-400">
+            <p className="mt-0.5 text-sm text-zinc-400">
               {totalAttendances} no histórico
             </p>
           </div>
@@ -208,7 +208,7 @@ export function AttendancesPanel({
                 <p className="mb-2 text-xs font-medium text-zinc-300">Período de início</p>
                 <div className="space-y-2">
                   <div className="min-w-0">
-                    <p className="mb-1 text-[11px] text-zinc-500">De</p>
+                <p className="mb-1 text-xs text-zinc-400">De</p>
                     <Input
                       type="date"
                       value={dateFrom}
@@ -217,7 +217,7 @@ export function AttendancesPanel({
                     />
                   </div>
                   <div className="min-w-0">
-                    <p className="mb-1 text-[11px] text-zinc-500">Até</p>
+                <p className="mb-1 text-xs text-zinc-400">Até</p>
                     <Input
                       type="date"
                       value={dateTo}
@@ -260,7 +260,7 @@ export function AttendancesPanel({
           )}
 
           {!isLoading && !hasAttendances && (
-            <div className="rounded-xl border border-zinc-800 bg-zinc-900/70 p-4 text-xs text-zinc-400">
+            <div className="rounded-xl border border-zinc-800 bg-zinc-900/70 p-4 text-sm text-zinc-300">
               Nenhum atendimento encontrado com os filtros atuais.
             </div>
           )}
@@ -286,7 +286,7 @@ export function AttendancesPanel({
           >
             Anterior
           </Button>
-          <p className="text-xs text-zinc-400">
+          <p className="text-sm text-zinc-300">
             Página {page} de {totalPages}
           </p>
           <Button

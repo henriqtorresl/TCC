@@ -42,7 +42,7 @@ export function ChatHeader({
       <div className="ml-auto flex w-full flex-wrap items-center justify-end gap-2 md:w-auto">
         <Button
           variant="outline"
-          className="border-amber-700/70 bg-amber-950/40 text-amber-100 hover:bg-amber-900/55"
+          className="border-rose-700/70 bg-rose-950/45 text-rose-100 hover:bg-rose-900/60"
           onClick={onAttendanceAction}
           disabled={disableAttendanceAction}
         >
@@ -50,7 +50,7 @@ export function ChatHeader({
         </Button>
         <Button
           variant="outline"
-          className="border-emerald-700/70 bg-emerald-950/50 text-emerald-200 hover:bg-emerald-900/60"
+          className="border-emerald-700/80 bg-emerald-950/60 text-emerald-100 hover:bg-emerald-900/70"
           onClick={onGenerateReport}
           disabled={disableGenerateReport}
           title={readinessHint ?? undefined}
