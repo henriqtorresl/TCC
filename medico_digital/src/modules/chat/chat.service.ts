@@ -11,6 +11,13 @@ type ChatHistoryItem = {
   ts: number;
 };
 
+type ListAttendancesQuery = {
+  page?: string | null;
+  pageSize?: string | null;
+  dateFrom?: string | null;
+  dateTo?: string | null;
+};
+
 export class ChatService {
   private readonly conversations: Record<string, ChatHistoryItem[]> = {};
 
@@ -98,7 +105,7 @@ Não dê diagnóstico final; seu papel é exclusivamente coletar as informaçõe
     return { conversationId };
   }
 
-  async listAttendances(patientId: string) {
+  async listAttendances(patientId: string, query: ListAttendancesQuery = {}) {
     if (!this.chatRepository) {
       throw new Error("database_not_configured");
     }
@@ -108,7 +115,55 @@ Não dê diagnóstico final; seu papel é exclusivamente coletar as informaçõe
       throw new Error("invalid_patient_id");
     }
 
-    return this.chatRepository.listAttendancesByPatient(numericPatientId);
+    const page = Number(query.page ?? "1");
+    const pageSize = Number(query.pageSize ?? "10");
+    const normalizedPage = Number.isFinite(page) && page > 0 ? Math.floor(page) : 1;
+    const normalizedPageSize =
+      Number.isFinite(pageSize) && pageSize > 0
+        ? Math.min(Math.floor(pageSize), 50)
+        : 10;
+
+    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+    const dateFrom = query.dateFrom?.trim() ?? "";
+    const dateTo = query.dateTo?.trim() ?? "";
+
+    if (dateFrom && !dateRegex.test(dateFrom)) {
+      throw new Error("invalid_date_from");
+    }
+
+    if (dateTo && !dateRegex.test(dateTo)) {
+      throw new Error("invalid_date_to");
+    }
+
+    if (dateFrom && dateTo && dateFrom > dateTo) {
+      throw new Error("invalid_date_range");
+    }
+
+    const result = await this.chatRepository.listAttendancesByPatientPaginated(
+      numericPatientId,
+      {
+        page: normalizedPage,
+        pageSize: normalizedPageSize,
+        dateFrom: dateFrom || null,
+        dateTo: dateTo || null,
+      },
+    );
+
+    const totalPages = Math.max(1, Math.ceil(result.total / normalizedPageSize));
+
+    return {
+      attendances: result.attendances,
+      pagination: {
+        page: normalizedPage,
+        pageSize: normalizedPageSize,
+        total: result.total,
+        totalPages,
+      },
+      filters: {
+        dateFrom: dateFrom || null,
+        dateTo: dateTo || null,
+      },
+    };
   }
 
   async listAttendanceMessages(patientId: string, attendanceId: string) {

@@ -14,7 +14,7 @@ const authRepository = db ? new AuthRepository(db) : null;
 const patientsRepository = db ? new PatientsRepository(db) : null;
 const patientsService = new PatientsService(patientsRepository);
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
     const sessionUser = await getSessionUserId(authRepository);
     if (!sessionUser.success) {
@@ -25,8 +25,14 @@ export async function GET() {
     }
 
     const patient = await patientsService.getMe(sessionUser.userId);
-    const attendances = await chatService.listAttendances(String(patient.id));
-    return NextResponse.json({ attendances });
+    const { searchParams } = new URL(request.url);
+    const result = await chatService.listAttendances(String(patient.id), {
+      page: searchParams.get("page"),
+      pageSize: searchParams.get("pageSize"),
+      dateFrom: searchParams.get("dateFrom"),
+      dateTo: searchParams.get("dateTo"),
+    });
+    return NextResponse.json(result);
   } catch (error) {
     if (error instanceof Error && error.message === "database_not_configured") {
       return NextResponse.json({ error: error.message }, { status: 503 });
@@ -34,7 +40,10 @@ export async function GET() {
     if (
       error instanceof Error &&
       (error.message === "invalid_user_id" ||
-        error.message === "invalid_patient_id")
+        error.message === "invalid_patient_id" ||
+        error.message === "invalid_date_from" ||
+        error.message === "invalid_date_to" ||
+        error.message === "invalid_date_range")
     ) {
       return NextResponse.json({ error: error.message }, { status: 400 });
     }

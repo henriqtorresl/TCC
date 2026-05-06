@@ -23,6 +23,18 @@ type AttendanceRow = {
   ended_at: string | null;
 };
 
+type ListAttendancesOptions = {
+  page: number;
+  pageSize: number;
+  dateFrom: string | null;
+  dateTo: string | null;
+};
+
+type AttendanceListResult = {
+  attendances: AttendanceSummaryRow[];
+  total: number;
+};
+
 export class ChatRepository {
   constructor(private readonly db: Pool) {}
 
@@ -106,6 +118,70 @@ export class ChatRepository {
     );
 
     return result.rows;
+  }
+
+  async listAttendancesByPatientPaginated(
+    patientId: number,
+    options: ListAttendancesOptions,
+  ): Promise<AttendanceListResult> {
+    const whereConditions: string[] = ["c.patient_id = $1"];
+    const values: Array<number | string> = [patientId];
+    let nextIndex = 2;
+
+    if (options.dateFrom) {
+      whereConditions.push(`c.started_at::date >= $${nextIndex}`);
+      values.push(options.dateFrom);
+      nextIndex += 1;
+    }
+
+    if (options.dateTo) {
+      whereConditions.push(`c.started_at::date <= $${nextIndex}`);
+      values.push(options.dateTo);
+      nextIndex += 1;
+    }
+
+    const whereClause = whereConditions.join(" AND ");
+    const limitParam = nextIndex;
+    const offsetParam = nextIndex + 1;
+    const offset = (options.page - 1) * options.pageSize;
+
+    values.push(options.pageSize, offset);
+
+    const [listResult, countResult] = await Promise.all([
+      this.db.query<AttendanceSummaryRow>(
+        `
+        SELECT
+          c.id,
+          c.title,
+          c.status,
+          c.started_at,
+          c.ended_at,
+          MAX(m.created_at) AS last_message_at,
+          COUNT(m.id)::text AS message_count
+        FROM conversations c
+        LEFT JOIN messages m ON m.conversation_id = c.id
+        WHERE ${whereClause}
+        GROUP BY c.id
+        ORDER BY c.started_at DESC
+        LIMIT $${limitParam}
+        OFFSET $${offsetParam};
+        `,
+        values,
+      ),
+      this.db.query<{ total: string }>(
+        `
+        SELECT COUNT(*)::text AS total
+        FROM conversations c
+        WHERE ${whereClause};
+        `,
+        values.slice(0, limitParam - 1),
+      ),
+    ]);
+
+    return {
+      attendances: listResult.rows,
+      total: Number(countResult.rows[0]?.total ?? 0),
+    };
   }
 
   async listMessagesByAttendance(

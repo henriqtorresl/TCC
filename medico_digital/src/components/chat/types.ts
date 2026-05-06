@@ -19,6 +19,16 @@ export type AttendanceSummary = {
 
 export type AttendanceListResponse = {
   attendances: AttendanceSummary[];
+  pagination: {
+    page: number;
+    pageSize: number;
+    total: number;
+    totalPages: number;
+  };
+  filters: {
+    dateFrom: string | null;
+    dateTo: string | null;
+  };
 };
 
 export type AttendanceMessage = {
