@@ -29,6 +29,14 @@ export function ChatScreen() {
     number | null
   >(null);
   const [isAttendancesLoading, setIsAttendancesLoading] = useState(false);
+  const [attendancesPage, setAttendancesPage] = useState(1);
+  const [attendancesPageSize] = useState(10);
+  const [attendancesTotal, setAttendancesTotal] = useState(0);
+  const [attendancesTotalPages, setAttendancesTotalPages] = useState(1);
+  const [dateFromFilterInput, setDateFromFilterInput] = useState("");
+  const [dateToFilterInput, setDateToFilterInput] = useState("");
+  const [dateFromFilterApplied, setDateFromFilterApplied] = useState("");
+  const [dateToFilterApplied, setDateToFilterApplied] = useState("");
   const [isHistoryLoading, setIsHistoryLoading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isStartingAttendance, setIsStartingAttendance] = useState(false);
@@ -87,10 +95,33 @@ export function ChatScreen() {
   }, [messages, isLoading]);
 
   const loadAttendances = useCallback(
-    async (preserveSelection = true) => {
+    async (
+      preserveSelection = true,
+      options?: {
+        page?: number;
+        dateFrom?: string;
+        dateTo?: string;
+      },
+    ) => {
       setIsAttendancesLoading(true);
       try {
-        const response = await fetch("/api/attendances");
+        const currentPage = options?.page ?? attendancesPage;
+        const currentDateFrom = options?.dateFrom ?? dateFromFilterApplied;
+        const currentDateTo = options?.dateTo ?? dateToFilterApplied;
+
+        const params = new URLSearchParams({
+          page: String(currentPage),
+          pageSize: String(attendancesPageSize),
+        });
+
+        if (currentDateFrom) {
+          params.set("dateFrom", currentDateFrom);
+        }
+        if (currentDateTo) {
+          params.set("dateTo", currentDateTo);
+        }
+
+        const response = await fetch(`/api/attendances?${params.toString()}`);
         if (response.status === 401) {
           router.replace("/login?next=%2F");
           return;
@@ -101,6 +132,9 @@ export function ChatScreen() {
 
         const data = (await response.json()) as AttendanceListResponse;
         setAttendances(data.attendances);
+        setAttendancesPage(data.pagination.page);
+        setAttendancesTotal(data.pagination.total);
+        setAttendancesTotalPages(data.pagination.totalPages);
 
         if (data.attendances.length === 0) {
           setSelectedAttendanceId(null);
@@ -126,7 +160,7 @@ export function ChatScreen() {
         setIsAttendancesLoading(false);
       }
     },
-    [router],
+    [router, attendancesPage, attendancesPageSize, dateFromFilterApplied, dateToFilterApplied],
   );
 
   const loadAttendanceMessages = useCallback(
@@ -378,7 +412,7 @@ export function ChatScreen() {
       setReadinessPreview(null);
       setReadinessIssue(null);
       setDownloadableReportId(null);
-      await loadAttendances(false);
+      await loadAttendances(false, { page: 1 });
     } catch (requestError) {
       setError(
         requestError instanceof Error
@@ -388,6 +422,38 @@ export function ChatScreen() {
     } finally {
       setIsStartingAttendance(false);
     }
+  }
+
+  function applyDateFilter() {
+    setDateFromFilterApplied(dateFromFilterInput);
+    setDateToFilterApplied(dateToFilterInput);
+    void loadAttendances(false, {
+      page: 1,
+      dateFrom: dateFromFilterInput,
+      dateTo: dateToFilterInput,
+    });
+  }
+
+  function clearDateFilter() {
+    setDateFromFilterInput("");
+    setDateToFilterInput("");
+    setDateFromFilterApplied("");
+    setDateToFilterApplied("");
+    void loadAttendances(false, { page: 1, dateFrom: "", dateTo: "" });
+  }
+
+  function goToPreviousPage() {
+    if (attendancesPage <= 1) {
+      return;
+    }
+    void loadAttendances(false, { page: attendancesPage - 1 });
+  }
+
+  function goToNextPage() {
+    if (attendancesPage >= attendancesTotalPages) {
+      return;
+    }
+    void loadAttendances(false, { page: attendancesPage + 1 });
   }
 
   async function generateReport(
@@ -774,6 +840,17 @@ export function ChatScreen() {
           selectedAttendanceId={selectedAttendanceId}
           onSelectAttendance={setSelectedAttendanceId}
           isLoading={isAttendancesLoading}
+          page={attendancesPage}
+          totalPages={attendancesTotalPages}
+          totalAttendances={attendancesTotal}
+          dateFrom={dateFromFilterInput}
+          dateTo={dateToFilterInput}
+          onDateFromChange={setDateFromFilterInput}
+          onDateToChange={setDateToFilterInput}
+          onApplyDateFilter={applyDateFilter}
+          onClearDateFilter={clearDateFilter}
+          onPreviousPage={goToPreviousPage}
+          onNextPage={goToNextPage}
         />
 
         <div className="flex w-full flex-col">
@@ -822,6 +899,20 @@ export function ChatScreen() {
             }
             readinessHint={readinessHint}
           />
+          {selectedAttendance && (
+            <section className="border-b border-zinc-800/80 bg-zinc-900/50 px-4 py-3 text-xs text-zinc-300">
+              <p>
+                Atendimento #{selectedAttendance.id} · Status: {selectedAttendance.status} ·
+                Início: {new Date(selectedAttendance.started_at).toLocaleString("pt-BR")}
+              </p>
+              <p>
+                Mensagens: {selectedAttendance.message_count}
+                {selectedAttendance.ended_at
+                  ? ` · Encerrado em: ${new Date(selectedAttendance.ended_at).toLocaleString("pt-BR")}`
+                  : " · Em andamento"}
+              </p>
+            </section>
+          )}
           <ChatMessages
             messages={messages}
             isLoading={isLoading}

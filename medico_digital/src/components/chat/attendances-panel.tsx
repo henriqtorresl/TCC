@@ -23,6 +23,17 @@ type AttendancesPanelProps = {
   selectedAttendanceId: number | null;
   onSelectAttendance: (attendanceId: number) => void;
   isLoading: boolean;
+  page: number;
+  totalPages: number;
+  totalAttendances: number;
+  dateFrom: string;
+  dateTo: string;
+  onDateFromChange: (value: string) => void;
+  onDateToChange: (value: string) => void;
+  onApplyDateFilter: () => void;
+  onClearDateFilter: () => void;
+  onPreviousPage: () => void;
+  onNextPage: () => void;
 };
 
 type FilterMode = "all" | "active" | "closed";
@@ -83,6 +94,17 @@ export function AttendancesPanel({
   selectedAttendanceId,
   onSelectAttendance,
   isLoading,
+  page,
+  totalPages,
+  totalAttendances,
+  dateFrom,
+  dateTo,
+  onDateFromChange,
+  onDateToChange,
+  onApplyDateFilter,
+  onClearDateFilter,
+  onPreviousPage,
+  onNextPage,
 }: AttendancesPanelProps) {
   const [query, setQuery] = useState("");
   const [filterMode, setFilterMode] = useState<FilterMode>("all");
@@ -132,7 +154,7 @@ export function AttendancesPanel({
           <div>
             <h2 className="text-sm font-semibold text-zinc-100">Atendimentos</h2>
             <p className="text-xs text-zinc-400">
-              {attendances.length} no histórico
+              {totalAttendances} no histórico
             </p>
           </div>
 
@@ -161,6 +183,40 @@ export function AttendancesPanel({
               </Button>
             ))}
           </div>
+
+          <div className="grid grid-cols-2 gap-2">
+            <Input
+              type="date"
+              value={dateFrom}
+              onChange={(event) => onDateFromChange(event.target.value)}
+              className="h-9 border-zinc-700 bg-zinc-900/70 text-zinc-100"
+            />
+            <Input
+              type="date"
+              value={dateTo}
+              onChange={(event) => onDateToChange(event.target.value)}
+              className="h-9 border-zinc-700 bg-zinc-900/70 text-zinc-100"
+            />
+          </div>
+          <div className="flex gap-2">
+            <Button
+              type="button"
+              size="sm"
+              className="bg-emerald-600 text-zinc-950 hover:bg-emerald-500"
+              onClick={onApplyDateFilter}
+            >
+              Aplicar datas
+            </Button>
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              className="border-zinc-700 bg-zinc-900 text-zinc-200 hover:bg-zinc-800"
+              onClick={onClearDateFilter}
+            >
+              Limpar
+            </Button>
+          </div>
         </div>
 
         <div className="flex-1 space-y-2 overflow-y-auto px-3 py-3">
@@ -187,6 +243,31 @@ export function AttendancesPanel({
                 onSelect={() => handleSelectAttendance(attendance.id)}
               />
             ))}
+        </div>
+        <div className="flex items-center justify-between border-t border-zinc-800/80 px-3 py-2">
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            className="border-zinc-700 bg-zinc-900 text-zinc-200 hover:bg-zinc-800"
+            disabled={page <= 1 || isLoading}
+            onClick={onPreviousPage}
+          >
+            Anterior
+          </Button>
+          <p className="text-xs text-zinc-400">
+            Página {page} de {totalPages}
+          </p>
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            className="border-zinc-700 bg-zinc-900 text-zinc-200 hover:bg-zinc-800"
+            disabled={page >= totalPages || isLoading}
+            onClick={onNextPage}
+          >
+            Próxima
+          </Button>
         </div>
       </aside>
 
