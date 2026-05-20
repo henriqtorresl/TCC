@@ -23,6 +23,16 @@ type AttendanceRow = {
   ended_at: string | null;
 };
 
+type AttendanceDetailsRow = {
+  id: number;
+  title: string | null;
+  status: string;
+  started_at: string;
+  ended_at: string | null;
+  last_message_at: string | null;
+  message_count: string;
+};
+
 type ListAttendancesOptions = {
   page: number;
   pageSize: number;
@@ -224,6 +234,32 @@ export class ChatRepository {
       SELECT id, status, ended_at
       FROM conversations
       WHERE id = $1 AND patient_id = $2
+      LIMIT 1;
+      `,
+      [attendanceId, patientId],
+    );
+
+    return result.rows[0] ?? null;
+  }
+
+  async findAttendanceDetailsById(
+    patientId: number,
+    attendanceId: number,
+  ): Promise<AttendanceDetailsRow | null> {
+    const result = await this.db.query<AttendanceDetailsRow>(
+      `
+      SELECT
+        c.id,
+        c.title,
+        c.status,
+        c.started_at,
+        c.ended_at,
+        MAX(m.created_at) AS last_message_at,
+        COUNT(m.id)::text AS message_count
+      FROM conversations c
+      LEFT JOIN messages m ON m.conversation_id = c.id
+      WHERE c.id = $1 AND c.patient_id = $2
+      GROUP BY c.id
       LIMIT 1;
       `,
       [attendanceId, patientId],

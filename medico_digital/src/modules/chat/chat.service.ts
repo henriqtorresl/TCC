@@ -193,6 +193,33 @@ Não dê diagnóstico final; seu papel é exclusivamente coletar as informaçõe
     return messages;
   }
 
+  async getAttendanceDetails(patientId: string, attendanceId: string) {
+    if (!this.chatRepository) {
+      throw new Error("database_not_configured");
+    }
+
+    const numericPatientId = Number(patientId);
+    if (!Number.isFinite(numericPatientId) || numericPatientId <= 0) {
+      throw new Error("invalid_patient_id");
+    }
+
+    const numericAttendanceId = Number(attendanceId);
+    if (!Number.isFinite(numericAttendanceId) || numericAttendanceId <= 0) {
+      throw new Error("invalid_attendance_id");
+    }
+
+    const attendance = await this.chatRepository.findAttendanceDetailsById(
+      numericPatientId,
+      numericAttendanceId,
+    );
+
+    if (!attendance) {
+      throw new Error("attendance_not_found");
+    }
+
+    return attendance;
+  }
+
   async finalizeAttendance(patientId: string, attendanceId: string) {
     if (!this.chatRepository) {
       throw new Error("database_not_configured");

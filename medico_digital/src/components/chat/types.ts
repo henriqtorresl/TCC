@@ -42,6 +42,10 @@ export type AttendanceMessagesResponse = {
   messages: AttendanceMessage[];
 };
 
+export type AttendanceDetailsResponse = {
+  attendance: AttendanceSummary;
+};
+
 export type StartAttendanceResponse = {
   conversationId: number;
 };
