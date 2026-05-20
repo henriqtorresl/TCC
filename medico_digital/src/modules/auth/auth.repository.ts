@@ -76,4 +76,16 @@ export class AuthRepository {
 
     return result.rows[0] ?? null;
   }
+
+  async revokeSessionByRefreshTokenHash(refreshTokenHash: string): Promise<void> {
+    await this.db.query(
+      `
+      UPDATE auth_sessions
+      SET revoked_at = NOW()
+      WHERE refresh_token_hash = $1
+        AND revoked_at IS NULL;
+      `,
+      [refreshTokenHash],
+    );
+  }
 }

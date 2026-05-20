@@ -1,6 +1,14 @@
 "use client";
 
-import { CalendarDays, ChevronDown, Clock3, Filter, MessageSquareMore, Stethoscope } from "lucide-react";
+import Link from "next/link";
+import {
+  CalendarDays,
+  ChevronDown,
+  Clock3,
+  Filter,
+  MessageSquareMore,
+  Stethoscope,
+} from "lucide-react";
 import { useMemo, useState } from "react";
 import {
   formatAttendanceLabel,
@@ -48,10 +56,16 @@ function AttendanceCard({
   onSelect: () => void;
 }) {
   return (
-    <Button
-      type="button"
+    <div
       onClick={onSelect}
-      variant="ghost"
+      role="button"
+      tabIndex={0}
+      onKeyDown={(event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          onSelect();
+        }
+      }}
       className={`h-auto w-full justify-start rounded-xl border px-3 py-3 text-left transition ${
         isActive
           ? "border-emerald-500/60 bg-gradient-to-r from-emerald-900/35 to-emerald-700/10 shadow-[0_0_0_1px_rgba(16,185,129,0.2)]"
@@ -84,8 +98,17 @@ function AttendanceCard({
           {attendance.message_count} mensagens ·{" "}
           {formatAttendanceRelativeTime(attendance.last_message_at)}
         </p>
+        <div className="pt-1">
+          <Link
+            href={`/attendances/${attendance.id}`}
+            onClick={(event) => event.stopPropagation()}
+            className="inline-flex rounded-md border border-zinc-700 px-2.5 py-1 text-xs text-zinc-200 hover:bg-zinc-800"
+          >
+            Ver detalhes
+          </Link>
+        </div>
       </div>
-    </Button>
+    </div>
   );
 }
 
@@ -112,7 +135,10 @@ export function AttendancesPanel({
   const [isDateFilterOpen, setIsDateFilterOpen] = useState(false);
 
   const selectedAttendance = useMemo(
-    () => attendances.find((attendance) => attendance.id === selectedAttendanceId) ?? null,
+    () =>
+      attendances.find(
+        (attendance) => attendance.id === selectedAttendanceId,
+      ) ?? null,
     [attendances, selectedAttendanceId],
   );
 
@@ -153,7 +179,9 @@ export function AttendancesPanel({
       <aside className="hidden w-80 flex-col border-r border-zinc-800/80 bg-zinc-950/70 backdrop-blur md:flex">
         <div className="space-y-4 border-b border-zinc-800/80 px-4 py-4">
           <div>
-            <h2 className="text-base font-semibold text-zinc-100">Atendimentos</h2>
+            <h2 className="text-base font-semibold text-zinc-100">
+              Atendimentos
+            </h2>
             <p className="mt-0.5 text-sm text-zinc-400">
               {totalAttendances} no histórico
             </p>
@@ -205,10 +233,12 @@ export function AttendancesPanel({
 
             {isDateFilterOpen && (
               <div className="rounded-lg border border-zinc-800 bg-zinc-900/40 p-3">
-                <p className="mb-2 text-xs font-medium text-zinc-300">Período de início</p>
+                <p className="mb-2 text-xs font-medium text-zinc-300">
+                  Período de início
+                </p>
                 <div className="space-y-2">
                   <div className="min-w-0">
-                <p className="mb-1 text-xs text-zinc-400">De</p>
+                    <p className="mb-1 text-xs text-zinc-400">De</p>
                     <Input
                       type="date"
                       value={dateFrom}
@@ -217,7 +247,7 @@ export function AttendancesPanel({
                     />
                   </div>
                   <div className="min-w-0">
-                <p className="mb-1 text-xs text-zinc-400">Até</p>
+                    <p className="mb-1 text-xs text-zinc-400">Até</p>
                     <Input
                       type="date"
                       value={dateTo}
@@ -275,7 +305,7 @@ export function AttendancesPanel({
               />
             ))}
         </div>
-        <div className="flex items-center justify-between border-t border-zinc-800/80 px-3 py-2">
+        <div className="flex flex-col gap-2 lg:flex-row items-center justify-between border-t border-zinc-800/80 px-3 py-2">
           <Button
             type="button"
             size="sm"
@@ -286,7 +316,7 @@ export function AttendancesPanel({
           >
             Anterior
           </Button>
-          <p className="text-sm text-zinc-300">
+          <p className="text-center text-sm text-zinc-300">
             Página {page} de {totalPages}
           </p>
           <Button
@@ -323,7 +353,10 @@ export function AttendancesPanel({
               </span>
             </Button>
           </SheetTrigger>
-          <SheetContent side="bottom" className="h-[82dvh] rounded-t-2xl border-zinc-800 bg-zinc-950 p-0">
+          <SheetContent
+            side="bottom"
+            className="h-[82dvh] rounded-t-2xl border-zinc-800 bg-zinc-950 p-0"
+          >
             <SheetHeader className="border-b border-zinc-800 px-4 py-4">
               <SheetTitle className="text-zinc-100">Atendimentos</SheetTitle>
             </SheetHeader>

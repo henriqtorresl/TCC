@@ -3,7 +3,6 @@
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AttendancesPanel } from "@/components/chat/attendances-panel";
-import { getAttendanceStatusLabel } from "@/components/chat/attendance-utils";
 import { ChatComposer } from "@/components/chat/chat-composer";
 import { ChatHeader } from "@/components/chat/chat-header";
 import { ChatMessages } from "@/components/chat/chat-messages";
@@ -900,21 +899,6 @@ export function ChatScreen() {
             }
             readinessHint={readinessHint}
           />
-          {selectedAttendance && (
-            <section className="border-b border-zinc-800/80 bg-zinc-900/50 px-4 py-3 text-sm text-zinc-200">
-              <p className="leading-6">
-                Atendimento #{selectedAttendance.id} · Status:{" "}
-                {getAttendanceStatusLabel(selectedAttendance.status)} · Início:{" "}
-                {new Date(selectedAttendance.started_at).toLocaleString("pt-BR")}
-              </p>
-              <p className="leading-6 text-zinc-300">
-                Mensagens: {selectedAttendance.message_count}
-                {selectedAttendance.ended_at
-                  ? ` · Encerrado em: ${new Date(selectedAttendance.ended_at).toLocaleString("pt-BR")}`
-                  : " · Em andamento"}
-              </p>
-            </section>
-          )}
           <ChatMessages
             messages={messages}
             isLoading={isLoading}
