@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { Menu, MessageSquareText, Users } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { LogOut, Menu, MessageSquareText, Users } from "lucide-react";
 import { ReactNode, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -24,7 +24,11 @@ type NavItem = {
 };
 
 const navItems: NavItem[] = [
-  { href: "/chat", label: "Chat", icon: <MessageSquareText className="size-4" /> },
+  {
+    href: "/chat",
+    label: "Chat",
+    icon: <MessageSquareText className="size-4" />,
+  },
   { href: "/patients", label: "Pacientes", icon: <Users className="size-4" /> },
 ];
 
@@ -61,11 +65,30 @@ function NavLinks({
 
 export function DashboardShell({ children }: DashboardShellProps) {
   const pathname = usePathname();
+  const router = useRouter();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const currentSection = useMemo(
     () => navItems.find((item) => item.href === pathname)?.label ?? "Dashboard",
     [pathname],
   );
+
+  async function handleLogout() {
+    if (isLoggingOut) {
+      return;
+    }
+
+    setIsLoggingOut(true);
+    try {
+      await fetch("/api/auth/logout", { method: "POST" });
+      localStorage.removeItem("md_user_id");
+      router.replace("/login");
+      router.refresh();
+    } finally {
+      setIsLoggingOut(false);
+      setIsMobileMenuOpen(false);
+    }
+  }
 
   return (
     <div className="min-h-dvh bg-zinc-950 text-zinc-100">
@@ -85,7 +108,10 @@ export function DashboardShell({ children }: DashboardShellProps) {
               <Menu />
             </Button>
           </SheetTrigger>
-          <SheetContent side="left" className="w-72 border-zinc-800 bg-zinc-950 p-4">
+          <SheetContent
+            side="left"
+            className="w-72 border-zinc-800 bg-zinc-950 p-4"
+          >
             <SheetHeader>
               <SheetTitle className="sr-only">Menu de navegação</SheetTitle>
             </SheetHeader>
@@ -94,17 +120,41 @@ export function DashboardShell({ children }: DashboardShellProps) {
               pathname={pathname}
               onNavigate={() => setIsMobileMenuOpen(false)}
             />
+            <div className="mt-6 border-t border-zinc-800 pt-4">
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full justify-start border-zinc-700 bg-zinc-900 text-zinc-100 hover:bg-zinc-800"
+                onClick={() => void handleLogout()}
+                disabled={isLoggingOut}
+              >
+                <LogOut className="size-4" />
+                {isLoggingOut ? "Saindo..." : "Sair"}
+              </Button>
+            </div>
           </SheetContent>
         </Sheet>
       </header>
 
       <div className="mx-auto flex min-h-[calc(100dvh-57px)] w-full max-w-[1600px] md:min-h-dvh">
-        <aside className="hidden w-64 border-r border-zinc-800 bg-zinc-950 p-4 md:block">
+        <aside className="hidden w-64 border-r border-zinc-800 bg-zinc-950 p-4 md:flex md:flex-col">
           <div className="mb-6">
             <p className="text-sm text-zinc-300">Médico Virtual</p>
             <h2 className="text-base font-semibold text-zinc-100">Painel</h2>
           </div>
           <NavLinks pathname={pathname} />
+          <div className="mt-auto border-t border-zinc-800 pt-4">
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full justify-start border-zinc-700 bg-zinc-900 text-zinc-100 hover:bg-zinc-800"
+              onClick={() => void handleLogout()}
+              disabled={isLoggingOut}
+            >
+              <LogOut className="size-4" />
+              {isLoggingOut ? "Saindo..." : "Sair da aplicação"}
+            </Button>
+          </div>
         </aside>
         <main className="min-h-dvh w-full">{children}</main>
       </div>
