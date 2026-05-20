@@ -152,7 +152,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
               disabled={isLoggingOut}
             >
               <LogOut className="size-4" />
-              {isLoggingOut ? "Saindo..." : "Sair da aplicação"}
+              {isLoggingOut ? "Saindo..." : "Sair"}
             </Button>
           </div>
         </aside>
