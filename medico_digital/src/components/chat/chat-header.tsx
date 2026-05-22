@@ -47,7 +47,6 @@ export function ChatHeader({
       <div className="ml-auto lg:hidden">
         <Button
           type="button"
-          variant="outline"
           size="icon"
           className="border-zinc-700 bg-zinc-900 text-zinc-100"
           onClick={() => setIsMobileActionsOpen((current) => !current)}
@@ -94,9 +93,7 @@ export function ChatHeader({
         </Button>
       </div>
 
-      <div
-        className="ml-auto hidden w-auto flex-wrap justify-end gap-2 lg:flex"
-      >
+      <div className="ml-auto hidden w-auto flex-wrap justify-end gap-2 lg:flex">
         <Button
           variant="outline"
           className="h-10 border-rose-700/70 bg-rose-950/45 px-3 text-sm text-rose-100 hover:bg-rose-900/60"
