@@ -15,7 +15,7 @@ export function ChatMessages({
   messagesEndRef,
 }: ChatMessagesProps) {
   return (
-    <section className="scrollbar-slim flex-1 space-y-3 overflow-y-auto px-4 py-6 md:px-6">
+    <section className="scrollbar-slim min-h-0 flex-1 space-y-3 overflow-y-auto px-3 py-4 sm:px-4 sm:py-6 md:px-6">
       {isHistoryLoading && (
         <div className="rounded-xl border border-zinc-800 bg-zinc-900/70 p-4 text-sm text-zinc-300">
           Carregando histórico do atendimento...
@@ -36,7 +36,7 @@ export function ChatMessages({
           }`}
         >
           <div
-            className={`max-w-[80%] rounded-2xl px-4 py-2 text-sm shadow-sm ${
+            className={`max-w-[88%] break-words rounded-2xl px-3 py-2 text-sm shadow-sm sm:max-w-[80%] sm:px-4 ${
               message.role === "user"
                 ? "bg-zinc-100 text-zinc-900"
                 : "border border-zinc-700 bg-zinc-800 text-zinc-100"

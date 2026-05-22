@@ -136,7 +136,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
         </Sheet>
       </header>
 
-      <div className="mx-auto flex min-h-[calc(100dvh-57px)] w-full max-w-[1600px] md:min-h-dvh">
+      <div className="mx-auto flex min-h-[calc(100dvh-57px)] w-full max-w-[1600px] min-w-0 md:min-h-dvh">
         <aside className="hidden w-64 border-r border-zinc-800 bg-zinc-950 p-4 md:flex md:flex-col">
           <div className="mb-6">
             <p className="text-sm text-zinc-300">Médico Virtual</p>
@@ -156,7 +156,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
             </Button>
           </div>
         </aside>
-        <main className="min-h-dvh w-full">{children}</main>
+        <main className="min-h-dvh w-full min-w-0">{children}</main>
       </div>
     </div>
   );

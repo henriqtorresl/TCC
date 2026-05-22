@@ -176,7 +176,7 @@ export function AttendancesPanel({
 
   return (
     <>
-      <aside className="hidden w-80 flex-col border-r border-zinc-800/80 bg-zinc-950/70 backdrop-blur md:flex">
+      <aside className="hidden w-80 min-w-0 flex-col border-r border-zinc-800/80 bg-zinc-950/70 backdrop-blur md:flex">
         <div className="space-y-4 border-b border-zinc-800/80 px-4 py-4">
           <div>
             <h2 className="text-base font-semibold text-zinc-100">
@@ -305,7 +305,7 @@ export function AttendancesPanel({
               />
             ))}
         </div>
-        <div className="flex flex-col gap-2 lg:flex-row items-center justify-between border-t border-zinc-800/80 px-3 py-2">
+        <div className="flex items-center justify-between gap-2 border-t border-zinc-800/80 px-3 py-2">
           <Button
             type="button"
             size="sm"
@@ -332,7 +332,7 @@ export function AttendancesPanel({
         </div>
       </aside>
 
-      <div className="border-b border-zinc-800/80 bg-zinc-950/60 px-4 py-3 md:hidden">
+      <div className="border-b border-zinc-800/80 bg-zinc-950/60 px-3 py-3 md:hidden">
         <Sheet open={isMobileSheetOpen} onOpenChange={setIsMobileSheetOpen}>
           <SheetTrigger asChild>
             <Button
@@ -340,11 +340,13 @@ export function AttendancesPanel({
               variant="outline"
               className="h-11 w-full justify-between border-zinc-700 bg-zinc-900 text-zinc-100 hover:bg-zinc-800"
             >
-              <span className="flex items-center gap-2">
+              <span className="flex min-w-0 items-center gap-2">
                 <Stethoscope className="size-4 text-emerald-400" />
-                {selectedAttendance
+                <span className="truncate">
+                  {selectedAttendance
                   ? `Atendimento #${selectedAttendance.id}`
                   : "Selecionar atendimento"}
+                </span>
               </span>
               <span className="text-xs text-zinc-400">
                 {selectedAttendance
@@ -361,7 +363,7 @@ export function AttendancesPanel({
               <SheetTitle className="text-zinc-100">Atendimentos</SheetTitle>
             </SheetHeader>
 
-            <div className="space-y-3 px-4 py-3">
+            <div className="space-y-3 px-3 py-3 sm:px-4">
               <Input
                 placeholder="Buscar atendimento..."
                 className="h-10 border-zinc-700 bg-zinc-900 text-zinc-100 placeholder:text-zinc-500"
@@ -392,7 +394,7 @@ export function AttendancesPanel({
               </div>
             </div>
 
-            <div className="scrollbar-slim space-y-2 overflow-y-auto px-3 pb-4">
+            <div className="scrollbar-slim space-y-2 overflow-y-auto px-3 pb-4 sm:px-4">
               {isLoading && (
                 <>
                   <div className="h-24 animate-pulse rounded-xl border border-zinc-800 bg-zinc-900/70" />

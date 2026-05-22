@@ -35,14 +35,14 @@ export function ChatHeader({
       <div className="flex size-10 items-center justify-center rounded-full bg-zinc-800">
         <Stethoscope className="size-5 text-emerald-400" />
       </div>
-      <div>
+      <div className="min-w-0">
         <h1 className="text-base font-semibold md:text-lg">Médico Virtual</h1>
         <p className="text-xs text-zinc-400 md:text-sm">Assistente de anamnese</p>
       </div>
-      <div className="ml-auto flex w-full flex-wrap items-center justify-end gap-2 md:w-auto">
+      <div className="ml-auto grid w-full grid-cols-1 gap-2 sm:grid-cols-2 lg:flex lg:w-auto lg:flex-wrap lg:justify-end">
         <Button
           variant="outline"
-          className="border-rose-700/70 bg-rose-950/45 text-rose-100 hover:bg-rose-900/60"
+          className="h-10 w-full border-rose-700/70 bg-rose-950/45 px-3 text-xs text-rose-100 hover:bg-rose-900/60 sm:text-sm lg:w-auto"
           onClick={onAttendanceAction}
           disabled={disableAttendanceAction}
         >
@@ -50,7 +50,7 @@ export function ChatHeader({
         </Button>
         <Button
           variant="outline"
-          className="border-emerald-700/80 bg-emerald-950/60 text-emerald-100 hover:bg-emerald-900/70"
+          className="h-10 w-full border-emerald-700/80 bg-emerald-950/60 px-3 text-xs text-emerald-100 hover:bg-emerald-900/70 sm:text-sm lg:w-auto"
           onClick={onGenerateReport}
           disabled={disableGenerateReport}
           title={readinessHint ?? undefined}
@@ -59,7 +59,7 @@ export function ChatHeader({
         </Button>
         <Button
           variant="outline"
-          className="border-zinc-700 bg-zinc-900 text-zinc-100 hover:bg-zinc-800"
+          className="h-10 w-full border-zinc-700 bg-zinc-900 px-3 text-xs text-zinc-100 hover:bg-zinc-800 sm:col-span-2 sm:text-sm lg:col-span-1 lg:w-auto"
           onClick={onStartNewAttendance}
           disabled={disableNewAttendance}
         >
