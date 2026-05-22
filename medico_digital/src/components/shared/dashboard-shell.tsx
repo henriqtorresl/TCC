@@ -91,7 +91,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
   }
 
   return (
-    <div className="min-h-dvh bg-zinc-950 text-zinc-100">
+    <div className="h-dvh overflow-hidden bg-zinc-950 text-zinc-100">
       <header className="sticky top-0 z-30 flex items-center justify-between border-b border-zinc-800 bg-zinc-950/95 px-4 py-3 backdrop-blur md:hidden">
         <div>
           <p className="text-sm text-zinc-300">Médico Virtual</p>
@@ -136,7 +136,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
         </Sheet>
       </header>
 
-      <div className="mx-auto flex min-h-[calc(100dvh-57px)] w-full max-w-[1600px] min-w-0 md:min-h-dvh">
+      <div className="mx-auto flex h-[calc(100dvh-57px)] w-full max-w-[1600px] min-w-0 min-h-0 overflow-hidden md:h-dvh">
         <aside className="hidden w-64 border-r border-zinc-800 bg-zinc-950 p-4 md:flex md:flex-col">
           <div className="mb-6">
             <p className="text-sm text-zinc-300">Médico Virtual</p>
@@ -156,7 +156,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
             </Button>
           </div>
         </aside>
-        <main className="min-h-dvh w-full min-w-0">{children}</main>
+        <main className="h-full w-full min-w-0 min-h-0 overflow-hidden">{children}</main>
       </div>
     </div>
   );
