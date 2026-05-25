@@ -1,7 +1,8 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import ejs from "ejs";
-import { chromium } from "playwright";
+import chromium from "@sparticuz/chromium";
+import { chromium as playwrightChromium } from "playwright-core";
 import { ReportsRepository } from "@/modules/reports/reports.repository";
 
 const REQUIRED_CRITERIA_SCORE = 7;
@@ -253,10 +254,11 @@ export class ReportsService {
       throw new Error("invalid_ids");
     }
 
-    const conversation = await this.reportsRepository.findConversationByIdForUser(
-      numericConversationId,
-      numericUserId,
-    );
+    const conversation =
+      await this.reportsRepository.findConversationByIdForUser(
+        numericConversationId,
+        numericUserId,
+      );
     if (!conversation) {
       throw new Error("conversation_not_found");
     }
@@ -360,10 +362,29 @@ export class ReportsService {
     }
 
     try {
-      const browser = await chromium.launch({
-        headless: true,
-        args: ["--no-sandbox", "--disable-setuid-sandbox"],
-      });
+      const isVercelRuntime = process.env.VERCEL === "1";
+      let browser;
+
+      if (isVercelRuntime) {
+        browser = await playwrightChromium.launch({
+          args: chromium.args,
+          executablePath: await chromium.executablePath(),
+          headless: true,
+        });
+      } else {
+        try {
+          browser = await playwrightChromium.launch({
+            channel: "chrome",
+            headless: true,
+          });
+        } catch {
+          browser = await playwrightChromium.launch({
+            channel: "msedge",
+            headless: true,
+          });
+        }
+      }
+
       const page = await browser.newPage();
       await page.setContent(html, { waitUntil: "networkidle" });
       const pdf = await page.pdf({
@@ -383,7 +404,8 @@ export class ReportsService {
         reportId: numericReportId,
         conversationId: Number(report.conversation_id),
       };
-    } catch {
+    } catch (error) {
+      console.log(error);
       throw new Error("report_pdf_generation_failed");
     }
   }
@@ -551,10 +573,11 @@ export class ReportsService {
       return null;
     }
 
-    const conversation = await this.reportsRepository.findConversationByIdForUser(
-      conversationId,
-      userId,
-    );
+    const conversation =
+      await this.reportsRepository.findConversationByIdForUser(
+        conversationId,
+        userId,
+      );
     if (!conversation) {
       return null;
     }

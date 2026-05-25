@@ -12,6 +12,7 @@
     "db:dev:down": "docker compose down"
   },
   "dependencies": {
+    "@sparticuz/chromium": "^138.0.2",
     "@huggingface/inference": "^4.8.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -19,7 +20,7 @@
     "lucide-react": "^0.577.0",
     "next": "16.1.7",
     "pg": "^8.16.3",
-    "playwright": "^1.59.1",
+    "playwright-core": "^1.59.1",
     "radix-ui": "^1.4.3",
     "react": "19.2.3",
     "react-dom": "19.2.3",
