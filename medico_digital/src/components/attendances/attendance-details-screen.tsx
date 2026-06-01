@@ -3,7 +3,13 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
-import { ArrowLeft, Clock3, Download, FileText, Stethoscope } from "lucide-react";
+import {
+  ArrowLeft,
+  Clock3,
+  Download,
+  FileText,
+  Stethoscope,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   AttendanceDetailsResponse,
@@ -15,7 +21,10 @@ import {
   ReportGenerateResponse,
   ReportReadinessResponse,
 } from "@/components/chat/types";
-import { formatAttendanceRelativeTime, getAttendanceStatusLabel } from "@/components/chat/attendance-utils";
+import {
+  formatAttendanceRelativeTime,
+  getAttendanceStatusLabel,
+} from "@/components/chat/attendance-utils";
 import { useConfirmationDialog } from "@/hooks/use-confirmation-dialog";
 
 type AttendanceDetailsScreenProps = {
@@ -42,10 +51,15 @@ export function AttendanceDetailsScreen({
 }: AttendanceDetailsScreenProps) {
   const router = useRouter();
   const { requestConfirmation, confirmationDialog } = useConfirmationDialog();
-  const [attendance, setAttendance] = useState<AttendanceDetailsResponse["attendance"] | null>(null);
+  const [attendance, setAttendance] = useState<
+    AttendanceDetailsResponse["attendance"] | null
+  >(null);
   const [messages, setMessages] = useState<AttendanceMessage[]>([]);
-  const [readinessPreview, setReadinessPreview] = useState<ReportReadinessResponse | null>(null);
-  const [downloadableReportId, setDownloadableReportId] = useState<number | null>(null);
+  const [readinessPreview, setReadinessPreview] =
+    useState<ReportReadinessResponse | null>(null);
+  const [downloadableReportId, setDownloadableReportId] = useState<
+    number | null
+  >(null);
   const [readinessIssue, setReadinessIssue] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
@@ -82,13 +96,17 @@ export function AttendanceDetailsScreen({
       setError(null);
 
       try {
-        const [attendanceResponse, messagesResponse, readinessResponse, availabilityResponse] =
-          await Promise.all([
-            fetch(`/api/attendances/${attendanceId}`),
-            fetch(`/api/attendances/${attendanceId}/messages`),
-            fetch(`/api/reports/readiness?conversationId=${attendanceId}`),
-            fetch(`/api/reports/availability?conversationId=${attendanceId}`),
-          ]);
+        const [
+          attendanceResponse,
+          messagesResponse,
+          readinessResponse,
+          availabilityResponse,
+        ] = await Promise.all([
+          fetch(`/api/attendances/${attendanceId}`),
+          fetch(`/api/attendances/${attendanceId}/messages`),
+          fetch(`/api/reports/readiness?conversationId=${attendanceId}`),
+          fetch(`/api/reports/availability?conversationId=${attendanceId}`),
+        ]);
 
         if (
           attendanceResponse.status === 401 ||
@@ -96,25 +114,35 @@ export function AttendanceDetailsScreen({
           readinessResponse.status === 401 ||
           availabilityResponse.status === 401
         ) {
-          router.replace(`/login?next=${encodeURIComponent(`/attendances/${attendanceId}`)}`);
+          router.replace(
+            `/login?next=${encodeURIComponent(`/attendances/${attendanceId}`)}`,
+          );
           return;
         }
 
         if (!attendanceResponse.ok) {
-          throw new Error("Não foi possível carregar os detalhes do atendimento.");
+          throw new Error(
+            "Não foi possível carregar os detalhes do atendimento.",
+          );
         }
         if (!messagesResponse.ok) {
-          throw new Error("Não foi possível carregar o histórico do atendimento.");
+          throw new Error(
+            "Não foi possível carregar o histórico do atendimento.",
+          );
         }
 
-        const attendancePayload = (await attendanceResponse.json()) as AttendanceDetailsResponse;
-        const messagesPayload = (await messagesResponse.json()) as AttendanceMessagesResponse;
+        const attendancePayload =
+          (await attendanceResponse.json()) as AttendanceDetailsResponse;
+        const messagesPayload =
+          (await messagesResponse.json()) as AttendanceMessagesResponse;
 
         setAttendance(attendancePayload.attendance);
         setMessages(messagesPayload.messages);
 
         if (readinessResponse.status === 400) {
-          const payload = (await readinessResponse.json()) as { error?: string };
+          const payload = (await readinessResponse.json()) as {
+            error?: string;
+          };
           if (payload.error === "conversation_without_messages") {
             setReadinessIssue(
               "Prontidão do relatório: envie mais informações no chat para avaliar completude.",
@@ -124,14 +152,18 @@ export function AttendanceDetailsScreen({
           }
           setReadinessPreview(null);
         } else if (readinessResponse.ok) {
-          const payload = (await readinessResponse.json()) as ReportReadinessResponse;
+          const payload =
+            (await readinessResponse.json()) as ReportReadinessResponse;
           setReadinessPreview(payload);
           setReadinessIssue(null);
         }
 
         if (availabilityResponse.ok) {
-          const payload = (await availabilityResponse.json()) as ReportAvailabilityResponse;
-          setDownloadableReportId(payload.canDownload ? payload.reportId : null);
+          const payload =
+            (await availabilityResponse.json()) as ReportAvailabilityResponse;
+          setDownloadableReportId(
+            payload.canDownload ? payload.reportId : null,
+          );
         } else {
           setDownloadableReportId(null);
         }
@@ -153,13 +185,17 @@ export function AttendanceDetailsScreen({
     setStatusMessage(nextStatusMessage ?? null);
     setError(null);
 
-    const [attendanceResponse, messagesResponse, readinessResponse, availabilityResponse] =
-      await Promise.all([
-        fetch(`/api/attendances/${attendanceId}`),
-        fetch(`/api/attendances/${attendanceId}/messages`),
-        fetch(`/api/reports/readiness?conversationId=${attendanceId}`),
-        fetch(`/api/reports/availability?conversationId=${attendanceId}`),
-      ]);
+    const [
+      attendanceResponse,
+      messagesResponse,
+      readinessResponse,
+      availabilityResponse,
+    ] = await Promise.all([
+      fetch(`/api/attendances/${attendanceId}`),
+      fetch(`/api/attendances/${attendanceId}/messages`),
+      fetch(`/api/reports/readiness?conversationId=${attendanceId}`),
+      fetch(`/api/reports/availability?conversationId=${attendanceId}`),
+    ]);
 
     if (
       attendanceResponse.status === 401 ||
@@ -167,22 +203,27 @@ export function AttendanceDetailsScreen({
       readinessResponse.status === 401 ||
       availabilityResponse.status === 401
     ) {
-      router.replace(`/login?next=${encodeURIComponent(`/attendances/${attendanceId}`)}`);
+      router.replace(
+        `/login?next=${encodeURIComponent(`/attendances/${attendanceId}`)}`,
+      );
       return;
     }
 
     if (attendanceResponse.ok) {
-      const payload = (await attendanceResponse.json()) as AttendanceDetailsResponse;
+      const payload =
+        (await attendanceResponse.json()) as AttendanceDetailsResponse;
       setAttendance(payload.attendance);
     }
 
     if (messagesResponse.ok) {
-      const payload = (await messagesResponse.json()) as AttendanceMessagesResponse;
+      const payload =
+        (await messagesResponse.json()) as AttendanceMessagesResponse;
       setMessages(payload.messages);
     }
 
     if (readinessResponse.ok) {
-      const payload = (await readinessResponse.json()) as ReportReadinessResponse;
+      const payload =
+        (await readinessResponse.json()) as ReportReadinessResponse;
       setReadinessPreview(payload);
       setReadinessIssue(null);
     } else if (readinessResponse.status === 400) {
@@ -198,7 +239,8 @@ export function AttendanceDetailsScreen({
     }
 
     if (availabilityResponse.ok) {
-      const payload = (await availabilityResponse.json()) as ReportAvailabilityResponse;
+      const payload =
+        (await availabilityResponse.json()) as ReportAvailabilityResponse;
       setDownloadableReportId(payload.canDownload ? payload.reportId : null);
     } else {
       setDownloadableReportId(null);
@@ -216,12 +258,17 @@ export function AttendanceDetailsScreen({
     try {
       if (attendance.status === "active") {
         setIsFinalizingAttendance(true);
-        const response = await fetch(`/api/attendances/${attendanceId}/finalize`, {
-          method: "POST",
-        });
+        const response = await fetch(
+          `/api/attendances/${attendanceId}/finalize`,
+          {
+            method: "POST",
+          },
+        );
 
         if (response.status === 401) {
-          router.replace(`/login?next=${encodeURIComponent(`/attendances/${attendanceId}`)}`);
+          router.replace(
+            `/login?next=${encodeURIComponent(`/attendances/${attendanceId}`)}`,
+          );
           return;
         }
 
@@ -242,7 +289,9 @@ export function AttendanceDetailsScreen({
       });
 
       if (response.status === 401) {
-        router.replace(`/login?next=${encodeURIComponent(`/attendances/${attendanceId}`)}`);
+        router.replace(
+          `/login?next=${encodeURIComponent(`/attendances/${attendanceId}`)}`,
+        );
         return;
       }
 
@@ -251,7 +300,9 @@ export function AttendanceDetailsScreen({
       }
 
       const payload = (await response.json()) as FinalizeAttendanceResponse;
-      await refreshAfterMutation(`Atendimento #${payload.attendanceId} retomado com sucesso.`);
+      await refreshAfterMutation(
+        `Atendimento #${payload.attendanceId} retomado com sucesso.`,
+      );
     } catch (requestError) {
       setError(
         requestError instanceof Error
@@ -277,13 +328,17 @@ export function AttendanceDetailsScreen({
     try {
       if (downloadableReportId) {
         await downloadReportPdf(downloadableReportId);
-        setStatusMessage(`Relatório #${downloadableReportId} baixado com sucesso.`);
+        setStatusMessage(
+          `Relatório #${downloadableReportId} baixado com sucesso.`,
+        );
         return;
       }
 
       let allowIncomplete = false;
       if (readinessIssue) {
-        throw new Error("Ainda não há informações suficientes para gerar relatório.");
+        throw new Error(
+          "Ainda não há informações suficientes para gerar relatório.",
+        );
       }
 
       if (readinessPreview && !readinessPreview.readiness.is_ready) {
@@ -297,7 +352,9 @@ export function AttendanceDetailsScreen({
         });
 
         if (!shouldGenerateIncomplete) {
-          setError("Relatório não gerado. Complete os tópicos pendentes primeiro.");
+          setError(
+            "Relatório não gerado. Complete os tópicos pendentes primeiro.",
+          );
           return;
         }
 
@@ -314,7 +371,9 @@ export function AttendanceDetailsScreen({
       });
 
       if (response.status === 401) {
-        router.replace(`/login?next=${encodeURIComponent(`/attendances/${attendanceId}`)}`);
+        router.replace(
+          `/login?next=${encodeURIComponent(`/attendances/${attendanceId}`)}`,
+        );
         return;
       }
 
@@ -362,7 +421,8 @@ export function AttendanceDetailsScreen({
           throw new Error("Não foi possível gerar relatório incompleto.");
         }
 
-        const fallbackPayload = (await fallbackResponse.json()) as ReportGenerateResponse;
+        const fallbackPayload =
+          (await fallbackResponse.json()) as ReportGenerateResponse;
         setDownloadableReportId(fallbackPayload.id);
         setStatusMessage(
           `Relatório #${fallbackPayload.id} (incompleto) gerado com sucesso.`,
@@ -386,7 +446,10 @@ export function AttendanceDetailsScreen({
     <main className="min-h-dvh bg-zinc-950 px-4 py-6 text-zinc-100 md:px-6">
       <div className="mx-auto w-full max-w-6xl space-y-4">
         <div className="flex items-center gap-2">
-          <Button asChild variant="outline" className="border-zinc-700 bg-zinc-900 text-zinc-100">
+          <Button
+            asChild
+            className="border-zinc-700 text-zinc-200 hover:bg-zinc-800"
+          >
             <Link href="/chat">
               <ArrowLeft className="size-4" />
               Voltar ao chat
@@ -407,7 +470,12 @@ export function AttendanceDetailsScreen({
                 variant="outline"
                 className="border-rose-700/70 bg-rose-950/45 text-rose-100 hover:bg-rose-900/60"
                 onClick={() => void handleAttendanceAction()}
-                disabled={!attendance || isFinalizingAttendance || isResumingAttendance || isLoading}
+                disabled={
+                  !attendance ||
+                  isFinalizingAttendance ||
+                  isResumingAttendance ||
+                  isLoading
+                }
               >
                 {attendance?.status === "active"
                   ? isFinalizingAttendance
@@ -424,14 +492,21 @@ export function AttendanceDetailsScreen({
                 disabled={!attendance || isGeneratingReport || isLoading}
                 title={readinessHint ?? undefined}
               >
-                {downloadableReportId ? <Download className="size-4" /> : <FileText className="size-4" />}
+                {downloadableReportId ? (
+                  <Download className="size-4" />
+                ) : (
+                  <FileText className="size-4" />
+                )}
                 {isGeneratingReport
                   ? "Processando..."
                   : downloadableReportId
                     ? "Baixar relatório"
                     : "Gerar relatório"}
               </Button>
-              <Button asChild variant="outline" className="border-zinc-700 bg-zinc-900 text-zinc-100">
+              <Button
+                asChild
+                className="border-zinc-700 text-zinc-200 hover:bg-zinc-800"
+              >
                 <Link href="/chat">
                   <Stethoscope className="size-4" />
                   Abrir no chat
@@ -441,13 +516,17 @@ export function AttendanceDetailsScreen({
           </div>
 
           {error && <p className="mt-4 text-sm text-red-400">{error}</p>}
-          {statusMessage && <p className="mt-4 text-sm text-emerald-400">{statusMessage}</p>}
+          {statusMessage && (
+            <p className="mt-4 text-sm text-emerald-400">{statusMessage}</p>
+          )}
 
           {attendance && (
             <div className="mt-4 grid gap-3 text-sm md:grid-cols-2">
               <div className="rounded-xl border border-zinc-800 bg-zinc-900/70 p-3">
                 <p className="text-zinc-400">Status</p>
-                <p className="mt-1 font-medium">{getAttendanceStatusLabel(attendance.status)}</p>
+                <p className="mt-1 font-medium">
+                  {getAttendanceStatusLabel(attendance.status)}
+                </p>
               </div>
               <div className="rounded-xl border border-zinc-800 bg-zinc-900/70 p-3">
                 <p className="text-zinc-400">Mensagens</p>
@@ -479,7 +558,9 @@ export function AttendanceDetailsScreen({
         </section>
 
         <section className="rounded-2xl border border-zinc-800 bg-zinc-900/60 p-4 md:p-6">
-          <h2 className="mb-3 text-base font-semibold">Histórico de mensagens</h2>
+          <h2 className="mb-3 text-base font-semibold">
+            Histórico de mensagens
+          </h2>
           {isLoading && (
             <div className="rounded-xl border border-zinc-800 bg-zinc-900/70 p-4 text-sm text-zinc-300">
               Carregando histórico...
@@ -494,7 +575,10 @@ export function AttendanceDetailsScreen({
 
           <div className="space-y-3">
             {messages
-              .filter((message) => message.role === "user" || message.role === "assistant")
+              .filter(
+                (message) =>
+                  message.role === "user" || message.role === "assistant",
+              )
               .map((message) => (
                 <div
                   key={message.id}
