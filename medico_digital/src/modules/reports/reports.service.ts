@@ -1,8 +1,3 @@
-import fs from "node:fs/promises";
-import path from "node:path";
-import ejs from "ejs";
-import chromium from "@sparticuz/chromium";
-import { chromium as playwrightChromium } from "playwright-core";
 import { ReportsRepository } from "@/modules/reports/reports.repository";
 
 const REQUIRED_CRITERIA_SCORE = 7;
@@ -334,80 +329,26 @@ export class ReportsService {
       throw new Error("conversation_not_found");
     }
 
-    const templatePath = path.join(
-      process.cwd(),
-      "public",
-      "assets",
-      "report-template.ejs",
-    );
-
-    let html: string;
-    try {
-      const template = await fs.readFile(templatePath, "utf8");
-      html = ejs.render(template, {
-        report,
-        attendance: {
-          id: conversation.id,
-          status: conversation.status,
-          started_at: conversation.started_at,
-          ended_at: conversation.ended_at,
-        },
-        patient: {
-          id: conversation.patient_id,
-          full_name: conversation.patient_full_name,
-        },
-      });
-    } catch {
-      throw new Error("report_template_render_failed");
-    }
-
-    try {
-      const isVercelRuntime = process.env.VERCEL === "1";
-      let browser;
-
-      if (isVercelRuntime) {
-        browser = await playwrightChromium.launch({
-          args: chromium.args,
-          executablePath: await chromium.executablePath(),
-          headless: true,
-        });
-      } else {
-        try {
-          browser = await playwrightChromium.launch({
-            channel: "chrome",
-            headless: true,
-          });
-        } catch {
-          browser = await playwrightChromium.launch({
-            channel: "msedge",
-            headless: true,
-          });
-        }
-      }
-
-      const page = await browser.newPage();
-      await page.setContent(html, { waitUntil: "networkidle" });
-      const pdf = await page.pdf({
-        format: "A4",
-        printBackground: true,
-        margin: {
-          top: "12mm",
-          right: "10mm",
-          bottom: "12mm",
-          left: "10mm",
-        },
-      });
-      await browser.close();
-
-      return {
-        pdf,
-        reportId: numericReportId,
-        conversationId: Number(report.conversation_id),
-      };
-    } catch (error) {
-      console.log(error);
-      throw new Error("report_pdf_generation_failed");
-    }
+    return {
+      report: {
+        id: report.id,
+        conversation_id: report.conversation_id,
+        summary: report.summary,
+        status: report.status,
+        metadata: report.metadata ?? null,
+        generated_at: report.generated_at,
+      },
+      attendance: {
+        id: conversation.id,
+        status: conversation.status,
+        started_at: conversation.started_at,
+        ended_at: conversation.ended_at,
+      },
+      patient: {
+        id: conversation.patient_id,
+        full_name: conversation.patient_full_name,
+      },
+    };
   }
 
   private extractSections(

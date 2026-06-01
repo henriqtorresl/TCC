@@ -97,3 +97,32 @@ export type ReportAvailabilityResponse = {
   canDownload: boolean;
   reportId: number | null;
 };
+
+export type ReportDownloadDataResponse = {
+  report: {
+    id: number;
+    conversation_id: number;
+    summary: string;
+    status: string;
+    metadata?: {
+      readiness?: {
+        is_ready?: boolean;
+        score?: number;
+        required_score?: number;
+        missing_criteria?: string[];
+      };
+      sections?: Record<string, string | null>;
+    } | null;
+    generated_at: string;
+  };
+  attendance: {
+    id: number;
+    status: string;
+    started_at: string;
+    ended_at: string | null;
+  };
+  patient: {
+    id: number;
+    full_name: string;
+  };
+};

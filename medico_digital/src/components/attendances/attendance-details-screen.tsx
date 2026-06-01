@@ -12,10 +12,12 @@ import {
   ConversationNotReadyErrorResponse,
   FinalizeAttendanceResponse,
   ReportAvailabilityResponse,
+  ReportDownloadDataResponse,
   ReportGenerateResponse,
   ReportReadinessResponse,
 } from "@/components/chat/types";
 import { formatAttendanceRelativeTime, getAttendanceStatusLabel } from "@/components/chat/attendance-utils";
+import { renderAndDownloadReportPdf } from "@/lib/report-pdf";
 
 type AttendanceDetailsScreenProps = {
   attendanceId: number;
@@ -271,18 +273,11 @@ export function AttendanceDetailsScreen({
     }
 
     if (!response.ok) {
-      throw new Error("Relatório gerado, mas não foi possível baixar o PDF.");
+      throw new Error("Relatório gerado, mas não foi possível carregar os dados do PDF.");
     }
 
-    const blob = await response.blob();
-    const url = URL.createObjectURL(blob);
-    const anchor = document.createElement("a");
-    anchor.href = url;
-    anchor.download = `relatorio-${reportId}.pdf`;
-    document.body.appendChild(anchor);
-    anchor.click();
-    anchor.remove();
-    URL.revokeObjectURL(url);
+    const data = (await response.json()) as ReportDownloadDataResponse;
+    await renderAndDownloadReportPdf(data);
   }
 
   async function handleGenerateReport() {

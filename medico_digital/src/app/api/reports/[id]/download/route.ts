@@ -32,16 +32,7 @@ export async function GET(
       userId: sessionUser.userId,
     });
 
-    const filename = `relatorio-atendimento-${payload.conversationId}-r${payload.reportId}.pdf`;
-
-    return new NextResponse(new Uint8Array(payload.pdf), {
-      status: 200,
-      headers: {
-        "content-type": "application/pdf",
-        "content-disposition": `attachment; filename=\"${filename}\"`,
-        "cache-control": "no-store",
-      },
-    });
+    return NextResponse.json(payload, { status: 200 });
   } catch (error) {
     if (error instanceof Error && error.message === "database_not_configured") {
       return NextResponse.json({ error: error.message }, { status: 503 });
@@ -56,14 +47,6 @@ export async function GET(
     ) {
       return NextResponse.json({ error: error.message }, { status: 404 });
     }
-    if (
-      error instanceof Error &&
-      (error.message === "report_template_render_failed" ||
-        error.message === "report_pdf_generation_failed")
-    ) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
-    }
-
     console.error("Unhandled error in /api/reports/[id]/download:", error);
     return NextResponse.json({ error: "internal_server_error" }, { status: 500 });
   }
