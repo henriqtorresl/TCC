@@ -19,6 +19,7 @@ import {
   ReportReadinessResponse,
   StartAttendanceResponse,
 } from "@/components/chat/types";
+import { useConfirmationDialog } from "@/hooks/use-confirmation-dialog";
 
 export function ChatScreen() {
   const router = useRouter();
@@ -52,6 +53,7 @@ export function ChatScreen() {
     null,
   );
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const { requestConfirmation, confirmationDialog } = useConfirmationDialog();
 
   const activeAttendanceId = useMemo(
     () =>
@@ -380,11 +382,16 @@ export function ChatScreen() {
       return;
     }
 
-    if (
-      messages.length > 0 &&
-      !window.confirm("Iniciar um novo atendimento e limpar o chat atual?")
-    ) {
-      return;
+    if (messages.length > 0) {
+      const shouldStart = await requestConfirmation({
+        title: "Iniciar novo atendimento",
+        description: "Isso vai limpar o chat atual. Deseja continuar?",
+        confirmLabel: "Iniciar",
+        cancelLabel: "Cancelar",
+      });
+      if (!shouldStart) {
+        return;
+      }
     }
 
     setError(null);
@@ -536,9 +543,13 @@ export function ChatScreen() {
     try {
       const readiness = await ensureReadinessPreview(selectedAttendance.id);
       if (readinessIssue) {
-        const shouldFinalizeWithoutData = window.confirm(
-          `${readinessIssue} Deseja finalizar mesmo assim?`,
-        );
+        const shouldFinalizeWithoutData = await requestConfirmation({
+          title: "Finalizar atendimento",
+          description: `${readinessIssue} Deseja finalizar mesmo assim?`,
+          confirmLabel: "Finalizar",
+          cancelLabel: "Continuar coletando",
+          tone: "danger",
+        });
         if (!shouldFinalizeWithoutData) {
           setError(
             "Atendimento mantido em aberto para continuar a coleta de informações.",
@@ -548,11 +559,15 @@ export function ChatScreen() {
       }
 
       if (readiness && !readiness.readiness.is_ready) {
-        const shouldFinalize = window.confirm(
-          `Ainda faltam informações para um relatório completo: ${formatMissingCriteria(
+        const shouldFinalize = await requestConfirmation({
+          title: "Finalizar atendimento incompleto",
+          description: `Ainda faltam informações para um relatório completo: ${formatMissingCriteria(
             readiness.readiness.missing_criteria,
           )}. Deseja finalizar o atendimento mesmo assim?`,
-        );
+          confirmLabel: "Finalizar assim mesmo",
+          cancelLabel: "Continuar conversa",
+          tone: "danger",
+        });
 
         if (!shouldFinalize) {
           setError(
@@ -712,11 +727,14 @@ export function ChatScreen() {
       }
 
       if (readiness && !readiness.readiness.is_ready) {
-        const shouldGenerateIncomplete = window.confirm(
-          `O relatório ainda está incompleto. Faltam: ${formatMissingCriteria(
+        const shouldGenerateIncomplete = await requestConfirmation({
+          title: "Gerar relatório incompleto",
+          description: `O relatório ainda está incompleto. Faltam: ${formatMissingCriteria(
             readiness.readiness.missing_criteria,
           )}. Deseja gerar mesmo assim?`,
-        );
+          confirmLabel: "Gerar assim mesmo",
+          cancelLabel: "Cancelar",
+        });
 
         if (!shouldGenerateIncomplete) {
           setError(
@@ -761,11 +779,14 @@ export function ChatScreen() {
       ) {
         const missingCriteria = payload.details?.missingCriteria ?? [];
         const missingLabels = missingCriteria.map(getMissingCriteriaLabel);
-        const shouldGenerateIncomplete = window.confirm(
-          `Ainda faltam informações para completar a anamnese: ${missingLabels.join(
+        const shouldGenerateIncomplete = await requestConfirmation({
+          title: "Gerar relatório incompleto",
+          description: `Ainda faltam informações para completar a anamnese: ${missingLabels.join(
             ", ",
           )}. Deseja gerar o relatório incompleto mesmo assim?`,
-        );
+          confirmLabel: "Gerar incompleto",
+          cancelLabel: "Cancelar",
+        });
 
         if (!shouldGenerateIncomplete) {
           setError(
@@ -898,6 +919,7 @@ export function ChatScreen() {
           />
         </div>
       </div>
+      {confirmationDialog}
     </main>
   );
 }

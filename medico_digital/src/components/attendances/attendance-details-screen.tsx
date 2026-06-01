@@ -16,6 +16,7 @@ import {
   ReportReadinessResponse,
 } from "@/components/chat/types";
 import { formatAttendanceRelativeTime, getAttendanceStatusLabel } from "@/components/chat/attendance-utils";
+import { useConfirmationDialog } from "@/hooks/use-confirmation-dialog";
 
 type AttendanceDetailsScreenProps = {
   attendanceId: number;
@@ -40,6 +41,7 @@ export function AttendanceDetailsScreen({
   attendanceId,
 }: AttendanceDetailsScreenProps) {
   const router = useRouter();
+  const { requestConfirmation, confirmationDialog } = useConfirmationDialog();
   const [attendance, setAttendance] = useState<AttendanceDetailsResponse["attendance"] | null>(null);
   const [messages, setMessages] = useState<AttendanceMessage[]>([]);
   const [readinessPreview, setReadinessPreview] = useState<ReportReadinessResponse | null>(null);
@@ -285,11 +287,14 @@ export function AttendanceDetailsScreen({
       }
 
       if (readinessPreview && !readinessPreview.readiness.is_ready) {
-        const shouldGenerateIncomplete = window.confirm(
-          `O relatório ainda está incompleto. Faltam: ${readinessPreview.readiness.missing_criteria
+        const shouldGenerateIncomplete = await requestConfirmation({
+          title: "Gerar relatório incompleto",
+          description: `O relatório ainda está incompleto. Faltam: ${readinessPreview.readiness.missing_criteria
             .map(getMissingCriteriaLabel)
             .join(", ")}. Deseja gerar mesmo assim?`,
-        );
+          confirmLabel: "Gerar assim mesmo",
+          cancelLabel: "Cancelar",
+        });
 
         if (!shouldGenerateIncomplete) {
           setError("Relatório não gerado. Complete os tópicos pendentes primeiro.");
@@ -330,11 +335,14 @@ export function AttendanceDetailsScreen({
         payload.error === "conversation_not_ready" &&
         "details" in payload
       ) {
-        const shouldGenerateIncomplete = window.confirm(
-          `Ainda faltam informações: ${payload.details.missingCriteria
+        const shouldGenerateIncomplete = await requestConfirmation({
+          title: "Gerar relatório incompleto",
+          description: `Ainda faltam informações: ${payload.details.missingCriteria
             .map(getMissingCriteriaLabel)
             .join(", ")}. Deseja gerar incompleto?`,
-        );
+          confirmLabel: "Gerar incompleto",
+          cancelLabel: "Cancelar",
+        });
 
         if (!shouldGenerateIncomplete) {
           setError("Relatório não gerado.");
@@ -511,6 +519,7 @@ export function AttendanceDetailsScreen({
           </div>
         </section>
       </div>
+      {confirmationDialog}
     </main>
   );
 }
