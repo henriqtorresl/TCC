@@ -12,12 +12,10 @@ import {
   ConversationNotReadyErrorResponse,
   FinalizeAttendanceResponse,
   ReportAvailabilityResponse,
-  ReportDownloadDataResponse,
   ReportGenerateResponse,
   ReportReadinessResponse,
 } from "@/components/chat/types";
 import { formatAttendanceRelativeTime, getAttendanceStatusLabel } from "@/components/chat/attendance-utils";
-import { renderAndDownloadReportPdf } from "@/lib/report-pdf";
 
 type AttendanceDetailsScreenProps = {
   attendanceId: number;
@@ -265,19 +263,8 @@ export function AttendanceDetailsScreen({
   }
 
   async function downloadReportPdf(reportId: number): Promise<void> {
-    const response = await fetch(`/api/reports/${reportId}/download`);
-
-    if (response.status === 401) {
-      router.replace(`/login?next=${encodeURIComponent(`/attendances/${attendanceId}`)}`);
-      return;
-    }
-
-    if (!response.ok) {
-      throw new Error("Relatório gerado, mas não foi possível carregar os dados do PDF.");
-    }
-
-    const data = (await response.json()) as ReportDownloadDataResponse;
-    await renderAndDownloadReportPdf(data);
+    const printUrl = `/reports/${reportId}/print`;
+    window.open(printUrl, "_blank", "noopener,noreferrer");
   }
 
   async function handleGenerateReport() {
