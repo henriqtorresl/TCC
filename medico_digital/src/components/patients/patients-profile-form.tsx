@@ -202,8 +202,8 @@ export function PatientsProfileForm() {
   }
 
   return (
-    <section className="px-4 py-6 md:px-8 md:py-8">
-      <div className="mx-auto max-w-4xl rounded-2xl border border-zinc-800 bg-zinc-900/40 p-6 md:p-8">
+    <section className="flex h-full min-h-0 flex-col overflow-y-auto px-4 py-6 pb-[calc(1.5rem+env(safe-area-inset-bottom))] md:px-8 md:py-8">
+      <div className="mx-auto w-full max-w-4xl rounded-2xl border border-zinc-800 bg-zinc-900/40 p-6 md:p-8">
         <div className="mb-6 flex items-center gap-3">
           <div className="flex size-10 items-center justify-center rounded-full bg-zinc-800">
             <UserRound className="size-5 text-emerald-400" />
