@@ -31,7 +31,7 @@ export function ChatComposer({
   }
 
   return (
-    <footer className="border-t border-zinc-800 px-3 py-3 sm:px-4 sm:py-4 md:px-6">
+    <footer className="border-t border-zinc-800 px-3 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] sm:px-4 sm:py-4 md:px-6">
       <div className="flex min-w-0 items-center gap-2 rounded-xl border border-zinc-700 bg-zinc-900 px-2.5 py-2 sm:px-3">
         <Input
           type="text"
