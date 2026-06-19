@@ -203,27 +203,38 @@ export function PatientsProfileForm() {
 
   return (
     <section className="flex h-full min-h-0 flex-col overflow-y-auto px-4 py-6 pb-[calc(1.5rem+env(safe-area-inset-bottom))] md:px-8 md:py-8">
-      <div className="mx-auto w-full max-w-4xl rounded-2xl border border-zinc-800 bg-zinc-900/40 p-6 md:p-8">
+      <div className="mx-auto w-full max-w-4xl surface-card rounded-[1.75rem] p-6 md:p-8">
         <div className="mb-6 flex items-center gap-3">
-          <div className="flex size-10 items-center justify-center rounded-full bg-zinc-800">
-            <UserRound className="size-5 text-emerald-400" />
+          <div className="flex size-11 items-center justify-center rounded-2xl border border-white/10 bg-white/6 text-primary shadow-[0_12px_30px_rgba(45,212,191,0.12)]">
+            <UserRound className="size-5" />
           </div>
           <div>
-            <h1 className="text-xl font-semibold text-zinc-100 md:text-2xl">
-              Perfil do Paciente
+            <p className="text-xs font-medium uppercase tracking-[0.18em] text-foreground/55">
+              Perfil
+            </p>
+            <h1 className="text-2xl font-semibold tracking-tight md:text-3xl">
+              Atualize seus dados
             </h1>
-            <p className="text-sm text-zinc-400">
-              Dados cadastrais básicos vinculados à conta autenticada.
+            <p className="text-sm leading-6 text-foreground/65">
+              Você está editando os seus dados de paciente vinculados à conta autenticada.
+            </p>
+            <p className="mt-2 inline-flex rounded-full border border-primary/15 bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
+              Seu perfil de paciente
             </p>
           </div>
         </div>
 
+        <div className="mb-6 rounded-2xl border border-primary/15 bg-primary/8 px-4 py-3 text-sm text-foreground/80">
+          Este formulário altera apenas os dados do seu perfil de paciente.
+          Use-o para manter informações pessoais atualizadas.
+        </div>
+
         {isLoading ? (
           <div className="space-y-3">
-            <div className="h-11 animate-pulse rounded-lg border border-zinc-800 bg-zinc-900/70" />
-            <div className="h-11 animate-pulse rounded-lg border border-zinc-800 bg-zinc-900/70" />
-            <div className="h-11 animate-pulse rounded-lg border border-zinc-800 bg-zinc-900/70" />
-            <div className="h-11 animate-pulse rounded-lg border border-zinc-800 bg-zinc-900/70" />
+            <div className="h-11 animate-pulse rounded-2xl border border-white/10 bg-white/5" />
+            <div className="h-11 animate-pulse rounded-2xl border border-white/10 bg-white/5" />
+            <div className="h-11 animate-pulse rounded-2xl border border-white/10 bg-white/5" />
+            <div className="h-11 animate-pulse rounded-2xl border border-white/10 bg-white/5" />
           </div>
         ) : (
           <form
@@ -232,7 +243,9 @@ export function PatientsProfileForm() {
           >
             <div className="grid gap-4 md:grid-cols-2">
               <label className="space-y-2">
-                <span className="text-sm text-zinc-300">Nome completo</span>
+                <span className="text-sm font-medium text-foreground/80">
+                  Nome completo
+                </span>
                 <Input
                   value={form.fullName}
                   onChange={(event) =>
@@ -241,14 +254,14 @@ export function PatientsProfileForm() {
                       fullName: event.target.value,
                     }))
                   }
-                  className="h-11 border-zinc-700 bg-zinc-950 text-zinc-100"
+                  className="h-12"
                   placeholder="Nome completo"
                   required
                 />
               </label>
 
               <label className="space-y-2">
-                <span className="text-sm text-zinc-300">
+                <span className="text-sm font-medium text-foreground/80">
                   Data de nascimento
                 </span>
                 <Input
@@ -260,36 +273,38 @@ export function PatientsProfileForm() {
                       birthDate: event.target.value,
                     }))
                   }
-                  className="h-11 border-zinc-700 bg-zinc-950 text-zinc-100"
+                  className="date-input-highlight h-12"
                 />
               </label>
 
               <label className="space-y-2">
-                <span className="text-sm text-zinc-300">CPF</span>
+                <span className="text-sm font-medium text-foreground/80">CPF</span>
                 <Input
                   value={form.cpf}
                   onChange={(event) =>
                     setForm((prev) => ({ ...prev, cpf: event.target.value }))
                   }
-                  className="h-11 border-zinc-700 bg-zinc-950 text-zinc-100"
+                  className="h-12"
                   placeholder="000.000.000-00"
                 />
               </label>
 
               <label className="space-y-2">
-                <span className="text-sm text-zinc-300">Telefone</span>
+                <span className="text-sm font-medium text-foreground/80">
+                  Telefone
+                </span>
                 <Input
                   value={form.phone}
                   onChange={(event) =>
                     setForm((prev) => ({ ...prev, phone: event.target.value }))
                   }
-                  className="h-11 border-zinc-700 bg-zinc-950 text-zinc-100"
+                  className="h-12"
                   placeholder="(00) 00000-0000"
                 />
               </label>
 
               <label className="space-y-2 md:col-span-2">
-                <span className="text-sm text-zinc-300">Sexo</span>
+                <span className="text-sm font-medium text-foreground/80">Sexo</span>
                 <Select
                   value={form.gender || "unspecified"}
                   onValueChange={(value) =>
@@ -302,10 +317,10 @@ export function PatientsProfileForm() {
                     }))
                   }
                 >
-                  <SelectTrigger className="h-11 w-full border-zinc-700 bg-zinc-950 text-zinc-100">
+                  <SelectTrigger className="h-12 w-full">
                     <SelectValue placeholder="Selecione o sexo" />
                   </SelectTrigger>
-                  <SelectContent className="border-zinc-700 bg-zinc-900 text-zinc-100">
+                  <SelectContent>
                     <SelectItem value="unspecified">Não informado</SelectItem>
                     <SelectItem value="female">Feminino</SelectItem>
                     <SelectItem value="male">Masculino</SelectItem>
@@ -316,10 +331,10 @@ export function PatientsProfileForm() {
               </label>
             </div>
 
-            <div className="flex flex-wrap items-center justify-between gap-3 border-t border-zinc-800 pt-4">
+            <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-4">
               <div className="space-y-1">
                 {lastUpdatedAt && (
-                  <p className="text-xs text-zinc-500">
+                  <p className="text-xs text-foreground/55">
                     Última atualização:{" "}
                     {new Intl.DateTimeFormat("pt-BR", {
                       day: "2-digit",
@@ -330,16 +345,14 @@ export function PatientsProfileForm() {
                     }).format(new Date(lastUpdatedAt))}
                   </p>
                 )}
-                {error && <p className="text-sm text-red-400">{error}</p>}
-                {success && (
-                  <p className="text-sm text-emerald-400">{success}</p>
-                )}
+                {error && <p className="text-sm text-rose-100">{error}</p>}
+                {success && <p className="text-sm text-primary">{success}</p>}
               </div>
 
               <Button
                 type="submit"
                 size="lg"
-                className="h-11 bg-zinc-100 text-zinc-900 hover:bg-zinc-300"
+                className="h-12"
                 disabled={isSaving || !isDirty}
               >
                 <Save className="size-4" />
