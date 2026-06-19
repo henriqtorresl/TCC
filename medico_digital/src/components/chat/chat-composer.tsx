@@ -36,7 +36,7 @@ export function ChatComposer({
         <Input
           type="text"
           placeholder="Digite sua mensagem..."
-          className="h-11 min-w-0 flex-1 border-0 bg-transparent text-base shadow-none outline-none placeholder:text-foreground/40 focus-visible:ring-0 md:text-sm"
+          className="h-11 min-w-0 flex-1 border-0 bg-transparent shadow-none outline-none placeholder:text-foreground/40 focus-visible:ring-0"
           value={value}
           onChange={(event) => onChange(event.target.value)}
           onKeyDown={handleKeyDown}
