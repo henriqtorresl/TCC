@@ -7,7 +7,6 @@ import {
   Clock3,
   Filter,
   MessageSquareMore,
-  Stethoscope,
   Search,
 } from "lucide-react";
 import { useMemo, useState } from "react";
@@ -351,7 +350,7 @@ export function AttendancesPanel({
                 className="h-11 w-full justify-between border-white/10 bg-white/5 text-foreground hover:bg-white/10"
             >
               <span className="flex min-w-0 items-center gap-2">
-                <Stethoscope className="size-4 text-primary" />
+                <Filter className="size-4 text-primary" />
                 <span className="truncate">
                   {selectedAttendance
                   ? `Atendimento #${selectedAttendance.id}`
