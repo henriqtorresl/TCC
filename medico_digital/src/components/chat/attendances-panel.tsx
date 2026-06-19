@@ -7,7 +7,6 @@ import {
   Clock3,
   Filter,
   MessageSquareMore,
-  Search,
 } from "lucide-react";
 import { useMemo, useState } from "react";
 import {
@@ -129,7 +128,6 @@ export function AttendancesPanel({
   onPreviousPage,
   onNextPage,
 }: AttendancesPanelProps) {
-  const [query, setQuery] = useState("");
   const [filterMode, setFilterMode] = useState<FilterMode>("all");
   const [isMobileSheetOpen, setIsMobileSheetOpen] = useState(false);
   const [isDateFilterOpen, setIsDateFilterOpen] = useState(false);
@@ -149,17 +147,9 @@ export function AttendancesPanel({
         (filterMode === "active" && attendance.status === "active") ||
         (filterMode === "closed" && attendance.status !== "active");
 
-      const normalizedQuery = query.trim().toLowerCase();
-      const matchesQuery =
-        normalizedQuery.length === 0 ||
-        String(attendance.id).includes(normalizedQuery) ||
-        getAttendanceStatusLabel(attendance.status)
-          .toLowerCase()
-          .includes(normalizedQuery);
-
-      return matchesFilter && matchesQuery;
+      return matchesFilter;
     });
-  }, [attendances, filterMode, query]);
+  }, [attendances, filterMode]);
 
   const filters: Array<{ id: FilterMode; label: string }> = [
     { id: "all", label: "Todos" },
@@ -191,16 +181,6 @@ export function AttendancesPanel({
                 </p>
               )}
             </div>
-          </div>
-
-          <div className="relative">
-            <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-foreground/40" />
-            <Input
-              placeholder="Buscar por ID ou status..."
-              className="h-10 pl-10 placeholder:text-foreground/40"
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-            />
           </div>
 
           <div className="flex flex-wrap gap-1">
@@ -370,13 +350,6 @@ export function AttendancesPanel({
             </SheetHeader>
 
             <div className="space-y-3 px-3 py-3 sm:px-4">
-              <Input
-                placeholder="Buscar atendimento..."
-                className="h-10 placeholder:text-foreground/40"
-                value={query}
-                onChange={(event) => setQuery(event.target.value)}
-              />
-
               <div className="flex gap-1.5">
                 <Filter className="mt-2 size-4 text-foreground/45" />
                 <div className="flex flex-wrap gap-1.5">
