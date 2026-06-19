@@ -73,7 +73,7 @@ export function ChatHeader({
       >
         <Button
           variant="outline"
-          className="h-11 w-full border-white/10 bg-white/5 px-3 text-xs text-foreground hover:bg-white/10 sm:text-sm"
+          className="h-11 w-full border-rose-400/20 bg-rose-400/10 px-3 text-xs text-rose-100 hover:bg-rose-400/15 sm:text-sm"
           onClick={onAttendanceAction}
           disabled={disableAttendanceAction}
         >
@@ -81,7 +81,7 @@ export function ChatHeader({
         </Button>
         <Button
           variant="outline"
-          className="h-11 w-full border-white/10 bg-white/5 px-3 text-xs text-foreground hover:bg-white/10 sm:text-sm"
+          className="h-11 w-full border-primary/20 bg-primary/12 px-3 text-xs text-primary hover:bg-primary/16 sm:text-sm"
           onClick={onGenerateReport}
           disabled={disableGenerateReport}
           title={readinessHint ?? undefined}
@@ -106,7 +106,7 @@ export function ChatHeader({
       <div className="ml-auto hidden w-auto flex-wrap justify-end gap-2 lg:flex">
         <Button
           variant="outline"
-          className="h-11 border-white/10 bg-white/5 px-3 text-sm text-foreground hover:bg-white/10"
+          className="h-11 border-rose-400/20 bg-rose-400/10 px-3 text-sm text-rose-100 hover:bg-rose-400/15"
           onClick={onAttendanceAction}
           disabled={disableAttendanceAction}
         >
@@ -114,7 +114,7 @@ export function ChatHeader({
         </Button>
         <Button
           variant="outline"
-          className="h-11 border-white/10 bg-white/5 px-3 text-sm text-foreground hover:bg-white/10"
+          className="h-11 border-primary/20 bg-primary/12 px-3 text-sm text-primary hover:bg-primary/16"
           onClick={onGenerateReport}
           disabled={disableGenerateReport}
           title={readinessHint ?? undefined}
