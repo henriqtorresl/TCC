@@ -205,7 +205,7 @@ export function PatientsProfileForm() {
     <section className="flex h-full min-h-0 flex-col overflow-y-auto px-4 py-6 pb-[calc(1.5rem+env(safe-area-inset-bottom))] md:px-8 md:py-8">
       <div className="mx-auto w-full max-w-4xl surface-card rounded-[1.75rem] p-6 md:p-8">
         <div className="mb-6 flex items-center gap-3">
-          <div className="flex size-11 items-center justify-center rounded-2xl border border-white/10 bg-white/6 text-primary shadow-[0_12px_30px_rgba(45,212,191,0.12)]">
+          <div className="hidden lg:flex size-11 items-center justify-center rounded-2xl border border-white/10 bg-white/6 text-primary shadow-[0_12px_30px_rgba(45,212,191,0.12)]">
             <UserRound className="size-5" />
           </div>
           <div>
@@ -216,7 +216,8 @@ export function PatientsProfileForm() {
               Atualize seus dados
             </h1>
             <p className="text-sm leading-6 text-foreground/65">
-              Você está editando os seus dados de paciente vinculados à conta autenticada.
+              Você está editando os seus dados de paciente vinculados à conta
+              autenticada.
             </p>
             <p className="mt-2 inline-flex rounded-full border border-primary/15 bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
               Seu perfil de paciente
@@ -278,7 +279,9 @@ export function PatientsProfileForm() {
               </label>
 
               <label className="space-y-2">
-                <span className="text-sm font-medium text-foreground/80">CPF</span>
+                <span className="text-sm font-medium text-foreground/80">
+                  CPF
+                </span>
                 <Input
                   value={form.cpf}
                   onChange={(event) =>
@@ -304,7 +307,9 @@ export function PatientsProfileForm() {
               </label>
 
               <label className="space-y-2 md:col-span-2">
-                <span className="text-sm font-medium text-foreground/80">Sexo</span>
+                <span className="text-sm font-medium text-foreground/80">
+                  Sexo
+                </span>
                 <Select
                   value={form.gender || "unspecified"}
                   onValueChange={(value) =>
