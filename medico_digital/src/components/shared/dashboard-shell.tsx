@@ -10,7 +10,7 @@ import {
   Sparkles,
   UserRound,
 } from "lucide-react";
-import { ReactNode, useMemo, useState } from "react";
+import { ReactNode, useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -89,6 +89,23 @@ export function DashboardShell({ children }: DashboardShellProps) {
     [pathname],
   );
 
+  useEffect(() => {
+    const { body, documentElement } = document;
+    const previousBodyOverflow = body.style.overflow;
+    const previousBodyOverscroll = body.style.overscrollBehavior;
+    const previousHtmlOverscroll = documentElement.style.overscrollBehavior;
+
+    body.style.overflow = "hidden";
+    body.style.overscrollBehavior = "none";
+    documentElement.style.overscrollBehavior = "none";
+
+    return () => {
+      body.style.overflow = previousBodyOverflow;
+      body.style.overscrollBehavior = previousBodyOverscroll;
+      documentElement.style.overscrollBehavior = previousHtmlOverscroll;
+    };
+  }, []);
+
   async function handleLogout() {
     if (isLoggingOut) {
       return;
@@ -107,7 +124,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
   }
 
   return (
-    <div className="fixed inset-0 overflow-hidden overscroll-none text-foreground">
+    <div className="relative h-dvh overflow-hidden text-foreground">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(45,212,191,0.14),_transparent_34%),radial-gradient(circle_at_top_right,_rgba(59,130,246,0.14),_transparent_30%),linear-gradient(180deg,_rgba(15,23,42,0.35),_transparent_30%)]" />
 
       <header className="sticky top-0 z-30 flex items-center justify-between border-b border-white/10 bg-slate-950/70 px-4 py-3 pt-[calc(0.75rem+env(safe-area-inset-top))] backdrop-blur-xl md:hidden">
