@@ -1,4 +1,4 @@
-import { ChevronDown, Stethoscope } from "lucide-react";
+import { ChevronDown, Loader2, Stethoscope } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 
@@ -34,21 +34,26 @@ export function ChatHeader({
   const [isMobileActionsOpen, setIsMobileActionsOpen] = useState(false);
 
   return (
-    <header className="flex flex-wrap items-center gap-3 border-b border-zinc-800 px-4 py-4 md:px-6">
-      <div className="flex size-10 items-center justify-center rounded-full bg-zinc-800">
-        <Stethoscope className="size-5 text-emerald-400" />
+    <header className="mx-3 mt-3 flex flex-wrap items-center gap-3 border-b border-white/10 px-1 pb-4 md:mx-4 md:px-1">
+      <div className="flex size-11 items-center justify-center rounded-2xl border border-white/10 bg-white/6 text-primary">
+        <Stethoscope className="size-5" />
       </div>
       <div className="min-w-0">
-        <h1 className="text-base font-semibold md:text-lg">Médico Virtual</h1>
-        <p className="text-xs text-zinc-400 md:text-sm">
-          Assistente de anamnese
+        <p className="text-xs font-medium uppercase tracking-[0.18em] text-foreground/55">
+          Atendimento clínico
+        </p>
+        <h1 className="text-base font-semibold tracking-tight md:text-lg">
+          Médico Digital
+        </h1>
+        <p className="text-xs text-foreground/65 md:text-sm">
+          Assistente de anamnese com geração de relatório
         </p>
       </div>
       <div className="ml-auto lg:hidden">
         <Button
           type="button"
           size="icon"
-          className="border-zinc-700 bg-zinc-900 text-zinc-100"
+          className="border-white/10 bg-white/6 text-foreground hover:bg-white/10"
           onClick={() => setIsMobileActionsOpen((current) => !current)}
           aria-expanded={isMobileActionsOpen}
           aria-label="Mostrar ações do atendimento"
@@ -68,7 +73,7 @@ export function ChatHeader({
       >
         <Button
           variant="outline"
-          className="h-10 w-full border-rose-700/70 bg-rose-950/45 px-3 text-xs text-rose-100 hover:bg-rose-900/60 sm:text-sm"
+          className="h-11 w-full border-rose-400/20 bg-rose-400/10 px-3 text-xs text-rose-100 hover:bg-rose-400/15 sm:text-sm"
           onClick={onAttendanceAction}
           disabled={disableAttendanceAction}
         >
@@ -76,16 +81,21 @@ export function ChatHeader({
         </Button>
         <Button
           variant="outline"
-          className="h-10 w-full border-emerald-700/80 bg-emerald-950/60 px-3 text-xs text-emerald-100 hover:bg-emerald-900/70 sm:text-sm"
+          className="h-11 w-full border-primary/20 bg-primary/12 px-3 text-xs text-primary hover:bg-primary/16 sm:text-sm"
           onClick={onGenerateReport}
           disabled={disableGenerateReport}
           title={readinessHint ?? undefined}
         >
-          {isGeneratingReport ? "Processando..." : reportActionLabel}
+          {isGeneratingReport && <Loader2 className="size-4 animate-spin" />}
+          {isGeneratingReport ? (
+            <span className="inline-block h-4 w-28 animate-pulse rounded bg-white/15" />
+          ) : (
+            reportActionLabel
+          )}
         </Button>
         <Button
           variant="outline"
-          className="h-10 w-full border-zinc-700 bg-zinc-900 px-3 text-xs text-zinc-100 hover:bg-zinc-800 sm:col-span-2 sm:text-sm"
+          className="h-11 w-full border-white/10 bg-white/5 px-3 text-xs text-foreground hover:bg-white/10 sm:col-span-2 sm:text-sm"
           onClick={onStartNewAttendance}
           disabled={disableNewAttendance}
         >
@@ -96,7 +106,7 @@ export function ChatHeader({
       <div className="ml-auto hidden w-auto flex-wrap justify-end gap-2 lg:flex">
         <Button
           variant="outline"
-          className="h-10 border-rose-700/70 bg-rose-950/45 px-3 text-sm text-rose-100 hover:bg-rose-900/60"
+          className="h-11 border-rose-400/20 bg-rose-400/10 px-3 text-sm text-rose-100 hover:bg-rose-400/15"
           onClick={onAttendanceAction}
           disabled={disableAttendanceAction}
         >
@@ -104,16 +114,21 @@ export function ChatHeader({
         </Button>
         <Button
           variant="outline"
-          className="h-10 border-emerald-700/80 bg-emerald-950/60 px-3 text-sm text-emerald-100 hover:bg-emerald-900/70"
+          className="h-11 border-primary/20 bg-primary/12 px-3 text-sm text-primary hover:bg-primary/16"
           onClick={onGenerateReport}
           disabled={disableGenerateReport}
           title={readinessHint ?? undefined}
         >
-          {isGeneratingReport ? "Processando..." : reportActionLabel}
+          {isGeneratingReport && <Loader2 className="size-4 animate-spin" />}
+          {isGeneratingReport ? (
+            <span className="inline-block h-4 w-28 animate-pulse rounded bg-white/15" />
+          ) : (
+            reportActionLabel
+          )}
         </Button>
         <Button
           variant="outline"
-          className="h-10 border-zinc-700 bg-zinc-900 px-3 text-sm text-zinc-100 hover:bg-zinc-800"
+          className="h-11 border-white/10 bg-white/5 px-3 text-sm text-foreground hover:bg-white/10"
           onClick={onStartNewAttendance}
           disabled={disableNewAttendance}
         >

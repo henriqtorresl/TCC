@@ -1,20 +1,13 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
 export const metadata: Metadata = {
-  title: "Médico Digital",
-  description: "LLM Médica especializada em anamnese",
+  title: {
+    default: "Médico Digital",
+    template: "%s | Médico Digital",
+  },
+  description:
+    "Plataforma clínica para anamnese, acompanhamento de atendimentos e geração de relatórios.",
 };
 
 export default function RootLayout({
@@ -23,12 +16,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
-      </body>
+    <html lang="pt-BR">
+      <body className="antialiased">{children}</body>
     </html>
   );
 }

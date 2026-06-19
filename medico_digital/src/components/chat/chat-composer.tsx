@@ -7,6 +7,7 @@ type ChatComposerProps = {
   value: string;
   isLoading: boolean;
   isHistoryLoading: boolean;
+  isAttendanceClosed: boolean;
   onChange: (value: string) => void;
   onSend: () => void;
   error: string | null;
@@ -17,12 +18,13 @@ export function ChatComposer({
   value,
   isLoading,
   isHistoryLoading,
+  isAttendanceClosed,
   onChange,
   onSend,
   error,
   statusMessage,
 }: ChatComposerProps) {
-  const isDisabled = isLoading || isHistoryLoading;
+  const isDisabled = isLoading || isHistoryLoading || isAttendanceClosed;
 
   function handleKeyDown(event: KeyboardEvent<HTMLInputElement>) {
     if (event.key === "Enter") {
@@ -31,12 +33,16 @@ export function ChatComposer({
   }
 
   return (
-    <footer className="border-t border-zinc-800 px-3 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] sm:px-4 sm:py-4 md:px-6">
-      <div className="flex min-w-0 items-center gap-2 rounded-xl border border-zinc-700 bg-zinc-900 px-2.5 py-2 sm:px-3">
+    <footer className="border-t border-white/10 px-3 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] sm:px-4 sm:py-4 md:px-6">
+      <div className="flex min-w-0 items-center gap-2 rounded-[1.4rem] border border-white/10 bg-white/5 px-3 py-3 sm:px-4">
         <Input
           type="text"
-          placeholder="Digite sua mensagem..."
-          className="h-10 min-w-0 flex-1 border-0 bg-transparent text-base shadow-none outline-none placeholder:text-zinc-500 focus-visible:ring-0 md:text-sm"
+          placeholder={
+            isAttendanceClosed
+              ? "Atendimento encerrado. Retome para continuar..."
+              : "Digite sua mensagem..."
+          }
+          className="h-11 min-w-0 flex-1 border-0 bg-transparent shadow-none outline-none placeholder:text-foreground/40 focus-visible:ring-0"
           value={value}
           onChange={(event) => onChange(event.target.value)}
           onKeyDown={handleKeyDown}
@@ -44,7 +50,7 @@ export function ChatComposer({
         />
         <Button
           size="icon-lg"
-          className="size-9 bg-zinc-100 text-zinc-900 hover:bg-zinc-300"
+          className="size-11 border border-white/10 bg-white/6 text-foreground hover:bg-white/10"
           onClick={onSend}
           disabled={isDisabled || !value.trim()}
           aria-label="Enviar mensagem"
@@ -52,8 +58,17 @@ export function ChatComposer({
           <SendHorizontal />
         </Button>
       </div>
-      {error && <p className="pt-2 text-sm text-red-400">{error}</p>}
-      {statusMessage && <p className="pt-2 text-sm text-emerald-400">{statusMessage}</p>}
+      <div className="mt-2 flex flex-wrap items-center justify-between gap-2 text-xs text-foreground/55">
+        <p>Pressione Enter para enviar</p>
+        {statusMessage && <p className="text-primary">{statusMessage}</p>}
+      </div>
+      {isAttendanceClosed && (
+        <p className="mt-2 rounded-2xl border border-amber-400/20 bg-amber-400/10 px-3 py-2 text-sm text-amber-100">
+          Este atendimento está encerrado. Se quiser continuar a conversa,
+          retome o atendimento no botão acima.
+        </p>
+      )}
+      {error && <p className="pt-2 text-sm text-rose-100">{error}</p>}
     </footer>
   );
 }

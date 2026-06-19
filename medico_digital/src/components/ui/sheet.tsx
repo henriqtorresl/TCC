@@ -37,7 +37,7 @@ function SheetOverlay({
     <DialogPrimitive.Overlay
       data-slot="sheet-overlay"
       className={cn(
-        "fixed inset-0 z-50 bg-zinc-950/70 data-[state=open]:animate-in data-[state=closed]:animate-out",
+        "fixed inset-0 z-50 bg-slate-950/65 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out",
         className,
       )}
       {...props}
@@ -60,22 +60,22 @@ function SheetContent({
         data-slot="sheet-content"
         data-side={side}
         className={cn(
-          "fixed z-50 flex flex-col gap-4 bg-zinc-950 p-4 shadow-lg transition data-[state=open]:animate-in data-[state=closed]:animate-out",
+          "fixed z-50 flex flex-col gap-4 border border-white/10 bg-slate-950/92 p-4 text-foreground shadow-[0_28px_80px_rgba(2,8,23,0.45)] backdrop-blur-xl transition data-[state=open]:animate-in data-[state=closed]:animate-out",
           side === "left" &&
-            "inset-y-0 left-0 h-full w-72 border-r border-zinc-800 data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left",
+            "inset-y-0 left-0 h-full w-80 rounded-r-3xl border-r data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left",
           side === "right" &&
-            "inset-y-0 right-0 h-full w-72 border-l border-zinc-800 data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right",
+            "inset-y-0 right-0 h-full w-80 rounded-l-3xl border-l data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right",
           side === "top" &&
-            "inset-x-0 top-0 border-b border-zinc-800 data-[state=closed]:slide-out-to-top data-[state=open]:slide-in-from-top",
+            "inset-x-0 top-0 rounded-b-3xl border-b data-[state=closed]:slide-out-to-top data-[state=open]:slide-in-from-top",
           side === "bottom" &&
-            "inset-x-0 bottom-0 border-t border-zinc-800 data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom",
+            "inset-x-0 bottom-0 rounded-t-3xl border-t data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom",
           className,
         )}
         {...props}
       >
         {children}
         <SheetClose
-          className="absolute top-3 right-3 rounded-md p-1 text-zinc-400 transition hover:bg-zinc-900 hover:text-zinc-100"
+          className="absolute top-1 right-2 rounded-xl p-2 text-foreground/60 transition hover:bg-white/8 hover:text-foreground"
           aria-label="Fechar menu"
         >
           <XIcon className="size-4" />
@@ -112,7 +112,10 @@ function SheetTitle({
   return (
     <DialogPrimitive.Title
       data-slot="sheet-title"
-      className={cn("text-sm font-semibold text-zinc-100", className)}
+      className={cn(
+        "text-sm font-semibold tracking-tight text-foreground",
+        className,
+      )}
       {...props}
     />
   );
@@ -125,7 +128,7 @@ function SheetDescription({
   return (
     <DialogPrimitive.Description
       data-slot="sheet-description"
-      className={cn("text-sm text-zinc-400", className)}
+      className={cn("text-sm leading-6 text-foreground/70", className)}
       {...props}
     />
   );

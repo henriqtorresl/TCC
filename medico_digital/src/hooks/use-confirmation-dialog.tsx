@@ -17,9 +17,9 @@ type ConfirmationState = (ConfirmationOptions & {
 }) | null;
 
 const OVERLAY_CLASS =
-  "fixed inset-0 z-[100] bg-black/60 backdrop-blur-[1px] transition-opacity";
+  "fixed inset-0 z-[100] bg-slate-950/72 backdrop-blur-sm transition-opacity";
 const DIALOG_CLASS =
-  "fixed left-1/2 top-1/2 z-[101] w-[92vw] max-w-md -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-zinc-800 bg-zinc-950 p-5 text-zinc-100 shadow-2xl";
+  "fixed left-1/2 top-1/2 z-[101] w-[92vw] max-w-md -translate-x-1/2 -translate-y-1/2 rounded-3xl border border-white/10 bg-slate-950/92 p-5 text-foreground shadow-[0_32px_100px_rgba(2,8,23,0.55)] backdrop-blur-xl";
 
 export function useConfirmationDialog() {
   const [state, setState] = useState<ConfirmationState>(null);
@@ -68,12 +68,12 @@ export function useConfirmationDialog() {
           <h2 id="confirm-dialog-title" className="text-base font-semibold">
             {state.title}
           </h2>
-          <p className="mt-2 text-sm leading-6 text-zinc-300">{state.description}</p>
+          <p className="mt-2 text-sm leading-6 text-foreground/72">{state.description}</p>
           <div className="mt-5 flex justify-end gap-2">
             <Button
               type="button"
               variant="outline"
-              className="border-zinc-700 bg-zinc-900 text-zinc-100 hover:bg-zinc-800"
+              className="border-white/10 bg-white/5 text-foreground hover:bg-white/10"
               onClick={() => close(false)}
             >
               {state.cancelLabel}
@@ -82,8 +82,8 @@ export function useConfirmationDialog() {
               type="button"
               className={
                 state.tone === "danger"
-                  ? "bg-rose-600 text-white hover:bg-rose-500"
-                  : "bg-emerald-600 text-zinc-950 hover:bg-emerald-500"
+                  ? "bg-rose-500 text-white hover:bg-rose-400"
+                  : "bg-primary text-primary-foreground hover:bg-primary/90"
               }
               onClick={() => close(true)}
             >
@@ -97,4 +97,3 @@ export function useConfirmationDialog() {
 
   return { requestConfirmation, confirmationDialog };
 }
-

@@ -82,11 +82,11 @@ export default function ReportPrintPage() {
   }, [data]);
 
   if (error) {
-    return <main className="p-6 text-sm text-red-600">{error}</main>;
+    return <main className="p-6 text-sm text-rose-100">{error}</main>;
   }
 
   if (!data || !computed) {
-    return <main className="p-6 text-sm text-zinc-600">Carregando relatório...</main>;
+    return <main className="p-6 text-sm text-foreground/65">Carregando relatório...</main>;
   }
 
   const score =
@@ -98,7 +98,7 @@ export default function ReportPrintPage() {
   const readinessOk = computed.readiness.is_ready === true;
 
   return (
-    <main className="min-h-screen bg-slate-100 py-8 text-slate-900 print:bg-white print:py-0">
+    <main className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(45,212,191,0.08),_transparent_26%),linear-gradient(180deg,_#09111f_0%,_#0f172a_100%)] py-8 text-foreground print:bg-white print:py-0">
       <style>{`
         @page { size: A4; margin: 10mm; }
         @media print {
@@ -112,18 +112,18 @@ export default function ReportPrintPage() {
         <button
           type="button"
           onClick={() => window.print()}
-          className="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm text-slate-700 hover:bg-slate-50"
+          className="rounded-xl border border-white/10 bg-white/6 px-3 py-1.5 text-sm text-foreground shadow-[0_10px_24px_rgba(2,8,23,0.18)] hover:bg-white/10"
         >
           Imprimir / Salvar PDF
         </button>
       </div>
 
-      <section className="page mx-auto max-w-[920px] overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl shadow-slate-900/10">
-        <header className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-950 px-7 py-7 text-slate-50">
-          <h1 className="mb-3 text-[30px] font-bold leading-tight tracking-tight">
+      <section className="page mx-auto max-w-[920px] overflow-hidden rounded-[2rem] border border-white/10 bg-white shadow-[0_28px_90px_rgba(2,8,23,0.25)]">
+        <header className="bg-[linear-gradient(135deg,_#0f172a_0%,_#111827_45%,_#0b1220_100%)] px-7 py-7 text-white">
+          <h1 className="mb-3 text-[30px] font-semibold leading-tight tracking-tight">
             Relatório de Anamnese
           </h1>
-          <div className="grid gap-x-6 gap-y-2 text-[13px] text-slate-200 md:grid-cols-2">
+          <div className="grid gap-x-6 gap-y-2 text-[13px] text-white/78 md:grid-cols-2">
             <p>
               <strong className="font-semibold text-white">Relatório ID:</strong>{" "}
               {display(data.report.id)}
@@ -153,15 +153,15 @@ export default function ReportPrintPage() {
 
         <div className="space-y-6 px-7 py-6">
           <section>
-            <h2 className="mb-2 text-lg font-semibold text-slate-900">Completude da Anamnese</h2>
-            <div className="rounded-xl border border-slate-200 bg-slate-50/70 p-4">
+            <h2 className="mb-2 text-lg font-semibold tracking-tight text-slate-900">Completude da Anamnese</h2>
+            <div className="rounded-2xl border border-slate-200 bg-slate-50/80 p-4">
               {score !== null && requiredScore !== null ? (
                 <p className="mb-2">
                   <span
                     className={`inline-flex rounded-full px-3 py-1 text-xs font-bold ${
                       readinessOk
                         ? "bg-emerald-100 text-emerald-800"
-                        : "bg-amber-100 text-amber-800"
+                      : "bg-amber-100 text-amber-800"
                     }`}
                   >
                     {readinessOk ? "Completo" : "Incompleto"}
@@ -188,7 +188,7 @@ export default function ReportPrintPage() {
           </section>
 
           <section>
-            <h2 className="mb-2 text-lg font-semibold text-slate-900">Seções Clínicas</h2>
+            <h2 className="mb-2 text-lg font-semibold tracking-tight text-slate-900">Seções Clínicas</h2>
             <div className="grid grid-cols-2 gap-3">
               {[
                 ["Queixa principal", computed.sections.queixa_principal],
@@ -200,7 +200,7 @@ export default function ReportPrintPage() {
                 ["Medicações e alergias", computed.sections.medicacoes_alergias],
                 ["Hábitos e contexto", computed.sections.habitos_contexto],
               ].map(([label, value]) => (
-                <div key={label} className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+                <div key={label} className="rounded-2xl border border-slate-200 bg-slate-50 p-3">
                   <p className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-slate-500">
                     {label}
                   </p>
@@ -211,8 +211,8 @@ export default function ReportPrintPage() {
           </section>
 
           <section>
-            <h2 className="mb-2 text-lg font-semibold text-slate-900">Resumo Consolidado</h2>
-            <div className="rounded-xl border border-slate-200 bg-slate-50/70 p-4">
+            <h2 className="mb-2 text-lg font-semibold tracking-tight text-slate-900">Resumo Consolidado</h2>
+            <div className="rounded-2xl border border-slate-200 bg-slate-50/80 p-4">
               <p className="whitespace-pre-wrap text-sm leading-7 text-slate-800">
                 {display(data.report.summary)}
               </p>
