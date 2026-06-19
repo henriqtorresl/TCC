@@ -274,7 +274,7 @@ export function PatientsProfileForm() {
                       birthDate: event.target.value,
                     }))
                   }
-                  className="date-input-highlight h-12"
+                  className="date-input-highlight h-12 appearance-none"
                 />
               </label>
 

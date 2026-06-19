@@ -187,6 +187,20 @@
     filter: invert(87%) sepia(42%) saturate(830%) hue-rotate(108deg)
       brightness(104%) contrast(94%);
   }
+
+  .date-input-highlight {
+    -webkit-appearance: none;
+    appearance: none;
+    line-height: 1.2;
+  }
+
+  .date-input-highlight::-webkit-datetime-edit {
+    padding: 0;
+  }
+
+  .date-input-highlight::-webkit-datetime-edit-fields-wrapper {
+    padding: 0;
+  }
 }
 
 * {
