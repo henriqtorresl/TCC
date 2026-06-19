@@ -8,6 +8,7 @@ import {
   Clock3,
   Download,
   FileText,
+  Loader2,
   Stethoscope,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -443,12 +444,13 @@ export function AttendanceDetailsScreen({
   }
 
   return (
-    <main className="min-h-dvh bg-zinc-950 px-4 py-6 text-zinc-100 md:px-6">
-      <div className="mx-auto w-full max-w-6xl space-y-4">
+    <main className="relative min-h-dvh px-4 py-6 text-foreground md:px-6">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(45,212,191,0.12),_transparent_30%),radial-gradient(circle_at_top_right,_rgba(59,130,246,0.12),_transparent_26%)]" />
+      <div className="relative mx-auto w-full max-w-6xl space-y-4">
         <div className="flex items-center gap-2">
           <Button
             asChild
-            className="border-zinc-700 text-zinc-200 hover:bg-zinc-800"
+            className="border-white/10 bg-white/5 text-foreground hover:bg-white/10"
           >
             <Link href="/chat">
               <ArrowLeft className="size-4" />
@@ -457,18 +459,20 @@ export function AttendanceDetailsScreen({
           </Button>
         </div>
 
-        <section className="rounded-2xl border border-zinc-800 bg-zinc-900/60 p-4 md:p-6">
+        <section className="surface-card rounded-[1.75rem] p-4 md:p-6">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div className="space-y-1">
-              <p className="text-sm text-zinc-400">Detalhes do atendimento</p>
-              <h1 className="text-xl font-semibold">
+              <p className="text-sm font-medium uppercase tracking-[0.18em] text-foreground/55">
+                Detalhes do atendimento
+              </p>
+              <h1 className="text-2xl font-semibold tracking-tight">
                 {attendance ? `Atendimento #${attendance.id}` : "Carregando..."}
               </h1>
             </div>
             <div className="flex flex-wrap gap-2">
               <Button
                 variant="outline"
-                className="border-rose-700/70 bg-rose-950/45 text-rose-100 hover:bg-rose-900/60"
+                className="border-rose-400/20 bg-rose-400/10 text-rose-100 hover:bg-rose-400/15"
                 onClick={() => void handleAttendanceAction()}
                 disabled={
                   !attendance ||
@@ -487,25 +491,29 @@ export function AttendanceDetailsScreen({
               </Button>
               <Button
                 variant="outline"
-                className="border-emerald-700/80 bg-emerald-950/60 text-emerald-100 hover:bg-emerald-900/70"
+                className="border-primary/20 bg-primary/12 text-primary hover:bg-primary/16"
                 onClick={() => void handleGenerateReport()}
                 disabled={!attendance || isGeneratingReport || isLoading}
                 title={readinessHint ?? undefined}
               >
-                {downloadableReportId ? (
+                {isGeneratingReport ? (
+                  <Loader2 className="size-4 animate-spin" />
+                ) : downloadableReportId ? (
                   <Download className="size-4" />
                 ) : (
                   <FileText className="size-4" />
                 )}
                 {isGeneratingReport
-                  ? "Processando..."
+                  ? downloadableReportId
+                    ? "Baixando..."
+                    : "Gerando..."
                   : downloadableReportId
                     ? "Baixar relatório"
                     : "Gerar relatório"}
               </Button>
               <Button
                 asChild
-                className="border-zinc-700 text-zinc-200 hover:bg-zinc-800"
+                className="border-white/10 bg-white/5 text-foreground hover:bg-white/10"
               >
                 <Link href="/chat">
                   <Stethoscope className="size-4" />
@@ -517,37 +525,39 @@ export function AttendanceDetailsScreen({
 
           {error && <p className="mt-4 text-sm text-red-400">{error}</p>}
           {statusMessage && (
-            <p className="mt-4 text-sm text-emerald-400">{statusMessage}</p>
+            <p className="mt-4 text-sm text-primary">{statusMessage}</p>
           )}
 
           {attendance && (
             <div className="mt-4 grid gap-3 text-sm md:grid-cols-2">
-              <div className="rounded-xl border border-zinc-800 bg-zinc-900/70 p-3">
-                <p className="text-zinc-400">Status</p>
-                <p className="mt-1 font-medium">
+              <div className="rounded-2xl border border-white/10 bg-white/5 p-3">
+                <p className="text-foreground/55">Status</p>
+                <p className="mt-1 font-medium text-foreground">
                   {getAttendanceStatusLabel(attendance.status)}
                 </p>
               </div>
-              <div className="rounded-xl border border-zinc-800 bg-zinc-900/70 p-3">
-                <p className="text-zinc-400">Mensagens</p>
-                <p className="mt-1 font-medium">{attendance.message_count}</p>
+              <div className="rounded-2xl border border-white/10 bg-white/5 p-3">
+                <p className="text-foreground/55">Mensagens</p>
+                <p className="mt-1 font-medium text-foreground">
+                  {attendance.message_count}
+                </p>
               </div>
-              <div className="rounded-xl border border-zinc-800 bg-zinc-900/70 p-3">
-                <p className="text-zinc-400">Início</p>
-                <p className="mt-1 font-medium">
+              <div className="rounded-2xl border border-white/10 bg-white/5 p-3">
+                <p className="text-foreground/55">Início</p>
+                <p className="mt-1 font-medium text-foreground">
                   {new Date(attendance.started_at).toLocaleString("pt-BR")}
                 </p>
               </div>
-              <div className="rounded-xl border border-zinc-800 bg-zinc-900/70 p-3">
-                <p className="text-zinc-400">Última atividade</p>
-                <p className="mt-1 inline-flex items-center gap-2 font-medium">
-                  <Clock3 className="size-3.5 text-zinc-400" />
+              <div className="rounded-2xl border border-white/10 bg-white/5 p-3">
+                <p className="text-foreground/55">Última atividade</p>
+                <p className="mt-1 inline-flex items-center gap-2 font-medium text-foreground">
+                  <Clock3 className="size-3.5 text-foreground/45" />
                   {formatAttendanceRelativeTime(attendance.last_message_at)}
                 </p>
               </div>
-              <div className="rounded-xl border border-zinc-800 bg-zinc-900/70 p-3 md:col-span-2">
-                <p className="text-zinc-400">Encerramento</p>
-                <p className="mt-1 font-medium">
+              <div className="rounded-2xl border border-white/10 bg-white/5 p-3 md:col-span-2">
+                <p className="text-foreground/55">Encerramento</p>
+                <p className="mt-1 font-medium text-foreground">
                   {attendance.ended_at
                     ? new Date(attendance.ended_at).toLocaleString("pt-BR")
                     : "Em andamento"}
@@ -557,18 +567,18 @@ export function AttendanceDetailsScreen({
           )}
         </section>
 
-        <section className="rounded-2xl border border-zinc-800 bg-zinc-900/60 p-4 md:p-6">
-          <h2 className="mb-3 text-base font-semibold">
+        <section className="surface-card rounded-[1.75rem] p-4 md:p-6">
+          <h2 className="mb-3 text-base font-semibold tracking-tight">
             Histórico de mensagens
           </h2>
           {isLoading && (
-            <div className="rounded-xl border border-zinc-800 bg-zinc-900/70 p-4 text-sm text-zinc-300">
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-foreground/70">
               Carregando histórico...
             </div>
           )}
 
           {!isLoading && messages.length === 0 && (
-            <div className="rounded-xl border border-zinc-800 bg-zinc-900/70 p-4 text-sm text-zinc-300">
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-foreground/70">
               Este atendimento ainda não possui mensagens.
             </div>
           )}
@@ -587,10 +597,10 @@ export function AttendanceDetailsScreen({
                   }`}
                 >
                   <div
-                    className={`max-w-[85%] rounded-2xl px-4 py-2 text-sm ${
+                    className={`max-w-[85%] rounded-[1.35rem] px-4 py-3 text-sm leading-7 ${
                       message.role === "user"
-                        ? "bg-zinc-100 text-zinc-900"
-                        : "border border-zinc-700 bg-zinc-800 text-zinc-100"
+                        ? "bg-primary text-primary-foreground"
+                        : "border border-white/10 bg-white/6 text-foreground"
                     }`}
                   >
                     <p>{message.content}</p>
