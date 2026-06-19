@@ -165,7 +165,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
         </Sheet>
       </header>
 
-      <div className="relative mx-auto flex h-[calc(100dvh-57px)] w-full max-w-[1680px] min-w-0 min-h-0 overflow-hidden md:h-dvh">
+      <div className="relative flex h-[calc(100dvh-57px)] w-full min-w-0 min-h-0 overflow-hidden md:h-dvh">
         <aside className="hidden w-72 min-w-0 flex-col border-r border-white/10 bg-slate-950/40 p-4 backdrop-blur-xl md:flex">
           <div className="surface-card rounded-3xl p-4">
             <div className="flex items-center gap-3">

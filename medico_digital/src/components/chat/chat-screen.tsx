@@ -837,7 +837,7 @@ export function ChatScreen() {
 
   return (
     <main className="relative h-full min-h-0 w-full overflow-hidden text-foreground">
-      <div className="relative mx-auto flex h-full w-full max-w-6xl min-w-0 min-h-0 flex-col md:flex-row">
+      <div className="relative flex h-full w-full min-w-0 min-h-0 flex-col md:flex-row">
         <AttendancesPanel
           attendances={attendances}
           selectedAttendanceId={selectedAttendanceId}
