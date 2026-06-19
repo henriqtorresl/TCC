@@ -914,6 +914,9 @@ export function ChatScreen() {
             onSend={() => void handleSendMessage()}
             isLoading={isLoading}
             isHistoryLoading={isHistoryLoading}
+            isAttendanceClosed={
+              selectedAttendance ? selectedAttendance.status !== "active" : false
+            }
             error={error}
             statusMessage={statusMessage}
           />

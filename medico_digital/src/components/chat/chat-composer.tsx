@@ -7,6 +7,7 @@ type ChatComposerProps = {
   value: string;
   isLoading: boolean;
   isHistoryLoading: boolean;
+  isAttendanceClosed: boolean;
   onChange: (value: string) => void;
   onSend: () => void;
   error: string | null;
@@ -17,12 +18,13 @@ export function ChatComposer({
   value,
   isLoading,
   isHistoryLoading,
+  isAttendanceClosed,
   onChange,
   onSend,
   error,
   statusMessage,
 }: ChatComposerProps) {
-  const isDisabled = isLoading || isHistoryLoading;
+  const isDisabled = isLoading || isHistoryLoading || isAttendanceClosed;
 
   function handleKeyDown(event: KeyboardEvent<HTMLInputElement>) {
     if (event.key === "Enter") {
@@ -35,7 +37,11 @@ export function ChatComposer({
       <div className="flex min-w-0 items-center gap-2 rounded-[1.4rem] border border-white/10 bg-white/5 px-3 py-3 sm:px-4">
         <Input
           type="text"
-          placeholder="Digite sua mensagem..."
+          placeholder={
+            isAttendanceClosed
+              ? "Atendimento encerrado. Retome para continuar..."
+              : "Digite sua mensagem..."
+          }
           className="h-11 min-w-0 flex-1 border-0 bg-transparent shadow-none outline-none placeholder:text-foreground/40 focus-visible:ring-0"
           value={value}
           onChange={(event) => onChange(event.target.value)}
@@ -56,6 +62,12 @@ export function ChatComposer({
         <p>Pressione Enter para enviar</p>
         {statusMessage && <p className="text-primary">{statusMessage}</p>}
       </div>
+      {isAttendanceClosed && (
+        <p className="mt-2 rounded-2xl border border-amber-400/20 bg-amber-400/10 px-3 py-2 text-sm text-amber-100">
+          Este atendimento está encerrado. Se quiser continuar a conversa,
+          retome o atendimento no botão acima.
+        </p>
+      )}
       {error && <p className="pt-2 text-sm text-rose-100">{error}</p>}
     </footer>
   );
