@@ -503,13 +503,13 @@ export function AttendanceDetailsScreen({
                 ) : (
                   <FileText className="size-4" />
                 )}
-                {isGeneratingReport
-                  ? downloadableReportId
-                    ? "Baixando..."
-                    : "Gerando..."
-                  : downloadableReportId
-                    ? "Baixar relatório"
-                    : "Gerar relatório"}
+                {isGeneratingReport ? (
+                  <span className="inline-block h-4 w-28 animate-pulse rounded bg-white/15" />
+                ) : downloadableReportId ? (
+                  "Baixar relatório"
+                ) : (
+                  "Gerar relatório"
+                )}
               </Button>
               <Button
                 asChild

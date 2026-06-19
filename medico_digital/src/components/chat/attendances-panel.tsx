@@ -183,9 +183,15 @@ export function AttendancesPanel({
             <h2 className="text-base font-semibold tracking-tight text-foreground">
               Atendimentos
             </h2>
-            <p className="mt-0.5 text-sm text-foreground/65">
-              {totalAttendances} no histórico
-            </p>
+            <div className="mt-0.5">
+              {isLoading ? (
+                <div className="h-4 w-20 animate-pulse rounded bg-white/10" />
+              ) : (
+                <p className="text-sm text-foreground/65">
+                  {totalAttendances} no histórico
+                </p>
+              )}
+            </div>
           </div>
 
           <div className="relative">

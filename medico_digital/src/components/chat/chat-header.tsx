@@ -87,7 +87,11 @@ export function ChatHeader({
           title={readinessHint ?? undefined}
         >
           {isGeneratingReport && <Loader2 className="size-4 animate-spin" />}
-          {isGeneratingReport ? "Processando..." : reportActionLabel}
+          {isGeneratingReport ? (
+            <span className="inline-block h-4 w-28 animate-pulse rounded bg-white/15" />
+          ) : (
+            reportActionLabel
+          )}
         </Button>
         <Button
           variant="outline"
@@ -116,7 +120,11 @@ export function ChatHeader({
           title={readinessHint ?? undefined}
         >
           {isGeneratingReport && <Loader2 className="size-4 animate-spin" />}
-          {isGeneratingReport ? "Processando..." : reportActionLabel}
+          {isGeneratingReport ? (
+            <span className="inline-block h-4 w-28 animate-pulse rounded bg-white/15" />
+          ) : (
+            reportActionLabel
+          )}
         </Button>
         <Button
           variant="outline"
