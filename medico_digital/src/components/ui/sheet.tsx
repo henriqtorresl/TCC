@@ -75,7 +75,7 @@ function SheetContent({
       >
         {children}
         <SheetClose
-          className="absolute top-3 right-3 rounded-xl p-2 text-foreground/60 transition hover:bg-white/8 hover:text-foreground"
+          className="absolute top-1 right-2 rounded-xl p-2 text-foreground/60 transition hover:bg-white/8 hover:text-foreground"
           aria-label="Fechar menu"
         >
           <XIcon className="size-4" />
@@ -112,7 +112,10 @@ function SheetTitle({
   return (
     <DialogPrimitive.Title
       data-slot="sheet-title"
-      className={cn("text-sm font-semibold tracking-tight text-foreground", className)}
+      className={cn(
+        "text-sm font-semibold tracking-tight text-foreground",
+        className,
+      )}
       {...props}
     />
   );
