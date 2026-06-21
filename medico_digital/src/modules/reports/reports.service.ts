@@ -44,14 +44,16 @@ type ConversationMetadata = {
   readiness: ReportReadiness;
   sections: ConversationSections;
   generation: {
-    strategy: "rule_based_v1";
+    strategy: "rule_based_v1" | "rule_based_v2";
     generated_at: string;
   };
 };
 
 type ConversationSignal = {
   key: ReportCriterionKey;
-  patterns: RegExp[];
+  positivePatterns: RegExp[];
+  negativeEvidencePatterns?: RegExp[];
+  rejectIfNegated?: boolean;
 };
 
 type ConversationRef = {
@@ -78,50 +80,128 @@ const REPORT_CRITERIA_LABELS: Record<ReportCriterionKey, string> = {
 const CONVERSATION_SIGNALS: ConversationSignal[] = [
   {
     key: "queixa_principal",
-    patterns: [
-      /dor|febre|tosse|falta de ar|dispneia|nausea|náusea|vomit|diarreia|tontura|cansa[cç]o|palpita[cç][aã]o|inch[aã]co/i,
+    rejectIfNegated: true,
+    positivePatterns: [
+      /(?:^|\b)(dor(?:es)?|febre|tosse|falta de ar|dispneia|nausea|vomito|vomitar|diarreia|tontura|cansaco|palpitacao|inchaco|cefaleia|dor de cabeca|mal-estar)(?:\b|$)/i,
     ],
   },
   {
     key: "inicio_duracao",
-    patterns: [
-      /desde|h[áa]\s*\d+\s*(hora|horas|dia|dias|semana|semanas|m[eê]s|meses|ano|anos)/i,
-      /come[cç]ou|in[ií]cio|dura[cç][aã]o|h[aá] tempo/i,
+    positivePatterns: [
+      /\bdesde\b/i,
+      /\bha\s*\d+\s*(hora|horas|dia|dias|semana|semanas|mes|meses|ano|anos)\b/i,
+      /\bcomecou\b/i,
+      /\binicio\b/i,
+      /\bduracao\b/i,
+      /\bha tempo\b/i,
     ],
   },
   {
     key: "evolucao",
-    patterns: [/piorou|melhorou|est[aá]vel|progressiv|evolu[cç][aã]o/i],
+    positivePatterns: [
+      /\bpiorou\b/i,
+      /\bmelhorou\b/i,
+      /\bestavel\b/i,
+      /\bprogressiv/i,
+      /\bevolucao\b/i,
+      /\bnao melhorou\b/i,
+      /\bsem melhora\b/i,
+    ],
   },
   {
     key: "fatores_melhora_piora",
-    patterns: [
-      /piora com|melhora com|piora ao|melhora ao|alivia com|agrava com/i,
+    positivePatterns: [
+      /\bpiora com\b/i,
+      /\bmelhora com\b/i,
+      /\bpiora ao\b/i,
+      /\bmelhora ao\b/i,
+      /\balivia com\b/i,
+      /\bagrava com\b/i,
+      /\bnao melhora com\b/i,
+      /\bpiora quando\b/i,
+      /\bmelhora quando\b/i,
     ],
   },
   {
     key: "sintomas_associados",
-    patterns: [
-      /al[eé]m disso|tamb[eé]m estou|sintomas associados|outro sintoma|junto com/i,
+    rejectIfNegated: true,
+    positivePatterns: [
+      /\balem disso\b/i,
+      /\btambem\b.*\b(sinto|tenho|apresento|percebo|noto|vem|apareceu|junto)\b/i,
+      /\bsintomas associados\b/i,
+      /\boutro sintoma\b/i,
+      /\bjunto com\b/i,
+      /\bassociado\b/i,
+      /\bvem acompanhado\b/i,
     ],
   },
   {
     key: "antecedentes",
-    patterns: [
-      /hiperten|diabet|asma|card[ií]ac|cirurg|interna[cç][aã]o|antecedente|hist[oó]rico familiar/i,
-      /n[aã]o tenho doen[cç]a cr[oô]nica|sem antecedente/i,
+    positivePatterns: [
+      /\bhiperten/i,
+      /\bdiabet/i,
+      /\basma\b/i,
+      /\bcardi/i,
+      /\bcirurg/i,
+      /\binterna/i,
+      /\bantecedent/i,
+      /\bhistorico familiar\b/i,
+      /\bdoenca cronica\b/i,
+      /\bcomorbidade\b/i,
+    ],
+    negativeEvidencePatterns: [
+      /\bsem antecedent/i,
+      /\bnao tenho doenca cronica\b/i,
+      /\bnao tenho comorbidade\b/i,
+      /\bsem comorbidade\b/i,
+      /\bnao tenho historico\b/i,
+      /\bnao tenho nada\b/i,
     ],
   },
   {
     key: "medicacoes_alergias",
-    patterns: [
-      /tomo|uso|medica[cç][aã]o|rem[eé]dio|alergia|sou al[eé]rgic|n[aã]o tenho alergia/i,
+    positivePatterns: [
+      /\b(tomo|uso|faco uso)\b.*\b(de )?(medicacao|medicamento|remedio)s?\b/i,
+      /\bmedicacao\b/i,
+      /\bmedicamento\b/i,
+      /\bremedio\b/i,
+      /\balergi/i,
+      /\breacao alergica\b/i,
+      /\bintolerancia\b/i,
+    ],
+    negativeEvidencePatterns: [
+      /\bnao uso\b/i,
+      /\bnao tomo\b/i,
+      /\bsem medicacao\b/i,
+      /\bsem remedio\b/i,
+      /\bnao tenho alergia\b/i,
+      /\bsem alergia\b/i,
+      /\bnao sou alergic/i,
     ],
   },
   {
     key: "habitos_contexto",
-    patterns: [
-      /fumo|tabag|cigarro|[aá]lcool|bebida|drogas?|atividade f[ií]sica|sedent[aá]rio|sono|trabalho/i,
+    positivePatterns: [
+      /\bfumo\b/i,
+      /\btabag/i,
+      /\bcigarro\b/i,
+      /\balcool\b/i,
+      /\bbebida/i,
+      /\bdrogas?\b/i,
+      /\batividade fisica\b/i,
+      /\bsedentario\b/i,
+      /\bsono\b/i,
+      /\btrabalho\b/i,
+      /\balimentacao\b/i,
+      /\bdieta\b/i,
+    ],
+    negativeEvidencePatterns: [
+      /\bnao fumo\b/i,
+      /\bnao bebo\b/i,
+      /\bnao uso drogas\b/i,
+      /\bsem alcool\b/i,
+      /\bsem cigarro\b/i,
+      /\bnao pratico atividade fisica\b/i,
     ],
   },
 ];
@@ -214,7 +294,7 @@ export class ReportsService {
       readiness,
       sections,
       generation: {
-        strategy: "rule_based_v1",
+        strategy: "rule_based_v2",
         generated_at: new Date().toISOString(),
       },
     };
@@ -372,7 +452,7 @@ export class ReportsService {
     for (const signal of CONVERSATION_SIGNALS) {
       sections[signal.key] = this.findFirstMatchingSnippet(
         userMessages,
-        signal.patterns,
+        signal,
       );
     }
 
@@ -444,17 +524,76 @@ export class ReportsService {
 
   private findFirstMatchingSnippet(
     messages: string[],
-    patterns: RegExp[],
+    signal: ConversationSignal,
   ): string | null {
-    const matched = messages.find((message) =>
-      patterns.some((pattern) => pattern.test(message)),
+    const candidates = messages.flatMap((message) =>
+      this.splitIntoCandidates(message),
     );
 
-    return matched ? matched.slice(0, 280) : null;
+    let bestText = "";
+    let bestScore = -1;
+    let bestOrder = -1;
+
+    candidates.forEach((candidate, index) => {
+      const normalized = this.normalizeText(candidate);
+      const positiveMatch = signal.positivePatterns.some((pattern) =>
+        pattern.test(normalized),
+      );
+      const negativeEvidenceMatch = Boolean(
+        signal.negativeEvidencePatterns?.some((pattern) =>
+          pattern.test(normalized),
+        ),
+      );
+
+      if (!positiveMatch && !negativeEvidenceMatch) {
+        return;
+      }
+
+      if (signal.rejectIfNegated && this.hasNegationCue(normalized)) {
+        return;
+      }
+
+      const score =
+        (positiveMatch ? 2 : 0) +
+        (negativeEvidenceMatch ? 1 : 0) +
+        Math.min(candidate.length, 140) / 140;
+
+      if (score > bestScore || (score === bestScore && index > bestOrder)) {
+        bestText = candidate;
+        bestScore = score;
+        bestOrder = index;
+      }
+    });
+
+    if (bestOrder < 0) {
+      return null;
+    }
+
+    return bestText.slice(0, 280);
   }
 
   private normalizeSpaces(value: string): string {
     return value.replace(/\s+/g, " ").trim();
+  }
+
+  private splitIntoCandidates(message: string): string[] {
+    const fragments = message
+      .split(/[\n.,;!?]+/)
+      .map((fragment) => fragment.trim())
+      .filter(Boolean);
+
+    return fragments.length > 0 ? fragments : [message];
+  }
+
+  private normalizeText(value: string): string {
+    return this.normalizeSpaces(value)
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "");
+  }
+
+  private hasNegationCue(value: string): boolean {
+    return /\b(nao|sem|nega|negou|nunca|ausente|ausencia de)\b/.test(value);
   }
 
   private async loadConversationContext({
