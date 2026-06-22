@@ -22,7 +22,7 @@ export class ChatService {
   private readonly conversations: Record<string, ChatHistoryItem[]> = {};
 
   constructor(
-    private readonly hfClient: InferenceClient,
+    private readonly aiClient: InferenceClient,
     private readonly chatRepository: ChatRepository | null = null,
   ) {}
 
@@ -53,7 +53,7 @@ Não dê diagnóstico final; seu papel é exclusivamente coletar as informaçõe
       })),
     ];
 
-    const completion = await this.hfClient.chatCompletion({
+    const completion = await this.aiClient.chatCompletion({
       model: CHAT_MODEL,
       messages,
       max_tokens: 150,
@@ -70,7 +70,7 @@ Não dê diagnóstico final; seu papel é exclusivamente coletar as informaçõe
       ts: Date.now(),
     });
 
-    const nerResult = await this.hfClient.tokenClassification({
+    const nerResult = await this.aiClient.tokenClassification({
       model: NER_MODEL,
       inputs: text,
     });
@@ -91,7 +91,9 @@ Não dê diagnóstico final; seu papel é exclusivamente coletar as informaçõe
     return { reply: botText, entities, conversationId };
   }
 
-  async startNewAttendance(patientId: string): Promise<{ conversationId: number }> {
+  async startNewAttendance(
+    patientId: string,
+  ): Promise<{ conversationId: number }> {
     if (!this.chatRepository) {
       throw new Error("database_not_configured");
     }
@@ -102,9 +104,8 @@ Não dê diagnóstico final; seu papel é exclusivamente coletar as informaçõe
     }
 
     await this.chatRepository.closeLatestActiveConversation(numericPatientId);
-    const conversationId = await this.chatRepository.createConversation(
-      numericPatientId,
-    );
+    const conversationId =
+      await this.chatRepository.createConversation(numericPatientId);
     this.conversations[patientId] = [];
 
     return { conversationId };
@@ -122,7 +123,8 @@ Não dê diagnóstico final; seu papel é exclusivamente coletar as informaçõe
 
     const page = Number(query.page ?? "1");
     const pageSize = Number(query.pageSize ?? "10");
-    const normalizedPage = Number.isFinite(page) && page > 0 ? Math.floor(page) : 1;
+    const normalizedPage =
+      Number.isFinite(page) && page > 0 ? Math.floor(page) : 1;
     const normalizedPageSize =
       Number.isFinite(pageSize) && pageSize > 0
         ? Math.min(Math.floor(pageSize), 50)
@@ -154,7 +156,10 @@ Não dê diagnóstico final; seu papel é exclusivamente coletar as informaçõe
       },
     );
 
-    const totalPages = Math.max(1, Math.ceil(result.total / normalizedPageSize));
+    const totalPages = Math.max(
+      1,
+      Math.ceil(result.total / normalizedPageSize),
+    );
 
     return {
       attendances: result.attendances,
