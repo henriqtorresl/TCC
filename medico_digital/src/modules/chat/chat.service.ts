@@ -81,9 +81,14 @@ Não dê diagnóstico final; seu papel é exclusivamente coletar as informaçõe
       score: entity.score ?? 0,
     }));
 
-    await this.persistIfPossible(patientId, text, botText, entities);
+    const conversationId = await this.persistIfPossible(
+      patientId,
+      text,
+      botText,
+      entities,
+    );
 
-    return { reply: botText, entities };
+    return { reply: botText, entities, conversationId };
   }
 
   async startNewAttendance(patientId: string): Promise<{ conversationId: number }> {
@@ -331,14 +336,14 @@ Não dê diagnóstico final; seu papel é exclusivamente coletar as informaçõe
     userText: string,
     assistantText: string,
     entities: ChatEntity[],
-  ): Promise<void> {
+  ): Promise<number | null> {
     if (!this.chatRepository) {
-      return;
+      return null;
     }
 
     const numericPatientId = Number(patientId);
     if (!Number.isFinite(numericPatientId) || numericPatientId <= 0) {
-      return;
+      return null;
     }
 
     try {
@@ -351,8 +356,11 @@ Não dê diagnóstico final; seu papel é exclusivamente coletar as informaçõe
         assistantText,
         entities,
       );
+
+      return conversationId;
     } catch (error) {
       console.warn("Could not persist chat messages:", error);
+      return null;
     }
   }
 }
