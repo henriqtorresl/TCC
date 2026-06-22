@@ -1,5 +1,7 @@
+import { InferenceClient } from "@huggingface/inference";
 import { ReportsRepository } from "@/modules/reports/reports.repository";
 import type {
+  AiConversationSections,
   ConversationMetadata,
   ConversationMessage,
   ConversationRef,
@@ -11,6 +13,7 @@ import type {
 } from "@/modules/reports/types";
 
 const REQUIRED_CRITERIA_SCORE = 7;
+const REPORT_AI_MODEL = "meta-llama/Llama-3.1-8B-Instruct";
 
 const REPORT_CRITERIA_LABELS: Record<ReportCriterionKey, string> = {
   queixa_principal: "queixa principal",
@@ -176,6 +179,88 @@ function hasNegationCue(value: string): boolean {
   return /\b(nao|sem|nega|negou|nunca|ausente|ausencia de)\b/.test(value);
 }
 
+function extractJsonObject(rawText: string): string | null {
+  const fencedMatch = rawText.match(/```(?:json)?\s*([\s\S]*?)```/i);
+  if (fencedMatch?.[1]) {
+    return fencedMatch[1].trim();
+  }
+
+  const start = rawText.indexOf("{");
+  const end = rawText.lastIndexOf("}");
+  if (start >= 0 && end > start) {
+    return rawText.slice(start, end + 1).trim();
+  }
+
+  return null;
+}
+
+function normalizeAiSectionValue(value: unknown): string | null {
+  if (typeof value !== "string") {
+    return null;
+  }
+
+  const normalized = normalizeSpaces(value);
+  return normalized.length > 0 ? normalized.slice(0, 280) : null;
+}
+
+export function mergeSections(
+  base: ConversationSections,
+  aiSections: AiConversationSections,
+): ConversationSections {
+  return {
+    queixa_principal:
+      base.queixa_principal ?? normalizeAiSectionValue(aiSections.queixa_principal),
+    inicio_duracao:
+      base.inicio_duracao ?? normalizeAiSectionValue(aiSections.inicio_duracao),
+    evolucao: base.evolucao ?? normalizeAiSectionValue(aiSections.evolucao),
+    fatores_melhora_piora:
+      base.fatores_melhora_piora ??
+      normalizeAiSectionValue(aiSections.fatores_melhora_piora),
+    sintomas_associados:
+      base.sintomas_associados ??
+      normalizeAiSectionValue(aiSections.sintomas_associados),
+    antecedentes:
+      base.antecedentes ?? normalizeAiSectionValue(aiSections.antecedentes),
+    medicacoes_alergias:
+      base.medicacoes_alergias ??
+      normalizeAiSectionValue(aiSections.medicacoes_alergias),
+    habitos_contexto:
+      base.habitos_contexto ?? normalizeAiSectionValue(aiSections.habitos_contexto),
+  };
+}
+
+export function parseAiSections(rawText: string): AiConversationSections | null {
+  const jsonText = extractJsonObject(rawText);
+  if (!jsonText) {
+    return null;
+  }
+
+  try {
+    const parsed = JSON.parse(jsonText) as Record<string, unknown>;
+    return {
+      queixa_principal: normalizeAiSectionValue(parsed.queixa_principal),
+      inicio_duracao: normalizeAiSectionValue(parsed.inicio_duracao),
+      evolucao: normalizeAiSectionValue(parsed.evolucao),
+      fatores_melhora_piora: normalizeAiSectionValue(parsed.fatores_melhora_piora),
+      sintomas_associados: normalizeAiSectionValue(parsed.sintomas_associados),
+      antecedentes: normalizeAiSectionValue(parsed.antecedentes),
+      medicacoes_alergias: normalizeAiSectionValue(parsed.medicacoes_alergias),
+      habitos_contexto: normalizeAiSectionValue(parsed.habitos_contexto),
+    };
+  } catch {
+    return null;
+  }
+}
+
+function formatTranscriptForAi(messages: ConversationMessage[]): string {
+  return messages
+    .map(
+      (message, index) =>
+        `${index + 1}. [${message.role}] ${normalizeSpaces(message.content)}`,
+    )
+    .join("\n");
+}
+
 export function findFirstMatchingSnippet(
   messages: string[],
   signal: ConversationSignal,
@@ -334,6 +419,7 @@ export function assessConversation(messages: ConversationMessage[]) {
 export class ReportsService {
   constructor(
     private readonly reportsRepository: ReportsRepository | null = null,
+    private readonly aiClient: InferenceClient | null = null,
   ) {}
 
   async assessConversation({
@@ -349,7 +435,7 @@ export class ReportsService {
         conversationId,
       });
 
-    const assessment = assessConversation(messages);
+    const assessment = await this.evaluateConversation(messages);
 
     return {
       conversationId: numericConversationId,
@@ -393,7 +479,7 @@ export class ReportsService {
       throw new Error("conversation_not_completed");
     }
 
-    const assessment = assessConversation(messages);
+    const assessment = await this.evaluateConversation(messages);
     const sections = assessment.sections;
     const readiness = assessment.readiness;
 
@@ -421,6 +507,8 @@ export class ReportsService {
       sections,
       generation: {
         generated_at: new Date().toISOString(),
+        ai_enhanced: assessment.aiEnhanced,
+        ai_model: assessment.aiModel,
       },
     };
 
@@ -430,6 +518,77 @@ export class ReportsService {
       summary,
       metadata,
     });
+  }
+
+  private async evaluateConversation(messages: ConversationMessage[]) {
+    const baseAssessment = assessConversation(messages);
+
+    if (!this.aiClient || baseAssessment.readiness.is_ready) {
+      return {
+        ...baseAssessment,
+        aiEnhanced: false,
+        aiModel: null,
+      };
+    }
+
+    try {
+      const completion = await this.aiClient.chatCompletion({
+        model: REPORT_AI_MODEL,
+        messages: [
+          {
+            role: "system",
+            content:
+              "Você é um extrator clínico. Analise a conversa e devolva apenas JSON válido com as chaves de anamnese. Não invente dados. Use somente informações presentes ou claramente implícitas na conversa.",
+          },
+          {
+            role: "user",
+            content: [
+              "Conversa completa:",
+              formatTranscriptForAi(messages),
+              "",
+              "Seções já detectadas pelo sistema:",
+              JSON.stringify(baseAssessment.sections, null, 2),
+              "",
+              "Retorne um objeto JSON com as chaves: queixa_principal, inicio_duracao, evolucao, fatores_melhora_piora, sintomas_associados, antecedentes, medicacoes_alergias, habitos_contexto.",
+              "Preencha apenas o que conseguir identificar com segurança na conversa.",
+              "Use strings curtas e objetivas. Se não houver evidência suficiente, use null.",
+            ].join("\n"),
+          },
+        ],
+        max_tokens: 350,
+        temperature: 0.1,
+        top_p: 0.9,
+      });
+
+      const rawText = completion?.choices?.[0]?.message?.content ?? "";
+      const parsedSections = parseAiSections(rawText);
+      if (!parsedSections) {
+        return {
+          ...baseAssessment,
+          aiEnhanced: false,
+          aiModel: REPORT_AI_MODEL,
+        };
+      }
+
+      const mergedSections = mergeSections(baseAssessment.sections, parsedSections);
+      const readiness = calculateReadiness(mergedSections);
+
+      return {
+        sections: mergedSections,
+        readiness,
+        shouldAutoFinalize: shouldAutoFinalizeConversation(readiness),
+        aiEnhanced: true,
+        aiModel: REPORT_AI_MODEL,
+      };
+    } catch (error) {
+      console.warn("Could not enhance report extraction with AI:", error);
+
+      return {
+        ...baseAssessment,
+        aiEnhanced: false,
+        aiModel: REPORT_AI_MODEL,
+      };
+    }
   }
 
   async getReportAvailability({
