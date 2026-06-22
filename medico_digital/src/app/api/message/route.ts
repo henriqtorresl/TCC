@@ -22,7 +22,7 @@ const chatRepository = db ? new ChatRepository(db) : null;
 const hf = new InferenceClient(env.hfToken || undefined);
 const chatService = new ChatService(hf, chatRepository);
 const reportsRepository = db ? new ReportsRepository(db) : null;
-const reportsService = new ReportsService(reportsRepository);
+const reportsService = new ReportsService(reportsRepository, hf);
 
 export async function POST(request: Request) {
   try {
