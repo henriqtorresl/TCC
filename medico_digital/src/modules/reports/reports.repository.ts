@@ -1,5 +1,6 @@
 import { Pool } from "pg";
 import { GenerateReportInput } from "@/modules/reports/types";
+import type { ConversationMetadata } from "@/modules/reports/types";
 
 export class ReportsRepository {
   constructor(private readonly db: Pool) {}
@@ -60,7 +61,7 @@ export class ReportsRepository {
     conversationId,
     summary,
     metadata,
-  }: GenerateReportInput & { summary: string; metadata: unknown }) {
+  }: GenerateReportInput & { summary: string; metadata: ConversationMetadata }) {
     const result = await this.db.query(
       `
       INSERT INTO reports (user_id, conversation_id, summary, status, metadata)

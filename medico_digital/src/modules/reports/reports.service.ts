@@ -1,70 +1,16 @@
 import { ReportsRepository } from "@/modules/reports/reports.repository";
+import type {
+  ConversationMetadata,
+  ConversationMessage,
+  ConversationRef,
+  ConversationSections,
+  ConversationSignal,
+  ReportCriterionKey,
+  ReportRef,
+  ReportReadiness,
+} from "@/modules/reports/types";
 
 const REQUIRED_CRITERIA_SCORE = 7;
-
-type ConversationMessage = {
-  role: "system" | "user" | "assistant";
-  content: string;
-  created_at: string;
-};
-
-type ReportCriterionKey =
-  | "queixa_principal"
-  | "inicio_duracao"
-  | "evolucao"
-  | "fatores_melhora_piora"
-  | "sintomas_associados"
-  | "antecedentes"
-  | "medicacoes_alergias"
-  | "habitos_contexto";
-
-type ReportReadiness = {
-  is_ready: boolean;
-  score: number;
-  required_score: number;
-  criteria: Record<ReportCriterionKey, boolean>;
-  missing_criteria: ReportCriterionKey[];
-};
-
-type ConversationSections = {
-  queixa_principal: string | null;
-  inicio_duracao: string | null;
-  evolucao: string | null;
-  fatores_melhora_piora: string | null;
-  sintomas_associados: string | null;
-  antecedentes: string | null;
-  medicacoes_alergias: string | null;
-  habitos_contexto: string | null;
-};
-
-type ConversationMetadata = {
-  message_count: number;
-  user_message_count: number;
-  assistant_message_count: number;
-  readiness: ReportReadiness;
-  sections: ConversationSections;
-  generation: {
-    strategy: "rule_based_v1" | "rule_based_v2";
-    generated_at: string;
-  };
-};
-
-type ConversationSignal = {
-  key: ReportCriterionKey;
-  positivePatterns: RegExp[];
-  negativeEvidencePatterns?: RegExp[];
-  rejectIfNegated?: boolean;
-};
-
-type ConversationRef = {
-  status: string;
-  ended_at: string | null;
-};
-
-type ReportRef = {
-  id: number | string;
-  generated_at: string;
-};
 
 const REPORT_CRITERIA_LABELS: Record<ReportCriterionKey, string> = {
   queixa_principal: "queixa principal",
@@ -206,6 +152,185 @@ const CONVERSATION_SIGNALS: ConversationSignal[] = [
   },
 ];
 
+function normalizeSpaces(value: string): string {
+  return value.replace(/\s+/g, " ").trim();
+}
+
+function normalizeText(value: string): string {
+  return normalizeSpaces(value)
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+}
+
+function splitIntoCandidates(message: string): string[] {
+  const fragments = message
+    .split(/[\n.,;!?]+/)
+    .map((fragment) => fragment.trim())
+    .filter(Boolean);
+
+  return fragments.length > 0 ? fragments : [message];
+}
+
+function hasNegationCue(value: string): boolean {
+  return /\b(nao|sem|nega|negou|nunca|ausente|ausencia de)\b/.test(value);
+}
+
+export function findFirstMatchingSnippet(
+  messages: string[],
+  signal: ConversationSignal,
+): string | null {
+  const candidates = messages.flatMap((message) => splitIntoCandidates(message));
+
+  let bestText = "";
+  let bestScore = -1;
+  let bestOrder = -1;
+
+  candidates.forEach((candidate, index) => {
+    const normalized = normalizeText(candidate);
+    const positiveMatch = signal.positivePatterns.some((pattern) =>
+      pattern.test(normalized),
+    );
+    const negativeEvidenceMatch = Boolean(
+      signal.negativeEvidencePatterns?.some((pattern) =>
+        pattern.test(normalized),
+      ),
+    );
+
+    if (!positiveMatch && !negativeEvidenceMatch) {
+      return;
+    }
+
+    if (signal.rejectIfNegated && hasNegationCue(normalized)) {
+      return;
+    }
+
+    const score =
+      (positiveMatch ? 2 : 0) +
+      (negativeEvidenceMatch ? 1 : 0) +
+      Math.min(candidate.length, 140) / 140;
+
+    if (score > bestScore || (score === bestScore && index > bestOrder)) {
+      bestText = candidate;
+      bestScore = score;
+      bestOrder = index;
+    }
+  });
+
+  if (bestOrder < 0) {
+    return null;
+  }
+
+  return bestText.slice(0, 280);
+}
+
+export function extractSections(
+  messages: ConversationMessage[],
+): ConversationSections {
+  const userMessages = messages
+    .filter((message) => message.role === "user")
+    .map((message) => normalizeSpaces(message.content));
+
+  const sections: ConversationSections = {
+    queixa_principal: null,
+    inicio_duracao: null,
+    evolucao: null,
+    fatores_melhora_piora: null,
+    sintomas_associados: null,
+    antecedentes: null,
+    medicacoes_alergias: null,
+    habitos_contexto: null,
+  };
+
+  for (const signal of CONVERSATION_SIGNALS) {
+    sections[signal.key] = findFirstMatchingSnippet(userMessages, signal);
+  }
+
+  return sections;
+}
+
+export function calculateReadiness(
+  sections: ConversationSections,
+): ReportReadiness {
+  const criteria: Record<ReportCriterionKey, boolean> = {
+    queixa_principal: Boolean(sections.queixa_principal),
+    inicio_duracao: Boolean(sections.inicio_duracao),
+    evolucao: Boolean(sections.evolucao),
+    fatores_melhora_piora: Boolean(sections.fatores_melhora_piora),
+    sintomas_associados: Boolean(sections.sintomas_associados),
+    antecedentes: Boolean(sections.antecedentes),
+    medicacoes_alergias: Boolean(sections.medicacoes_alergias),
+    habitos_contexto: Boolean(sections.habitos_contexto),
+  };
+
+  const score = Object.values(criteria).filter(Boolean).length;
+  const missing_criteria = Object.entries(criteria)
+    .filter(([, met]) => !met)
+    .map(([key]) => key as ReportCriterionKey);
+
+  return {
+    is_ready: score >= REQUIRED_CRITERIA_SCORE,
+    score,
+    required_score: REQUIRED_CRITERIA_SCORE,
+    criteria,
+    missing_criteria,
+  };
+}
+
+export function shouldAutoFinalizeConversation(
+  readiness: ReportReadiness,
+): boolean {
+  return readiness.is_ready;
+}
+
+export function buildSummary({
+  conversationId,
+  sections,
+  readiness,
+  messages,
+}: {
+  conversationId: number;
+  sections: ConversationSections;
+  readiness: ReportReadiness;
+  messages: ConversationMessage[];
+}): string {
+  const lines = [
+    `Relatório de anamnese - Atendimento #${conversationId}`,
+    `Completude: ${readiness.score}/${readiness.required_score}`,
+    "",
+    `Queixa principal: ${sections.queixa_principal ?? "Não informado."}`,
+    `Início e duração: ${sections.inicio_duracao ?? "Não informado."}`,
+    `Evolução: ${sections.evolucao ?? "Não informado."}`,
+    `Fatores de melhora/piora: ${sections.fatores_melhora_piora ?? "Não informado."}`,
+    `Sintomas associados: ${sections.sintomas_associados ?? "Não informado."}`,
+    `Antecedentes: ${sections.antecedentes ?? "Não informado."}`,
+    `Medicações e alergias: ${sections.medicacoes_alergias ?? "Não informado."}`,
+    `Hábitos e contexto: ${sections.habitos_contexto ?? "Não informado."}`,
+    "",
+    readiness.missing_criteria.length > 0
+      ? `Pendências: ${readiness.missing_criteria
+          .map((criterion) => REPORT_CRITERIA_LABELS[criterion] ?? criterion)
+          .join(", ")}`
+      : "Pendências: nenhuma.",
+    "",
+    "Observação: este relatório representa triagem/anamnese e não substitui diagnóstico médico.",
+    `Total de mensagens analisadas: ${messages.length}`,
+  ];
+
+  return lines.join("\n").slice(0, 8000);
+}
+
+export function assessConversation(messages: ConversationMessage[]) {
+  const sections = extractSections(messages);
+  const readiness = calculateReadiness(sections);
+
+  return {
+    sections,
+    readiness,
+    shouldAutoFinalize: shouldAutoFinalizeConversation(readiness),
+  };
+}
+
 export class ReportsService {
   constructor(
     private readonly reportsRepository: ReportsRepository | null = null,
@@ -224,15 +349,15 @@ export class ReportsService {
         conversationId,
       });
 
-    const sections = this.extractSections(messages);
-    const readiness = this.calculateReadiness(sections);
+    const assessment = assessConversation(messages);
 
     return {
       conversationId: numericConversationId,
       conversationStatus: conversation.status,
       messageCount: messages.length,
-      readiness,
-      sections,
+      readiness: assessment.readiness,
+      sections: assessment.sections,
+      shouldAutoFinalize: assessment.shouldAutoFinalize,
     };
   }
 
@@ -268,8 +393,9 @@ export class ReportsService {
       throw new Error("conversation_not_completed");
     }
 
-    const sections = this.extractSections(messages);
-    const readiness = this.calculateReadiness(sections);
+    const assessment = assessConversation(messages);
+    const sections = assessment.sections;
+    const readiness = assessment.readiness;
 
     if (!readiness.is_ready && !allowIncomplete) {
       throw new Error(
@@ -277,7 +403,7 @@ export class ReportsService {
       );
     }
 
-    const summary = this.buildSummary({
+    const summary = buildSummary({
       conversationId: numericConversationId,
       sections,
       readiness,
@@ -294,7 +420,6 @@ export class ReportsService {
       readiness,
       sections,
       generation: {
-        strategy: "rule_based_v2",
         generated_at: new Date().toISOString(),
       },
     };
@@ -429,171 +554,6 @@ export class ReportsService {
         full_name: conversation.patient_full_name,
       },
     };
-  }
-
-  private extractSections(
-    messages: ConversationMessage[],
-  ): ConversationSections {
-    const userMessages = messages
-      .filter((message) => message.role === "user")
-      .map((message) => this.normalizeSpaces(message.content));
-
-    const sections = {
-      queixa_principal: null,
-      inicio_duracao: null,
-      evolucao: null,
-      fatores_melhora_piora: null,
-      sintomas_associados: null,
-      antecedentes: null,
-      medicacoes_alergias: null,
-      habitos_contexto: null,
-    } as ConversationSections;
-
-    for (const signal of CONVERSATION_SIGNALS) {
-      sections[signal.key] = this.findFirstMatchingSnippet(
-        userMessages,
-        signal,
-      );
-    }
-
-    return sections;
-  }
-
-  private calculateReadiness(sections: ConversationSections): ReportReadiness {
-    const criteria = {
-      queixa_principal: Boolean(sections.queixa_principal),
-      inicio_duracao: Boolean(sections.inicio_duracao),
-      evolucao: Boolean(sections.evolucao),
-      fatores_melhora_piora: Boolean(sections.fatores_melhora_piora),
-      sintomas_associados: Boolean(sections.sintomas_associados),
-      antecedentes: Boolean(sections.antecedentes),
-      medicacoes_alergias: Boolean(sections.medicacoes_alergias),
-      habitos_contexto: Boolean(sections.habitos_contexto),
-    };
-
-    const score = Object.values(criteria).filter(Boolean).length;
-    const missing_criteria = Object.entries(criteria)
-      .filter(([, met]) => !met)
-      .map(([key]) => key as ReportCriterionKey);
-
-    return {
-      is_ready: score >= REQUIRED_CRITERIA_SCORE,
-      score,
-      required_score: REQUIRED_CRITERIA_SCORE,
-      criteria,
-      missing_criteria,
-    };
-  }
-
-  private buildSummary({
-    conversationId,
-    sections,
-    readiness,
-    messages,
-  }: {
-    conversationId: number;
-    sections: ConversationSections;
-    readiness: ReportReadiness;
-    messages: ConversationMessage[];
-  }): string {
-    const lines = [
-      `Relatório de anamnese - Atendimento #${conversationId}`,
-      `Completude: ${readiness.score}/${readiness.required_score}`,
-      "",
-      `Queixa principal: ${sections.queixa_principal ?? "Não informado."}`,
-      `Início e duração: ${sections.inicio_duracao ?? "Não informado."}`,
-      `Evolução: ${sections.evolucao ?? "Não informado."}`,
-      `Fatores de melhora/piora: ${sections.fatores_melhora_piora ?? "Não informado."}`,
-      `Sintomas associados: ${sections.sintomas_associados ?? "Não informado."}`,
-      `Antecedentes: ${sections.antecedentes ?? "Não informado."}`,
-      `Medicações e alergias: ${sections.medicacoes_alergias ?? "Não informado."}`,
-      `Hábitos e contexto: ${sections.habitos_contexto ?? "Não informado."}`,
-      "",
-      readiness.missing_criteria.length > 0
-        ? `Pendências: ${readiness.missing_criteria
-            .map((criterion) => REPORT_CRITERIA_LABELS[criterion] ?? criterion)
-            .join(", ")}`
-        : "Pendências: nenhuma.",
-      "",
-      "Observação: este relatório representa triagem/anamnese e não substitui diagnóstico médico.",
-      `Total de mensagens analisadas: ${messages.length}`,
-    ];
-
-    return lines.join("\n").slice(0, 8000);
-  }
-
-  private findFirstMatchingSnippet(
-    messages: string[],
-    signal: ConversationSignal,
-  ): string | null {
-    const candidates = messages.flatMap((message) =>
-      this.splitIntoCandidates(message),
-    );
-
-    let bestText = "";
-    let bestScore = -1;
-    let bestOrder = -1;
-
-    candidates.forEach((candidate, index) => {
-      const normalized = this.normalizeText(candidate);
-      const positiveMatch = signal.positivePatterns.some((pattern) =>
-        pattern.test(normalized),
-      );
-      const negativeEvidenceMatch = Boolean(
-        signal.negativeEvidencePatterns?.some((pattern) =>
-          pattern.test(normalized),
-        ),
-      );
-
-      if (!positiveMatch && !negativeEvidenceMatch) {
-        return;
-      }
-
-      if (signal.rejectIfNegated && this.hasNegationCue(normalized)) {
-        return;
-      }
-
-      const score =
-        (positiveMatch ? 2 : 0) +
-        (negativeEvidenceMatch ? 1 : 0) +
-        Math.min(candidate.length, 140) / 140;
-
-      if (score > bestScore || (score === bestScore && index > bestOrder)) {
-        bestText = candidate;
-        bestScore = score;
-        bestOrder = index;
-      }
-    });
-
-    if (bestOrder < 0) {
-      return null;
-    }
-
-    return bestText.slice(0, 280);
-  }
-
-  private normalizeSpaces(value: string): string {
-    return value.replace(/\s+/g, " ").trim();
-  }
-
-  private splitIntoCandidates(message: string): string[] {
-    const fragments = message
-      .split(/[\n.,;!?]+/)
-      .map((fragment) => fragment.trim())
-      .filter(Boolean);
-
-    return fragments.length > 0 ? fragments : [message];
-  }
-
-  private normalizeText(value: string): string {
-    return this.normalizeSpaces(value)
-      .toLowerCase()
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "");
-  }
-
-  private hasNegationCue(value: string): boolean {
-    return /\b(nao|sem|nega|negou|nunca|ausente|ausencia de)\b/.test(value);
   }
 
   private async loadConversationContext({
