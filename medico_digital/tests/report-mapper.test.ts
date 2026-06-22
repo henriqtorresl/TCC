@@ -5,6 +5,8 @@ import {
   buildSummary,
   calculateReadiness,
   extractSections,
+  mergeSections,
+  parseAiSections,
   shouldAutoFinalizeConversation,
 } from "../src/modules/reports/reports.service";
 import type { ConversationMessage } from "../src/modules/reports/types";
@@ -123,4 +125,47 @@ test("buildSummary includes the detected fields and pending criteria", () => {
   assert.match(summary, /Atendimento #42/);
   assert.match(summary, /Queixa principal: Dor de cabeca/);
   assert.match(summary, /Pend[eê]ncias:/);
+});
+
+test("parseAiSections reads structured output from fenced JSON", () => {
+  const parsed = parseAiSections(
+    [
+      "Aqui está o resultado:",
+      "```json",
+      "{",
+      '  "queixa_principal": "Dor no peito",',
+      '  "inicio_duracao": "Desde ontem",',
+      '  "evolucao": null',
+      "}",
+      "```",
+    ].join("\n"),
+  );
+
+  assert.equal(parsed?.queixa_principal, "Dor no peito");
+  assert.equal(parsed?.inicio_duracao, "Desde ontem");
+  assert.equal(parsed?.evolucao, null);
+});
+
+test("mergeSections keeps mapper hits and fills only missing fields from AI", () => {
+  const merged = mergeSections(
+    {
+      queixa_principal: "Dor de cabeca",
+      inicio_duracao: null,
+      evolucao: null,
+      fatores_melhora_piora: null,
+      sintomas_associados: null,
+      antecedentes: null,
+      medicacoes_alergias: null,
+      habitos_contexto: null,
+    },
+    {
+      inicio_duracao: "Desde ontem",
+      evolucao: "Piorou hoje",
+      queixa_principal: "Dor no peito",
+    },
+  );
+
+  assert.equal(merged.queixa_principal, "Dor de cabeca");
+  assert.equal(merged.inicio_duracao, "Desde ontem");
+  assert.equal(merged.evolucao, "Piorou hoje");
 });
