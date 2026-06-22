@@ -54,8 +54,12 @@ export type ConversationMetadata = {
   sections: ConversationSections;
   generation: {
     generated_at: string;
+    ai_enhanced: boolean;
+    ai_model: string | null;
   };
 };
+
+export type AiConversationSections = Partial<ConversationSections>;
 
 export type ConversationRef = {
   status: string;
