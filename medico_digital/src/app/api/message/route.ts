@@ -1,8 +1,13 @@
 import { NextResponse } from "next/server";
 import { getDbPool } from "@/lib/server/db";
+import { InferenceClient } from "@huggingface/inference";
+import { env } from "@/lib/server/env";
 import { getSessionUserId } from "@/lib/server/auth-session";
 import { AuthRepository } from "@/modules/auth/auth.repository";
-import { chatService } from "@/modules/chat/chat.container";
+import { ChatRepository } from "@/modules/chat/chat.repository";
+import { ChatService } from "@/modules/chat/chat.service";
+import { ReportsRepository } from "@/modules/reports/reports.repository";
+import { ReportsService } from "@/modules/reports/reports.service";
 import { PatientsRepository } from "@/modules/patients/patients.repository";
 import { PatientsService } from "@/modules/patients/patients.service";
 
@@ -13,6 +18,11 @@ const db = getDbPool();
 const authRepository = db ? new AuthRepository(db) : null;
 const patientsRepository = db ? new PatientsRepository(db) : null;
 const patientsService = new PatientsService(patientsRepository);
+const chatRepository = db ? new ChatRepository(db) : null;
+const hf = new InferenceClient(env.hfToken || undefined);
+const chatService = new ChatService(hf, chatRepository);
+const reportsRepository = db ? new ReportsRepository(db) : null;
+const reportsService = new ReportsService(reportsRepository);
 
 export async function POST(request: Request) {
   try {
@@ -68,7 +78,40 @@ export async function POST(request: Request) {
       patientId: String(patient.id),
       text,
     });
-    return NextResponse.json(payload);
+
+    const conversationId = payload.conversationId ?? null;
+    let autoFinalized = false;
+
+    if (conversationId) {
+      try {
+        const assessment = await reportsService.assessConversation({
+          userId: sessionUser.userId,
+          conversationId,
+        });
+
+        if (
+          assessment.conversationStatus === "active" &&
+          assessment.readiness.is_ready
+        ) {
+          const finalizeResult = await chatService.finalizeAttendance(
+            String(patient.id),
+            String(conversationId),
+          );
+
+          autoFinalized = finalizeResult.status === "completed";
+        }
+      } catch (autoFinalizeError) {
+        console.warn("Could not auto-finalize attendance:", autoFinalizeError);
+      }
+    }
+
+    return NextResponse.json({
+      ...payload,
+      automation: {
+        autoFinalized,
+        conversationId,
+      },
+    });
   } catch (error) {
     if (
       error instanceof Error &&
