@@ -17,7 +17,6 @@ export default function ReportPrintPage() {
   const reportId = routeParams?.id ?? "";
   const [data, setData] = useState<ReportDownloadDataResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [hasAutoPrinted, setHasAutoPrinted] = useState(false);
 
   useEffect(() => {
     if (!reportId) {
@@ -28,7 +27,9 @@ export default function ReportPrintPage() {
       setError(null);
       const response = await fetch(`/api/reports/${reportId}/download`);
       if (response.status === 401) {
-        router.replace(`/login?next=${encodeURIComponent(`/reports/${reportId}/print`)}`);
+        router.replace(
+          `/login?next=${encodeURIComponent(`/reports/${reportId}/print`)}`,
+        );
         return;
       }
       if (!response.ok) {
@@ -39,17 +40,6 @@ export default function ReportPrintPage() {
       setData(payload);
     })();
   }, [reportId, router]);
-
-  useEffect(() => {
-    if (!data || hasAutoPrinted) {
-      return;
-    }
-    const timer = window.setTimeout(() => {
-      window.print();
-      setHasAutoPrinted(true);
-    }, 250);
-    return () => window.clearTimeout(timer);
-  }, [data, hasAutoPrinted]);
 
   const computed = useMemo(() => {
     if (!data) {
@@ -86,11 +76,17 @@ export default function ReportPrintPage() {
   }
 
   if (!data || !computed) {
-    return <main className="p-6 text-sm text-foreground/65">Carregando relatório...</main>;
+    return (
+      <main className="p-6 text-sm text-foreground/65">
+        Carregando relatório...
+      </main>
+    );
   }
 
   const score =
-    typeof computed.readiness.score === "number" ? computed.readiness.score : null;
+    typeof computed.readiness.score === "number"
+      ? computed.readiness.score
+      : null;
   const requiredScore =
     typeof computed.readiness.required_score === "number"
       ? computed.readiness.required_score
@@ -125,11 +121,15 @@ export default function ReportPrintPage() {
           </h1>
           <div className="grid gap-x-6 gap-y-2 text-[13px] text-white/78 md:grid-cols-2">
             <p>
-              <strong className="font-semibold text-white">Relatório ID:</strong>{" "}
+              <strong className="font-semibold text-white">
+                Relatório ID:
+              </strong>{" "}
               {display(data.report.id)}
             </p>
             <p>
-              <strong className="font-semibold text-white">Atendimento ID:</strong>{" "}
+              <strong className="font-semibold text-white">
+                Atendimento ID:
+              </strong>{" "}
               {display(data.report.conversation_id || data.attendance.id)}
             </p>
             <p>
@@ -138,14 +138,25 @@ export default function ReportPrintPage() {
             </p>
             <p>
               <strong className="font-semibold text-white">Gerado em:</strong>{" "}
-              {display(data.report.generated_at)}
+              {display(
+                data.report.generated_at
+                  ? new Intl.DateTimeFormat("pt-BR", {
+                      dateStyle: "short",
+                      timeStyle: "medium",
+                    }).format(new Date(data.report.generated_at))
+                  : "",
+              )}
             </p>
             <p>
-              <strong className="font-semibold text-white">Status do atendimento:</strong>{" "}
+              <strong className="font-semibold text-white">
+                Status do atendimento:
+              </strong>{" "}
               {display(data.attendance.status)}
             </p>
             <p>
-              <strong className="font-semibold text-white">Status do relatório:</strong>{" "}
+              <strong className="font-semibold text-white">
+                Status do relatório:
+              </strong>{" "}
               {display(data.report.status)}
             </p>
           </div>
@@ -153,7 +164,9 @@ export default function ReportPrintPage() {
 
         <div className="space-y-6 px-7 py-6">
           <section>
-            <h2 className="mb-2 text-lg font-semibold tracking-tight text-slate-900">Completude da Anamnese</h2>
+            <h2 className="mb-2 text-lg font-semibold tracking-tight text-slate-900">
+              Completude da Anamnese
+            </h2>
             <div className="rounded-2xl border border-slate-200 bg-slate-50/80 p-4">
               {score !== null && requiredScore !== null ? (
                 <p className="mb-2">
@@ -161,7 +174,7 @@ export default function ReportPrintPage() {
                     className={`inline-flex rounded-full px-3 py-1 text-xs font-bold ${
                       readinessOk
                         ? "bg-emerald-100 text-emerald-800"
-                      : "bg-amber-100 text-amber-800"
+                        : "bg-amber-100 text-amber-800"
                     }`}
                   >
                     {readinessOk ? "Completo" : "Incompleto"}
@@ -176,7 +189,9 @@ export default function ReportPrintPage() {
 
               {computed.missingCriteria.length > 0 && (
                 <div className="mt-2">
-                  <p className="text-sm font-semibold text-slate-800">Itens pendentes:</p>
+                  <p className="text-sm font-semibold text-slate-800">
+                    Itens pendentes:
+                  </p>
                   <ul className="mt-1 list-disc pl-5 text-sm text-slate-700">
                     {computed.missingCriteria.map((item) => (
                       <li key={item}>{item}</li>
@@ -188,30 +203,45 @@ export default function ReportPrintPage() {
           </section>
 
           <section>
-            <h2 className="mb-2 text-lg font-semibold tracking-tight text-slate-900">Seções Clínicas</h2>
+            <h2 className="mb-2 text-lg font-semibold tracking-tight text-slate-900">
+              Seções Clínicas
+            </h2>
             <div className="grid grid-cols-2 gap-3">
               {[
                 ["Queixa principal", computed.sections.queixa_principal],
                 ["Início e duração", computed.sections.inicio_duracao],
                 ["Evolução", computed.sections.evolucao],
-                ["Fatores de melhora/piora", computed.sections.fatores_melhora_piora],
+                [
+                  "Fatores de melhora/piora",
+                  computed.sections.fatores_melhora_piora,
+                ],
                 ["Sintomas associados", computed.sections.sintomas_associados],
                 ["Antecedentes", computed.sections.antecedentes],
-                ["Medicações e alergias", computed.sections.medicacoes_alergias],
+                [
+                  "Medicações e alergias",
+                  computed.sections.medicacoes_alergias,
+                ],
                 ["Hábitos e contexto", computed.sections.habitos_contexto],
               ].map(([label, value]) => (
-                <div key={label} className="rounded-2xl border border-slate-200 bg-slate-50 p-3">
+                <div
+                  key={label}
+                  className="rounded-2xl border border-slate-200 bg-slate-50 p-3"
+                >
                   <p className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-slate-500">
                     {label}
                   </p>
-                  <p className="text-sm leading-relaxed text-slate-800">{display(value)}</p>
+                  <p className="text-sm leading-relaxed text-slate-800">
+                    {display(value)}
+                  </p>
                 </div>
               ))}
             </div>
           </section>
 
           <section>
-            <h2 className="mb-2 text-lg font-semibold tracking-tight text-slate-900">Resumo Consolidado</h2>
+            <h2 className="mb-2 text-lg font-semibold tracking-tight text-slate-900">
+              Resumo Consolidado
+            </h2>
             <div className="rounded-2xl border border-slate-200 bg-slate-50/80 p-4">
               <p className="whitespace-pre-wrap text-sm leading-7 text-slate-800">
                 {display(data.report.summary)}
@@ -221,7 +251,8 @@ export default function ReportPrintPage() {
         </div>
 
         <footer className="border-t border-slate-200 bg-slate-50 px-7 py-3 text-xs text-slate-500">
-          Este documento representa triagem/anamnese e não substitui diagnóstico médico.
+          Este documento representa triagem/anamnese e não substitui diagnóstico
+          médico.
         </footer>
       </section>
     </main>

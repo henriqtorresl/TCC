@@ -5,6 +5,11 @@ export type ChatMessage = {
 
 export type ChatApiResponse = {
   reply: string;
+  conversationId?: number | null;
+  automation?: {
+    autoFinalized: boolean;
+    conversationId: number | null;
+  };
 };
 
 export type AttendanceSummary = {

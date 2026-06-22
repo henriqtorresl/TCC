@@ -355,6 +355,11 @@ export function ChatScreen() {
       const data = (await response.json()) as ChatApiResponse;
       setMessages((prev) => [...prev, { role: "assistant", text: data.reply }]);
       await loadAttendances(true);
+      if (data.automation?.autoFinalized) {
+        setStatusMessage(
+          "Atendimento encerrado automaticamente porque a anamnese ficou completa.",
+        );
+      }
       if (selectedAttendanceId) {
         await loadReadinessPreview(selectedAttendanceId);
         await loadReportAvailability(selectedAttendanceId);

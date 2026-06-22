@@ -1,9 +1,11 @@
 import { NextResponse } from "next/server";
+import { InferenceClient } from "@huggingface/inference";
 import { getDbPool } from "@/lib/server/db";
 import { getSessionUserId } from "@/lib/server/auth-session";
 import { AuthRepository } from "@/modules/auth/auth.repository";
 import { ReportsRepository } from "@/modules/reports/reports.repository";
 import { ReportsService } from "@/modules/reports/reports.service";
+import { env } from "@/lib/server/env";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -11,7 +13,8 @@ export const dynamic = "force-dynamic";
 const db = getDbPool();
 const authRepository = db ? new AuthRepository(db) : null;
 const reportsRepository = db ? new ReportsRepository(db) : null;
-const reportsService = new ReportsService(reportsRepository);
+const hf = new InferenceClient(env.hfToken || undefined);
+const reportsService = new ReportsService(reportsRepository, hf);
 
 export async function GET(request: Request) {
   try {

@@ -86,6 +86,21 @@ export class ChatRepository {
     return this.createConversation(patientId);
   }
 
+  async findLatestActiveConversationId(patientId: number): Promise<number | null> {
+    const existing = await this.db.query<{ id: number }>(
+      `
+      SELECT id
+      FROM conversations
+      WHERE patient_id = $1 AND status = 'active'
+      ORDER BY started_at DESC
+      LIMIT 1
+      `,
+      [patientId],
+    );
+
+    return existing.rows[0]?.id ?? null;
+  }
+
   async closeLatestActiveConversation(patientId: number): Promise<number | null> {
     const result = await this.db.query<{ id: number }>(
       `

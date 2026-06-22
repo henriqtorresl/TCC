@@ -12,4 +12,5 @@ export type ChatEntity = {
 export type ChatResponse = {
   reply: string;
   entities: ChatEntity[];
+  conversationId?: number | null;
 };
