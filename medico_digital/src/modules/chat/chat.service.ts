@@ -31,27 +31,13 @@ export class ChatService {
       throw new Error("patientId e text são obrigatórios");
     }
 
-    this.conversations[patientId] = this.conversations[patientId] ?? [];
-    this.conversations[patientId].push({ role: "user", text, ts: Date.now() });
+    const numericPatientId = Number(patientId);
+    if (!Number.isFinite(numericPatientId) || numericPatientId <= 0) {
+      throw new Error("invalid_patient_id");
+    }
 
-    const systemPrompt = `Você é um assistente médico virtual especializado em conduzir uma anamnese.
-Seu objetivo é coletar informações como queixa principal, início, evolução, fatores de melhora/piora, antecedentes e hábitos.
-
-Mantenha um tom profissional, buscando uma conversa natural, mas sem ser excessivamente seco.
-
-Sua regra mais importante é: faça apenas UMA pergunta de cada vez, sempre que possível.
-
-Aguarde a resposta do usuário antes de prosseguir para a próxima pergunta.
-Formule perguntas claras e objetivas para guiar o diálogo, avançando passo a passo na coleta de informações.
-Não dê diagnóstico final; seu papel é exclusivamente coletar as informações de forma sequencial.`;
-
-    const messages = [
-      { role: "system" as const, content: systemPrompt },
-      ...this.conversations[patientId].slice(-10).map((entry) => ({
-        role: entry.role,
-        content: entry.text,
-      })),
-    ];
+    const history = await this.loadConversationHistory(numericPatientId);
+    const messages = this.buildPromptMessages(history, text);
 
     const completion = await this.aiClient.chatCompletion({
       model: CHAT_MODEL,
@@ -64,11 +50,12 @@ Não dê diagnóstico final; seu papel é exclusivamente coletar as informaçõe
     const rawBotText = completion?.choices?.[0]?.message?.content ?? "";
     const botText = this.sanitizeBotText(rawBotText);
 
-    this.conversations[patientId].push({
-      role: "assistant",
-      text: botText,
-      ts: Date.now(),
-    });
+    const timestamp = Date.now();
+    this.conversations[patientId] = [
+      ...history,
+      { role: "user", text, ts: timestamp },
+      { role: "assistant", text: botText, ts: timestamp },
+    ];
 
     const nerResult = await this.aiClient.tokenClassification({
       model: NER_MODEL,
@@ -313,6 +300,11 @@ Não dê diagnóstico final; seu papel é exclusivamente coletar as informaçõe
       throw new Error("attendance_reopen_failed");
     }
 
+    this.conversations[patientId] = await this.loadConversationHistory(
+      numericPatientId,
+      reopened.id,
+    );
+
     return {
       attendanceId: reopened.id,
       status: reopened.status,
@@ -334,6 +326,62 @@ Não dê diagnóstico final; seu papel é exclusivamente coletar as informaçõe
 
     value = value.replace(/(\n\s*){2,}/g, "\n");
     return value.trim();
+  }
+
+  private buildPromptMessages(history: ChatHistoryItem[], userText: string) {
+    const systemPrompt = `Você é um assistente médico virtual especializado em conduzir uma anamnese.
+    Seu objetivo é coletar informações como queixa principal, início, evolução, fatores de melhora/piora, antecedentes e hábitos.
+
+    Mantenha um tom profissional, buscando uma conversa natural, mas sem ser excessivamente seco.
+
+    Sua regra mais importante é: faça apenas UMA pergunta de cada vez, sempre que possível.
+
+    Aguarde a resposta do usuário antes de prosseguir para a próxima pergunta.
+    Formule perguntas claras e objetivas para guiar o diálogo, avançando passo a passo na coleta de informações.
+    Não dê diagnóstico final; seu papel é exclusivamente coletar as informações de forma sequencial.`;
+
+    return [
+      { role: "system" as const, content: systemPrompt },
+      ...history.slice(-20).map((entry) => ({
+        role: entry.role,
+        content: entry.text,
+      })),
+      { role: "user" as const, content: userText },
+    ];
+  }
+
+  private async loadConversationHistory(
+    patientId: number,
+    conversationId?: number,
+  ): Promise<ChatHistoryItem[]> {
+    const memoryHistory = this.conversations[String(patientId)] ?? [];
+
+    if (!this.chatRepository) {
+      return memoryHistory;
+    }
+
+    const activeConversationId =
+      conversationId ??
+      (await this.chatRepository.findLatestActiveConversationId(patientId));
+
+    if (!activeConversationId) {
+      return memoryHistory;
+    }
+
+    const persistedMessages =
+      await this.chatRepository.listMessagesByConversationId(
+        activeConversationId,
+      );
+
+    return persistedMessages
+      .filter(
+        (message) => message.role === "user" || message.role === "assistant",
+      )
+      .map((message) => ({
+        role: message.role as "user" | "assistant",
+        text: message.content,
+        ts: Date.parse(message.created_at) || Date.now(),
+      }));
   }
 
   private async persistIfPossible(

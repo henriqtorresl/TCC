@@ -240,6 +240,22 @@ export class ChatRepository {
     return messages.rows;
   }
 
+  async listMessagesByConversationId(
+    conversationId: number,
+  ): Promise<AttendanceMessageRow[]> {
+    const messages = await this.db.query<AttendanceMessageRow>(
+      `
+      SELECT id, role, content, created_at
+      FROM messages
+      WHERE conversation_id = $1
+      ORDER BY created_at ASC;
+      `,
+      [conversationId],
+    );
+
+    return messages.rows;
+  }
+
   async findAttendanceById(
     patientId: number,
     attendanceId: number,
