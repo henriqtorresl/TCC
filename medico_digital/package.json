@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "test": "tsx --test tests/report-mapper.test.ts",
+    "test": "tsx --test tests/index.test.ts",
     "lint": "eslint",
     "migrate": "node scripts/migrate.mjs",
     "db:dev:up": "docker compose up -d",
