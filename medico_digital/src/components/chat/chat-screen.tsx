@@ -39,7 +39,7 @@ export function ChatScreen() {
   const [dateFromFilterApplied, setDateFromFilterApplied] = useState("");
   const [dateToFilterApplied, setDateToFilterApplied] = useState("");
   const [isHistoryLoading, setIsHistoryLoading] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isSendingMessage, setIsSendingMessage] = useState(false);
   const [isStartingAttendance, setIsStartingAttendance] = useState(false);
   const [isFinalizingAttendance, setIsFinalizingAttendance] = useState(false);
   const [isResumingAttendance, setIsResumingAttendance] = useState(false);
@@ -94,7 +94,36 @@ export function ChatScreen() {
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, isLoading]);
+  }, [messages, isSendingMessage]);
+
+  function syncAttendanceSummaryAfterSend(
+    conversationId: number | null | undefined,
+    autoFinalized: boolean,
+  ) {
+    if (!conversationId) {
+      return;
+    }
+
+    const nowIso = new Date().toISOString();
+
+    setAttendances((currentAttendances) =>
+      currentAttendances.map((attendance) => {
+        if (attendance.id !== conversationId) {
+          return attendance;
+        }
+
+        const currentMessageCount = Number(attendance.message_count) || 0;
+
+        return {
+          ...attendance,
+          message_count: String(currentMessageCount + 2),
+          last_message_at: nowIso,
+          status: autoFinalized ? "completed" : attendance.status,
+          ended_at: autoFinalized ? nowIso : attendance.ended_at,
+        };
+      }),
+    );
+  }
 
   const loadAttendances = useCallback(
     async (
@@ -308,7 +337,7 @@ export function ChatScreen() {
     const text = textInput.trim();
     if (
       !text ||
-      isLoading ||
+      isSendingMessage ||
       isHistoryLoading ||
       isFinalizingAttendance ||
       isResumingAttendance ||
@@ -331,7 +360,7 @@ export function ChatScreen() {
     setTextInput("");
     setError(null);
     setStatusMessage(null);
-    setIsLoading(true);
+    setIsSendingMessage(true);
     setMessages((prev) => [...prev, { role: "user", text }]);
 
     try {
@@ -354,15 +383,28 @@ export function ChatScreen() {
 
       const data = (await response.json()) as ChatApiResponse;
       setMessages((prev) => [...prev, { role: "assistant", text: data.reply }]);
-      await loadAttendances(true);
+
+      setIsSendingMessage(false);
+
+      if (data.automation?.autoFinalized || !data.conversationId) {
+        await loadAttendances(true);
+      } else {
+        syncAttendanceSummaryAfterSend(
+          data.conversationId,
+          data.automation?.autoFinalized ?? false,
+        );
+      }
+
       if (data.automation?.autoFinalized) {
         setStatusMessage(
           "Atendimento encerrado automaticamente porque a anamnese ficou completa.",
         );
       }
-      if (selectedAttendanceId) {
-        await loadReadinessPreview(selectedAttendanceId);
-        await loadReportAvailability(selectedAttendanceId);
+
+      const attendanceId = data.conversationId ?? selectedAttendanceId;
+      if (attendanceId) {
+        await loadReadinessPreview(attendanceId);
+        await loadReportAvailability(attendanceId);
       }
     } catch (requestError) {
       setError(
@@ -371,13 +413,13 @@ export function ChatScreen() {
           : "Erro inesperado ao enviar mensagem.",
       );
     } finally {
-      setIsLoading(false);
+      setIsSendingMessage(false);
     }
   }
 
   async function handleStartNewAttendance() {
     if (
-      isLoading ||
+      isSendingMessage ||
       isStartingAttendance ||
       isHistoryLoading ||
       isFinalizingAttendance ||
@@ -533,7 +575,7 @@ export function ChatScreen() {
       !selectedAttendance ||
       selectedAttendance.status !== "active" ||
       isFinalizingAttendance ||
-      isLoading ||
+      isSendingMessage ||
       isHistoryLoading ||
       isGeneratingReport ||
       isStartingAttendance
@@ -622,7 +664,7 @@ export function ChatScreen() {
       selectedAttendance.status === "active" ||
       isResumingAttendance ||
       isFinalizingAttendance ||
-      isLoading ||
+      isSendingMessage ||
       isHistoryLoading ||
       isGeneratingReport ||
       isStartingAttendance
@@ -681,7 +723,7 @@ export function ChatScreen() {
     if (
       !selectedAttendance ||
       isGeneratingReport ||
-      isLoading ||
+      isSendingMessage ||
       isHistoryLoading ||
       isStartingAttendance ||
       isFinalizingAttendance ||
@@ -872,7 +914,7 @@ export function ChatScreen() {
             }
             isGeneratingReport={isGeneratingReport}
             disableNewAttendance={
-              isLoading ||
+              isSendingMessage ||
               isStartingAttendance ||
               isHistoryLoading ||
               isGeneratingReport ||
@@ -881,7 +923,7 @@ export function ChatScreen() {
             }
             disableAttendanceAction={
               !selectedAttendance ||
-              isLoading ||
+              isSendingMessage ||
               isHistoryLoading ||
               isStartingAttendance ||
               isGeneratingReport ||
@@ -895,7 +937,7 @@ export function ChatScreen() {
             }
             disableGenerateReport={
               !selectedAttendance ||
-              isLoading ||
+              isSendingMessage ||
               isHistoryLoading ||
               isStartingAttendance ||
               isGeneratingReport ||
@@ -909,7 +951,7 @@ export function ChatScreen() {
           />
           <ChatMessages
             messages={messages}
-            isLoading={isLoading}
+            isLoading={isSendingMessage}
             isHistoryLoading={isHistoryLoading}
             messagesEndRef={messagesEndRef}
           />
@@ -917,7 +959,7 @@ export function ChatScreen() {
             value={textInput}
             onChange={setTextInput}
             onSend={() => void handleSendMessage()}
-            isLoading={isLoading}
+            isLoading={isSendingMessage}
             isHistoryLoading={isHistoryLoading}
             isAttendanceClosed={
               selectedAttendance ? selectedAttendance.status !== "active" : false
