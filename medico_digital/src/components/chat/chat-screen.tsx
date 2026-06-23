@@ -386,13 +386,13 @@ export function ChatScreen() {
 
       setIsSendingMessage(false);
 
-      if (data.automation?.autoFinalized || !data.conversationId) {
-        await loadAttendances(true);
-      } else {
+      if (data.conversationId) {
         syncAttendanceSummaryAfterSend(
           data.conversationId,
           data.automation?.autoFinalized ?? false,
         );
+      } else {
+        await loadAttendances(true);
       }
 
       if (data.automation?.autoFinalized) {
