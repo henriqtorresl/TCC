@@ -2,6 +2,7 @@ import { KeyboardEvent } from "react";
 import { SendHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 
 type ChatComposerProps = {
   value: string;
@@ -58,8 +59,13 @@ export function ChatComposer({
           <SendHorizontal />
         </Button>
       </div>
-      <div className="mt-2 flex flex-wrap items-center justify-between gap-2 text-xs text-foreground/55">
-        <p>Pressione Enter para enviar</p>
+      <div
+        className={cn(
+          "mt-2 flex flex-wrap items-center gap-2 text-xs text-foreground/55",
+          isAttendanceClosed ? "justify-end" : "justify-between",
+        )}
+      >
+        {!isAttendanceClosed && <p>Pressione Enter para enviar</p>}
         {statusMessage && <p className="text-primary">{statusMessage}</p>}
       </div>
       {isAttendanceClosed && (
