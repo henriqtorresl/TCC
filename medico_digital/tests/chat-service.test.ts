@@ -61,7 +61,11 @@ test("sendMessage reuses the persisted conversation context when it exists", asy
     findLatestActiveConversationId: async () => 42,
     listMessagesByConversationId: async () => savedMessages,
     ensureActiveConversation: async () => 42,
-    saveMessage: async (conversationId: number, role: string, content: string) => {
+    saveMessage: async (
+      conversationId: number,
+      role: string,
+      content: string,
+    ) => {
       savedCalls.push([conversationId, role, content]);
     },
   };
@@ -71,7 +75,8 @@ test("sendMessage reuses the persisted conversation context when it exists", asy
   const response = await service.sendMessage({
     patientId: "7",
     text: "Agora tambem sinto enjoo.",
-  }, { userId: 7 });
+    userId: 7,
+  });
 
   assert.equal(response.reply, "Claro. Qual a próxima informação?");
   assert.deepEqual(
@@ -116,7 +121,8 @@ test("sendMessage does not inject history when the database has no saved message
   await service.sendMessage({
     patientId: "7",
     text: "Tenho febre e dor no corpo.",
-  }, { userId: 7 });
+    userId: 7,
+  });
 
   assert.deepEqual(
     ai.state.lastMessages.map(({ role, content }) => ({ role, content })),
@@ -147,7 +153,11 @@ test("sendMessage auto-finalizes when the conversation is ready", async () => {
         created_at: "2026-06-21T10:00:00.000Z",
       },
     ],
-    saveMessage: async (conversationId: number, role: string, content: string) => {
+    saveMessage: async (
+      conversationId: number,
+      role: string,
+      content: string,
+    ) => {
       savedCalls.push([conversationId, role, content]);
     },
     findAttendanceById: async () => ({
@@ -170,7 +180,7 @@ test("sendMessage auto-finalizes when the conversation is ready", async () => {
       readiness: {
         is_ready: true,
         score: 8,
-        required_score: 7,
+        required_score: 8,
         criteria: {
           queixa_principal: true,
           inicio_duracao: true,
@@ -203,15 +213,11 @@ test("sendMessage auto-finalizes when the conversation is ready", async () => {
     reportsService as never,
   );
 
-  const response = await service.sendMessage(
-    {
-      patientId: "7",
-      text: "Tenho dor de cabeca desde ontem e piorou hoje.",
-    },
-    {
-      userId: 12,
-    },
-  );
+  const response = await service.sendMessage({
+    patientId: "7",
+    text: "Tenho dor de cabeca desde ontem e piorou hoje.",
+    userId: 12,
+  });
 
   assert.deepEqual(response, {
     autoFinalized: true,
@@ -219,5 +225,7 @@ test("sendMessage auto-finalizes when the conversation is ready", async () => {
   });
   assert.equal(ai.state.chatCompletionCalls, 0);
   assert.equal(ai.state.tokenClassificationCalls, 0);
-  assert.deepEqual(savedCalls, [[77, "user", "Tenho dor de cabeca desde ontem e piorou hoje."]]);
+  assert.deepEqual(savedCalls, [
+    [77, "user", "Tenho dor de cabeca desde ontem e piorou hoje."],
+  ]);
 });
