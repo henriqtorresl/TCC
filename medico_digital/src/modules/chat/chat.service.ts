@@ -28,11 +28,11 @@ export class ChatService {
     private readonly reportsService: ReportsService | null = null,
   ) {}
 
-  // tipar os parametros e o retorno corretamente
-  async sendMessage(
-    { patientId, text }: ChatRequest,
-    sessionUser: any,
-  ): Promise<ChatResponse | any> {
+  async sendMessage({
+    patientId,
+    text,
+    userId,
+  }: ChatRequest): Promise<ChatResponse> {
     if (!patientId || !text) {
       throw new Error("patientId e text são obrigatórios");
     }
@@ -43,29 +43,32 @@ export class ChatService {
     }
 
     if (!this.chatRepository) {
-      throw new Error("erro"); // melhorar essas exceções
+      throw new Error("database_not_configured");
     }
 
-    if (!this.reportsService) {
-      throw new Error("erro");
-    }
-
-    // validar se essa é a melhor logica possível
     const conversationId =
       await this.chatRepository.ensureActiveConversation(numericPatientId);
+    await this.chatRepository.saveMessage(conversationId, "user", text);
+
+    const persistedHistory = await this.loadConversationHistory(
+      numericPatientId,
+      conversationId,
+    );
+    const conversationHistory = this.ensureCurrentUserMessage(
+      persistedHistory,
+      text,
+    );
+    this.conversations[String(numericPatientId)] = conversationHistory;
 
     let autoFinalized = false;
-    if (conversationId) {
+    if (this.reportsService) {
       try {
         const assessment = await this.reportsService.assessConversation({
-          userId: sessionUser.userId,
+          userId,
           conversationId,
         });
 
-        if (
-          assessment.conversationStatus === "active" &&
-          assessment.readiness.is_ready
-        ) {
+        if (assessment.shouldAutoFinalize) {
           const finalizeResult = await this.finalizeAttendance(
             String(patientId),
             String(conversationId),
@@ -79,14 +82,13 @@ export class ChatService {
     }
 
     if (autoFinalized) {
-      // se eu puder finalizar de fato eu não "peço" mais uma resposta do chat e retorno para o front a informação de que foi autofinalizado
-      await this.chatRepository.saveMessage(conversationId, "user", text);
-
-      return { autoFinalized, conversationId };
+      return {
+        autoFinalized,
+        conversationId,
+      };
     }
 
-    const history = await this.loadConversationHistory(numericPatientId);
-    const messages = this.buildPromptMessages(history, text);
+    const messages = this.buildPromptMessages(conversationHistory);
 
     const completion = await this.aiClient.chatCompletion({
       model: CHAT_MODEL,
@@ -100,9 +102,8 @@ export class ChatService {
     const botText = this.sanitizeBotText(rawBotText);
 
     const timestamp = Date.now();
-    this.conversations[patientId] = [
-      ...history,
-      { role: "user", text, ts: timestamp },
+    this.conversations[String(numericPatientId)] = [
+      ...conversationHistory,
       { role: "assistant", text: botText, ts: timestamp },
     ];
 
@@ -117,7 +118,11 @@ export class ChatService {
       score: entity.score ?? 0,
     }));
 
-    await this.persistIfPossible(patientId, text, botText, entities);
+    await this.persistAssistantMessageIfPossible(
+      conversationId,
+      botText,
+      entities,
+    );
 
     return { reply: botText, entities, conversationId };
   }
@@ -372,17 +377,31 @@ export class ChatService {
     return value.trim();
   }
 
-  private buildPromptMessages(history: ChatHistoryItem[], userText: string) {
-    const systemPrompt = `Você é um assistente médico virtual especializado em conduzir uma anamnese.
-    Seu objetivo é coletar informações como queixa principal, início, evolução, fatores de melhora/piora, antecedentes e hábitos.
+  private ensureCurrentUserMessage(
+    history: ChatHistoryItem[],
+    userText: string,
+  ): ChatHistoryItem[] {
+    const lastMessage = history[history.length - 1];
+    if (lastMessage?.role === "user" && lastMessage.text === userText) {
+      return history;
+    }
 
-    Mantenha um tom profissional, buscando uma conversa natural, mas sem ser excessivamente seco.
+    return [...history, { role: "user", text: userText, ts: Date.now() }];
+  }
 
-    Sua regra mais importante é: faça apenas UMA pergunta de cada vez, sempre que possível.
-
-    Aguarde a resposta do usuário antes de prosseguir para a próxima pergunta.
-    Formule perguntas claras e objetivas para guiar o diálogo, avançando passo a passo na coleta de informações.
-    Não dê diagnóstico final; seu papel é exclusivamente coletar as informações de forma sequencial.`;
+  private buildPromptMessages(history: ChatHistoryItem[]) {
+    const systemPrompt = [
+      "Você é um assistente médico virtual especializado em conduzir uma anamnese.",
+      "Seu objetivo é coletar informações como queixa principal, início, evolução, fatores de melhora/piora, antecedentes e hábitos.",
+      "",
+      "Mantenha um tom profissional, buscando uma conversa natural, mas sem ser excessivamente seco.",
+      "",
+      "Sua regra mais importante é: faça apenas UMA pergunta de cada vez, sempre que possível.",
+      "",
+      "Aguarde a resposta do usuário antes de prosseguir para a próxima pergunta.",
+      "Formule perguntas claras e objetivas para guiar o diálogo, avançando passo a passo na coleta de informações.",
+      "Não dê diagnóstico final; seu papel é exclusivamente coletar as informações de forma sequencial.",
+    ].join("\n");
 
     return [
       { role: "system" as const, content: systemPrompt },
@@ -390,7 +409,6 @@ export class ChatService {
         role: entry.role,
         content: entry.text,
       })),
-      { role: "user" as const, content: userText },
     ];
   }
 
@@ -428,36 +446,24 @@ export class ChatService {
       }));
   }
 
-  private async persistIfPossible(
-    patientId: string,
-    userText: string,
+  private async persistAssistantMessageIfPossible(
+    conversationId: number,
     assistantText: string,
     entities: ChatEntity[],
-  ): Promise<number | null> {
+  ): Promise<void> {
     if (!this.chatRepository) {
-      return null;
-    }
-
-    const numericPatientId = Number(patientId);
-    if (!Number.isFinite(numericPatientId) || numericPatientId <= 0) {
-      return null;
+      return;
     }
 
     try {
-      const conversationId =
-        await this.chatRepository.ensureActiveConversation(numericPatientId);
-      await this.chatRepository.saveMessage(conversationId, "user", userText);
       await this.chatRepository.saveMessage(
         conversationId,
         "assistant",
         assistantText,
         entities,
       );
-
-      return conversationId;
     } catch (error) {
       console.warn("Could not persist chat messages:", error);
-      return null;
     }
   }
 }

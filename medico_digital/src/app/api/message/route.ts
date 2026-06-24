@@ -76,13 +76,11 @@ export async function POST(request: Request) {
 
     const patient = await patientsService.getMe(sessionUser.userId);
 
-    const payload = await chatService.sendMessage(
-      {
-        patientId: String(patient.id),
-        text,
-      },
-      sessionUser,
-    );
+    const payload = await chatService.sendMessage({
+      patientId: String(patient.id),
+      text,
+      userId: sessionUser.userId,
+    });
 
     return NextResponse.json({
       ...payload,

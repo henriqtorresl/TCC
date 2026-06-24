@@ -1,6 +1,7 @@
 export type ChatRequest = {
   patientId: string;
   text: string;
+  userId: number;
 };
 
 export type ChatEntity = {
@@ -10,7 +11,8 @@ export type ChatEntity = {
 };
 
 export type ChatResponse = {
-  reply: string;
-  entities: ChatEntity[];
+  reply?: string;
+  entities?: ChatEntity[];
   conversationId?: number | null;
+  autoFinalized?: boolean;
 };
