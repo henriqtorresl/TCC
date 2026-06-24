@@ -20,9 +20,9 @@ const patientsRepository = db ? new PatientsRepository(db) : null;
 const patientsService = new PatientsService(patientsRepository);
 const chatRepository = db ? new ChatRepository(db) : null;
 const hf = new InferenceClient(env.hfToken || undefined);
-const chatService = new ChatService(hf, chatRepository);
 const reportsRepository = db ? new ReportsRepository(db) : null;
 const reportsService = new ReportsService(reportsRepository, hf);
+const chatService = new ChatService(hf, chatRepository, reportsService);
 
 export async function POST(request: Request) {
   try {
@@ -45,7 +45,9 @@ export async function POST(request: Request) {
     }
 
     const text =
-      body && typeof body === "object" && typeof (body as { text?: unknown }).text === "string"
+      body &&
+      typeof body === "object" &&
+      typeof (body as { text?: unknown }).text === "string"
         ? (body as { text: string }).text.trim()
         : "";
 
@@ -74,42 +76,19 @@ export async function POST(request: Request) {
 
     const patient = await patientsService.getMe(sessionUser.userId);
 
-    const payload = await chatService.sendMessage({
-      patientId: String(patient.id),
-      text,
-    });
-
-    const conversationId = payload.conversationId ?? null;
-    let autoFinalized = false;
-
-    if (conversationId) {
-      try {
-        const assessment = await reportsService.assessConversation({
-          userId: sessionUser.userId,
-          conversationId,
-        });
-
-        if (
-          assessment.conversationStatus === "active" &&
-          assessment.readiness.is_ready
-        ) {
-          const finalizeResult = await chatService.finalizeAttendance(
-            String(patient.id),
-            String(conversationId),
-          );
-
-          autoFinalized = finalizeResult.status === "completed";
-        }
-      } catch (autoFinalizeError) {
-        console.warn("Could not auto-finalize attendance:", autoFinalizeError);
-      }
-    }
+    const payload = await chatService.sendMessage(
+      {
+        patientId: String(patient.id),
+        text,
+      },
+      sessionUser,
+    );
 
     return NextResponse.json({
       ...payload,
       automation: {
-        autoFinalized,
-        conversationId,
+        autoFinalized: payload.autoFinalized ?? false,
+        conversationId: payload.conversationId ?? null,
       },
     });
   } catch (error) {
@@ -123,19 +102,20 @@ export async function POST(request: Request) {
     if (error instanceof Error && error.message === "database_not_configured") {
       return NextResponse.json({ error: error.message }, { status: 503 });
     }
-    if (
-      error instanceof Error &&
-      error.message === "invalid_user_id"
-    ) {
+    if (error instanceof Error && error.message === "invalid_user_id") {
       return NextResponse.json({ error: error.message }, { status: 400 });
     }
     if (
       error instanceof Error &&
-      (error.message === "user_not_found" || error.message === "patient_not_found")
+      (error.message === "user_not_found" ||
+        error.message === "patient_not_found")
     ) {
       return NextResponse.json({ error: error.message }, { status: 404 });
     }
     console.error("Unhandled error in /api/message:", error);
-    return NextResponse.json({ error: "internal_server_error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "internal_server_error" },
+      { status: 500 },
+    );
   }
 }

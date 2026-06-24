@@ -1,6 +1,7 @@
 import { InferenceClient } from "@huggingface/inference";
 import { ChatRepository } from "@/modules/chat/chat.repository";
 import { ChatEntity, ChatRequest, ChatResponse } from "@/modules/chat/types";
+import { ReportsService } from "../reports/reports.service";
 
 const CHAT_MODEL = "meta-llama/Llama-3.1-8B-Instruct";
 const NER_MODEL = "d4data/biomedical-ner-all";
@@ -24,9 +25,14 @@ export class ChatService {
   constructor(
     private readonly aiClient: InferenceClient,
     private readonly chatRepository: ChatRepository | null = null,
+    private readonly reportsService: ReportsService | null = null,
   ) {}
 
-  async sendMessage({ patientId, text }: ChatRequest): Promise<ChatResponse> {
+  // tipar os parametros e o retorno corretamente
+  async sendMessage(
+    { patientId, text }: ChatRequest,
+    sessionUser: any,
+  ): Promise<ChatResponse | any> {
     if (!patientId || !text) {
       throw new Error("patientId e text são obrigatórios");
     }
@@ -34,6 +40,49 @@ export class ChatService {
     const numericPatientId = Number(patientId);
     if (!Number.isFinite(numericPatientId) || numericPatientId <= 0) {
       throw new Error("invalid_patient_id");
+    }
+
+    if (!this.chatRepository) {
+      throw new Error("erro"); // melhorar essas exceções
+    }
+
+    if (!this.reportsService) {
+      throw new Error("erro");
+    }
+
+    // validar se essa é a melhor logica possível
+    const conversationId =
+      await this.chatRepository.ensureActiveConversation(numericPatientId);
+
+    let autoFinalized = false;
+    if (conversationId) {
+      try {
+        const assessment = await this.reportsService.assessConversation({
+          userId: sessionUser.userId,
+          conversationId,
+        });
+
+        if (
+          assessment.conversationStatus === "active" &&
+          assessment.readiness.is_ready
+        ) {
+          const finalizeResult = await this.finalizeAttendance(
+            String(patientId),
+            String(conversationId),
+          );
+
+          autoFinalized = finalizeResult.status === "completed";
+        }
+      } catch (autoFinalizeError) {
+        console.warn("Could not auto-finalize attendance:", autoFinalizeError);
+      }
+    }
+
+    if (autoFinalized) {
+      // se eu puder finalizar de fato eu não "peço" mais uma resposta do chat e retorno para o front a informação de que foi autofinalizado
+      await this.chatRepository.saveMessage(conversationId, "user", text);
+
+      return { autoFinalized, conversationId };
     }
 
     const history = await this.loadConversationHistory(numericPatientId);
@@ -68,12 +117,7 @@ export class ChatService {
       score: entity.score ?? 0,
     }));
 
-    const conversationId = await this.persistIfPossible(
-      patientId,
-      text,
-      botText,
-      entities,
-    );
+    await this.persistIfPossible(patientId, text, botText, entities);
 
     return { reply: botText, entities, conversationId };
   }
