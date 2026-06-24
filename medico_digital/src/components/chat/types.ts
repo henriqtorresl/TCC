@@ -4,12 +4,17 @@ export type ChatMessage = {
 };
 
 export type ChatApiResponse = {
-  reply: string;
+  reply?: string;
   conversationId?: number | null;
   automation?: {
     autoFinalized: boolean;
     conversationId: number | null;
   };
+  entities?: {
+    label: string;
+    text: string;
+    score: number;
+  }[];
 };
 
 export type AttendanceSummary = {

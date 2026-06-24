@@ -99,6 +99,7 @@ export function ChatScreen() {
   function syncAttendanceSummaryAfterSend(
     conversationId: number | null | undefined,
     autoFinalized: boolean,
+    messageDelta: number,
   ) {
     if (!conversationId) {
       return;
@@ -116,7 +117,7 @@ export function ChatScreen() {
 
         return {
           ...attendance,
-          message_count: String(currentMessageCount + 2),
+          message_count: String(currentMessageCount + messageDelta),
           last_message_at: nowIso,
           status: autoFinalized ? "completed" : attendance.status,
           ended_at: autoFinalized ? nowIso : attendance.ended_at,
@@ -382,7 +383,10 @@ export function ChatScreen() {
       }
 
       const data = (await response.json()) as ChatApiResponse;
-      setMessages((prev) => [...prev, { role: "assistant", text: data.reply }]);
+      const reply = data.reply;
+      if (typeof reply === "string") {
+        setMessages((prev) => [...prev, { role: "assistant", text: reply }]);
+      }
 
       setIsSendingMessage(false);
 
@@ -390,6 +394,7 @@ export function ChatScreen() {
         syncAttendanceSummaryAfterSend(
           data.conversationId,
           data.automation?.autoFinalized ?? false,
+          data.automation?.autoFinalized ? 1 : 2,
         );
       } else {
         await loadAttendances(true);
