@@ -11,12 +11,15 @@ type RecordedMessage = {
 function createAiClient() {
   const state = {
     lastMessages: [] as RecordedMessage[],
+    chatCompletionCalls: 0,
+    tokenClassificationCalls: 0,
   };
 
   return {
     state,
     client: {
       chatCompletion: async ({ messages }: { messages: RecordedMessage[] }) => {
+        state.chatCompletionCalls += 1;
         state.lastMessages = messages;
         return {
           choices: [
@@ -28,7 +31,10 @@ function createAiClient() {
           ],
         };
       },
-      tokenClassification: async () => [],
+      tokenClassification: async () => {
+        state.tokenClassificationCalls += 1;
+        return [];
+      },
     },
   };
 }
@@ -65,7 +71,7 @@ test("sendMessage reuses the persisted conversation context when it exists", asy
   const response = await service.sendMessage({
     patientId: "7",
     text: "Agora tambem sinto enjoo.",
-  });
+  }, { userId: 7 });
 
   assert.equal(response.reply, "Claro. Qual a próxima informação?");
   assert.deepEqual(
@@ -110,7 +116,7 @@ test("sendMessage does not inject history when the database has no saved message
   await service.sendMessage({
     patientId: "7",
     text: "Tenho febre e dor no corpo.",
-  });
+  }, { userId: 7 });
 
   assert.deepEqual(
     ai.state.lastMessages.map(({ role, content }) => ({ role, content })),
@@ -126,4 +132,92 @@ test("sendMessage does not inject history when the database has no saved message
       },
     ],
   );
+});
+
+test("sendMessage auto-finalizes when the conversation is ready", async () => {
+  const ai = createAiClient();
+  const savedCalls: Array<[number, string, string]> = [];
+  const repository = {
+    ensureActiveConversation: async () => 77,
+    listMessagesByConversationId: async () => [
+      {
+        id: 1,
+        role: "user" as const,
+        content: "Tenho dor de cabeca desde ontem e piorou hoje.",
+        created_at: "2026-06-21T10:00:00.000Z",
+      },
+    ],
+    saveMessage: async (conversationId: number, role: string, content: string) => {
+      savedCalls.push([conversationId, role, content]);
+    },
+    findAttendanceById: async () => ({
+      id: 77,
+      status: "active",
+      ended_at: null,
+    }),
+    closeAttendanceById: async () => ({
+      id: 77,
+      status: "completed",
+      ended_at: "2026-06-21T10:01:00.000Z",
+    }),
+  };
+
+  const reportsService = {
+    assessConversation: async () => ({
+      conversationId: 77,
+      conversationStatus: "active",
+      messageCount: 2,
+      readiness: {
+        is_ready: true,
+        score: 8,
+        required_score: 7,
+        criteria: {
+          queixa_principal: true,
+          inicio_duracao: true,
+          evolucao: true,
+          fatores_melhora_piora: true,
+          sintomas_associados: true,
+          antecedentes: true,
+          medicacoes_alergias: true,
+          habitos_contexto: true,
+        },
+        missing_criteria: [],
+      },
+      sections: {
+        queixa_principal: "Dor de cabeca",
+        inicio_duracao: "Desde ontem",
+        evolucao: "Piorou hoje",
+        fatores_melhora_piora: null,
+        sintomas_associados: null,
+        antecedentes: null,
+        medicacoes_alergias: null,
+        habitos_contexto: null,
+      },
+      shouldAutoFinalize: true,
+    }),
+  };
+
+  const service = new ChatService(
+    ai.client as never,
+    repository as never,
+    reportsService as never,
+  );
+
+  const response = await service.sendMessage(
+    {
+      patientId: "7",
+      text: "Tenho dor de cabeca desde ontem e piorou hoje.",
+    },
+    {
+      userId: 12,
+    },
+  );
+
+  assert.deepEqual(response, {
+    autoFinalized: true,
+    conversationId: 77,
+  });
+  assert.equal(ai.state.chatCompletionCalls, 0);
+  assert.equal(ai.state.tokenClassificationCalls, 0);
+  assert.deepEqual(savedCalls, [[77, "user", "Tenho dor de cabeca desde ontem e piorou hoje."]]);
 });
