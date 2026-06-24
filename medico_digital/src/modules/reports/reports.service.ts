@@ -12,7 +12,7 @@ import type {
   ReportReadiness,
 } from "@/modules/reports/types";
 
-const REQUIRED_CRITERIA_SCORE = 7;
+const REQUIRED_CRITERIA_SCORE = 8;
 const REPORT_AI_MODEL = "meta-llama/Llama-3.1-8B-Instruct";
 
 const REPORT_CRITERIA_LABELS: Record<ReportCriterionKey, string> = {
