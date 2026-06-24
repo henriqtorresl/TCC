@@ -209,7 +209,8 @@ export function mergeSections(
 ): ConversationSections {
   return {
     queixa_principal:
-      base.queixa_principal ?? normalizeAiSectionValue(aiSections.queixa_principal),
+      base.queixa_principal ??
+      normalizeAiSectionValue(aiSections.queixa_principal),
     inicio_duracao:
       base.inicio_duracao ?? normalizeAiSectionValue(aiSections.inicio_duracao),
     evolucao: base.evolucao ?? normalizeAiSectionValue(aiSections.evolucao),
@@ -225,11 +226,14 @@ export function mergeSections(
       base.medicacoes_alergias ??
       normalizeAiSectionValue(aiSections.medicacoes_alergias),
     habitos_contexto:
-      base.habitos_contexto ?? normalizeAiSectionValue(aiSections.habitos_contexto),
+      base.habitos_contexto ??
+      normalizeAiSectionValue(aiSections.habitos_contexto),
   };
 }
 
-export function parseAiSections(rawText: string): AiConversationSections | null {
+export function parseAiSections(
+  rawText: string,
+): AiConversationSections | null {
   const jsonText = extractJsonObject(rawText);
   if (!jsonText) {
     return null;
@@ -241,7 +245,9 @@ export function parseAiSections(rawText: string): AiConversationSections | null 
       queixa_principal: normalizeAiSectionValue(parsed.queixa_principal),
       inicio_duracao: normalizeAiSectionValue(parsed.inicio_duracao),
       evolucao: normalizeAiSectionValue(parsed.evolucao),
-      fatores_melhora_piora: normalizeAiSectionValue(parsed.fatores_melhora_piora),
+      fatores_melhora_piora: normalizeAiSectionValue(
+        parsed.fatores_melhora_piora,
+      ),
       sintomas_associados: normalizeAiSectionValue(parsed.sintomas_associados),
       antecedentes: normalizeAiSectionValue(parsed.antecedentes),
       medicacoes_alergias: normalizeAiSectionValue(parsed.medicacoes_alergias),
@@ -265,7 +271,9 @@ export function findFirstMatchingSnippet(
   messages: string[],
   signal: ConversationSignal,
 ): string | null {
-  const candidates = messages.flatMap((message) => splitIntoCandidates(message));
+  const candidates = messages.flatMap((message) =>
+    splitIntoCandidates(message),
+  );
 
   let bestText = "";
   let bestScore = -1;
@@ -522,8 +530,14 @@ export class ReportsService {
 
   private async evaluateConversation(messages: ConversationMessage[]) {
     const baseAssessment = assessConversation(messages);
+    const userMessages = messages.filter((m) => m.role === "user").length;
+    const minMessages = 15;
 
-    if (!this.aiClient || baseAssessment.readiness.is_ready) {
+    if (
+      !this.aiClient ||
+      baseAssessment.readiness.is_ready ||
+      userMessages < minMessages
+    ) {
       return {
         ...baseAssessment,
         aiEnhanced: false,
@@ -570,7 +584,10 @@ export class ReportsService {
         };
       }
 
-      const mergedSections = mergeSections(baseAssessment.sections, parsedSections);
+      const mergedSections = mergeSections(
+        baseAssessment.sections,
+        parsedSections,
+      );
       const readiness = calculateReadiness(mergedSections);
 
       return {
