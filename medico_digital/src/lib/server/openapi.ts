@@ -17,6 +17,7 @@ export function buildOpenApiSpec() {
       { name: "Users" },
       { name: "Patients" },
       { name: "Reports" },
+      { name: "Docs" },
     ],
     paths: {
       "/api/health": {
@@ -29,6 +30,41 @@ export function buildOpenApiSpec() {
               content: {
                 "application/json": {
                   schema: { $ref: "#/components/schemas/HealthResponse" },
+                },
+              },
+            },
+          },
+        },
+      },
+      "/api/docs": {
+        get: {
+          tags: ["Docs"],
+          summary: "Open API reference UI",
+          responses: {
+            200: {
+              description: "Interactive API reference",
+              content: {
+                "text/html": {
+                  schema: { type: "string" },
+                },
+              },
+            },
+          },
+        },
+      },
+      "/api/openapi.json": {
+        get: {
+          tags: ["Docs"],
+          summary: "Get OpenAPI specification",
+          responses: {
+            200: {
+              description: "OpenAPI specification document",
+              content: {
+                "application/json": {
+                  schema: {
+                    type: "object",
+                    additionalProperties: true,
+                  },
                 },
               },
             },
@@ -223,6 +259,30 @@ export function buildOpenApiSpec() {
             },
             503: {
               description: "Database not configured",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/ErrorStringResponse" },
+                },
+              },
+            },
+          },
+        },
+      },
+      "/api/auth/logout": {
+        post: {
+          tags: ["Auth"],
+          summary: "Clear the current session",
+          responses: {
+            200: {
+              description: "Session cleared",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/LogoutResponse" },
+                },
+              },
+            },
+            500: {
+              description: "Internal server error",
               content: {
                 "application/json": {
                   schema: { $ref: "#/components/schemas/ErrorStringResponse" },
@@ -699,6 +759,62 @@ export function buildOpenApiSpec() {
           },
         },
       },
+      "/api/attendances/{id}": {
+        get: {
+          tags: ["Chat"],
+          summary: "Get attendance details for authenticated user",
+          parameters: [
+            {
+              in: "path",
+              name: "id",
+              required: true,
+              schema: { type: "integer" },
+            },
+          ],
+          responses: {
+            200: {
+              description: "Attendance details",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/AttendanceDetailsResponse" },
+                },
+              },
+            },
+            400: {
+              description: "Invalid attendance id",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/ErrorStringResponse" },
+                },
+              },
+            },
+            401: {
+              description: "Invalid or missing session",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/ErrorStringResponse" },
+                },
+              },
+            },
+            404: {
+              description: "Attendance not found for authenticated user",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/ErrorStringResponse" },
+                },
+              },
+            },
+            503: {
+              description: "Database not configured",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/ErrorStringResponse" },
+                },
+              },
+            },
+          },
+        },
+      },
       "/api/attendances/{id}/messages": {
         get: {
           tags: ["Chat"],
@@ -931,6 +1047,13 @@ export function buildOpenApiSpec() {
           },
           required: ["conversationId"],
         },
+        LogoutResponse: {
+          type: "object",
+          properties: {
+            success: { type: "boolean" },
+          },
+          required: ["success"],
+        },
         AttendanceSummary: {
           type: "object",
           properties: {
@@ -951,6 +1074,13 @@ export function buildOpenApiSpec() {
             "last_message_at",
             "message_count",
           ],
+        },
+        AttendanceDetailsResponse: {
+          type: "object",
+          properties: {
+            attendance: { $ref: "#/components/schemas/AttendanceSummary" },
+          },
+          required: ["attendance"],
         },
         AttendancesListResponse: {
           type: "object",
