@@ -42,6 +42,8 @@ function createAiClient(replyText: string) {
 test("sendMessage keeps working when auto-finalization assessment fails", async () => {
   const ai = createAiClient("Claro. Qual a próxima informação?");
   const savedCalls: unknown[][] = [];
+  const originalWarn = console.warn;
+  console.warn = () => undefined;
 
   const repository = {
     ensureActiveConversation: async () => 11,
@@ -63,23 +65,27 @@ test("sendMessage keeps working when auto-finalization assessment fails", async 
     reportsService as never,
   );
 
-  const response = await service.sendMessage({
-    patientId: "7",
-    text: "Tenho tosse e febre.",
-    userId: 7,
-  });
+  try {
+    const response = await service.sendMessage({
+      patientId: "7",
+      text: "Tenho tosse e febre.",
+      userId: 7,
+    });
 
-  assert.deepEqual(response, {
-    reply: "Claro. Qual a próxima informação?",
-    entities: [],
-    conversationId: 11,
-  });
-  assert.equal(ai.state.chatCompletionCalls, 1);
-  assert.equal(ai.state.tokenClassificationCalls, 1);
-  assert.deepEqual(savedCalls, [
-    [11, "user", "Tenho tosse e febre."],
-    [11, "assistant", "Claro. Qual a próxima informação?", []],
-  ]);
+    assert.deepEqual(response, {
+      reply: "Claro. Qual a próxima informação?",
+      entities: [],
+      conversationId: 11,
+    });
+    assert.equal(ai.state.chatCompletionCalls, 1);
+    assert.equal(ai.state.tokenClassificationCalls, 1);
+    assert.deepEqual(savedCalls, [
+      [11, "user", "Tenho tosse e febre."],
+      [11, "assistant", "Claro. Qual a próxima informação?", []],
+    ]);
+  } finally {
+    console.warn = originalWarn;
+  }
 });
 
 test("sendMessage sanitizes provider metadata before persisting the assistant reply", async () => {
