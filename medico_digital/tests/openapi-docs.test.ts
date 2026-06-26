@@ -29,14 +29,21 @@ function normalizeRoutePath(filePath: string): string {
   const relative = path.relative(apiRoot, path.dirname(filePath));
   return (
     "/api/" +
-    relative.split(path.sep).join("/").replace(/\[(.+?)\]/g, "{$1}")
+    relative
+      .split(path.sep)
+      .join("/")
+      .replace(/\[(.+?)\]/g, "{$1}")
   );
 }
 
 test("OpenAPI documents every API route", async () => {
   const routeFiles = await collectRouteFiles(apiRoot);
   const actualPaths = routeFiles.map(normalizeRoutePath).sort();
-  const spec = buildOpenApiSpec();
+  const spec = buildOpenApiSpec() as ReturnType<typeof buildOpenApiSpec>;
+  const documentedPathsByRoute = spec.paths as Record<
+    string,
+    Record<string, unknown>
+  >;
   const documentedPaths = Object.keys(spec.paths).sort();
 
   assert.deepEqual(documentedPaths, actualPaths);
@@ -49,7 +56,7 @@ test("OpenAPI documents every API route", async () => {
     ].map((match) => match[1].toLowerCase());
 
     assert.deepEqual(
-      Object.keys(spec.paths[routePath] ?? {}).sort(),
+      Object.keys(documentedPathsByRoute[routePath] ?? {}).sort(),
       declaredMethods.sort(),
       `Route ${routePath} is missing method docs`,
     );
