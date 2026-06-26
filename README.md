@@ -48,4 +48,29 @@ PDF gerado em:
 docs/latex/output/tcc.pdf
 ```
 
+## CI/CD
+
+O repositório possui um workflow de integração contínua em [`.github/workflows/ci.yml`](./.github/workflows/ci.yml).
+
+### CI
+
+O pipeline é executado automaticamente em `push` e `pull_request` e faz as seguintes etapas no diretório `medico_digital/`:
+
+1. Checkout do repositório.
+2. Configuração do Node.js 20 com cache do `npm`.
+3. Instalação das dependências com `npm ci`.
+4. Execução do `npm run lint`.
+5. Execução do `npm test`.
+6. Execução do `npm run build`.
+
+### CD
+
+O CD acontece por meio da configuração do projeto na Vercel.
+Todo `push` na branch `main` dispara automaticamente o deploy da aplicação.
+
+URLs públicas:
+
+- Aplicação: [https://medicodigital.vercel.app/](https://medicodigital.vercel.app/)
+- Documentação da API: [https://medicodigital.vercel.app/api/docs](https://medicodigital.vercel.app/api/docs)
+
 ---
