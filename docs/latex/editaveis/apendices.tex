@@ -4,105 +4,199 @@
 
 \chapter{Especificação da API REST}
 
-Este apêndice documenta o contrato de interface da API Backend for Frontend (BFF)
-desenvolvida. A comunicação é realizada via HTTP utilizando JSON para troca de dados.
+Este apêndice resume o contrato de interface da API Backend for Frontend (BFF) implementada
+na aplicação \texttt{medico\_digital}. A comunicação é realizada via HTTP, com dados em JSON.
+A especificação completa é publicada em \texttt{/api/openapi.json} e pode ser consultada pela
+interface \texttt{/api/docs}.
 
-\section{Endpoint de Chat e Anamnese}
-
-\textbf{Rota:} \texttt{POST /api/message}
-
-\textbf{Descrição:} recebe mensagem do usuário, gerencia histórico da sessão em memória,
-aciona os modelos de IA e retorna resposta conversacional com entidades extraídas.
-
-\subsection{Requisição}
-
-\textbf{Content-Type:} \texttt{application/json}
-
-\textbf{Body de exemplo:}
-
-\begin{verbatim}
-{
-  "userId": "paciente_12345",
-  "text": "Estou sentindo dor de cabeca muito forte",
-  "context": "com enjoo desde ontem"
-}
-\end{verbatim}
-
-\subsection{Resposta}
-
-\textbf{Status Code:} \texttt{200 OK}
-
-\textbf{Body de exemplo:}
-
-\begin{verbatim}
-{
-  "reply": "Sinto muito. Você poderia descrever se essa dor é pulsante?",
-  "entities": [
-    {
-      "label": "B-Sign_symptom",
-      "text": "dor de cabeça",
-      "score": 0.98
-    },
-    {
-      "label": "B-Sign_symptom",
-      "text": "enjoo",
-      "score": 0.95
-    }
-  ]
-}
-\end{verbatim}
-
-\subsection{Códigos de Erro}
-
-\begin{itemize}
-\item \texttt{400 Bad Request}: quando \texttt{userId} ou \texttt{text} não são fornecidos.
-\item \texttt{500 Internal Server Error}: falha na comunicação com a API de inferência.
-\end{itemize}
-
-\chapter{Códigos-fonte do Orquestrador (BFF)}
-
-O código do servidor Node.js utilizado no protótipo funcional está no arquivo:
-\path{medico_digital/backend/src/server.js}.
-
-Este módulo implementa:
-
-\begin{itemize}
-\item Inicialização do servidor Express e middlewares.
-\item Gestão de contexto em memória por \texttt{userId}.
-\item Chamada ao modelo generativo para condução da anamnese.
-\item Chamada ao modelo NER para extração de entidades clínicas.
-\item Sanitização da resposta textual e retorno unificado em JSON.
-\end{itemize}
-
-\chapter{Artefatos de Teste Exploratórios}
-
-Este apêndice consolida evidências iniciais da avaliação técnica realizada sobre o protótipo
-funcional.
-
-\section{Cenários Executados}
+\section{Rotas de Autenticação}
 
 \begin{table}[htb]
 \centering
-\caption{Resumo dos cenários exploratórios executados.}
+\caption{Endpoints de autenticação e sessão.}
+\label{tab:api-auth}
+\begin{tabular}{p{3.0cm}p{4.3cm}p{6.1cm}}
+\hline
+Método & Rota & Finalidade \\
+\hline
+\texttt{POST} & \texttt{/api/auth/register} & Criar conta de usuário com nome, e-mail e senha. \\
+\texttt{POST} & \texttt{/api/auth/login} & Autenticar usuário e criar sessão por cookie \texttt{httpOnly}. \\
+\texttt{POST} & \texttt{/api/auth/logout} & Revogar sessão e remover cookie de autenticação. \\
+\hline
+\end{tabular}
+\end{table}
+
+As rotas de autenticação validam corpo da requisição, retornam erro de entrada inválida com
+status \texttt{400} e separam falhas de credencial, sessão e indisponibilidade de banco.
+
+\section{Rotas de Paciente}
+
+\begin{table}[htb]
+\centering
+\caption{Endpoints do perfil do paciente autenticado.}
+\label{tab:api-paciente}
+\begin{tabular}{p{3.0cm}p{4.3cm}p{6.1cm}}
+\hline
+Método & Rota & Finalidade \\
+\hline
+\texttt{GET} & \texttt{/api/patients/me} & Consultar o perfil de paciente vinculado à sessão atual. \\
+\texttt{PUT} & \texttt{/api/patients/me} & Atualizar dados básicos do paciente autenticado. \\
+\hline
+\end{tabular}
+\end{table}
+
+\section{Rotas de Atendimento e Chat}
+
+\begin{table}[htb]
+\centering
+\caption{Endpoints de atendimento, mensagens e histórico.}
+\label{tab:api-atendimentos}
+\begin{tabular}{p{3.0cm}p{5.2cm}p{5.2cm}}
+\hline
+Método & Rota & Finalidade \\
+\hline
+\texttt{POST} & \texttt{/api/message} & Enviar mensagem ao assistente virtual de anamnese. \\
+\texttt{POST} & \texttt{/api/message/attendance/start} & Iniciar novo atendimento para o paciente autenticado. \\
+\texttt{GET} & \texttt{/api/attendances} & Listar atendimentos do paciente autenticado. \\
+\texttt{GET} & \texttt{/api/attendances/\{id\}} & Consultar dados resumidos de um atendimento. \\
+\texttt{GET} & \texttt{/api/attendances/\{id\}/messages} & Consultar mensagens de um atendimento. \\
+\texttt{POST} & \texttt{/api/attendances/\{id\}/finalize} & Finalizar atendimento ativo. \\
+\texttt{POST} & \texttt{/api/attendances/\{id\}/resume} & Retomar atendimento finalizado. \\
+\hline
+\end{tabular}
+\end{table}
+
+\section{Rotas de Relatório}
+
+\begin{table}[htb]
+\centering
+\caption{Endpoints do ciclo de relatórios clínicos.}
+\label{tab:api-relatorios}
+\begin{tabular}{p{3.0cm}p{5.2cm}p{5.2cm}}
+\hline
+Método & Rota & Finalidade \\
+\hline
+\texttt{GET} & \texttt{/api/reports/readiness} & Avaliar prontidão da conversa para geração de relatório. \\
+\texttt{GET} & \texttt{/api/reports/availability} & Verificar se há relatório atual disponível para download. \\
+\texttt{POST} & \texttt{/api/reports/generate} & Gerar relatório de anamnese. \\
+\texttt{GET} & \texttt{/api/reports/\{id\}} & Consultar relatório por identificador. \\
+\texttt{GET} & \texttt{/api/reports/\{id\}/download} & Obter dados estruturados para visualização e impressão. \\
+\hline
+\end{tabular}
+\end{table}
+
+\section{Rotas de Suporte}
+
+\begin{table}[htb]
+\centering
+\caption{Endpoints de suporte, documentação e saúde da aplicação.}
+\label{tab:api-suporte}
+\begin{tabular}{p{3.0cm}p{4.3cm}p{6.1cm}}
+\hline
+Método & Rota & Finalidade \\
+\hline
+\texttt{GET} & \texttt{/api/health} & Verificar estado básico da aplicação e configuração do banco. \\
+\texttt{GET} & \texttt{/api/openapi.json} & Obter especificação OpenAPI em JSON. \\
+\texttt{GET} & \texttt{/api/docs} & Acessar documentação interativa da API. \\
+\texttt{GET} & \texttt{/api/users/\{id\}} & Consultar dados básicos de usuário por identificador. \\
+\hline
+\end{tabular}
+\end{table}
+
+\chapter{Artefatos de Implementação}
+
+Os códigos-fonte do protótipo funcional estão concentrados no diretório \path{medico_digital}.
+A aplicação foi organizada por camadas e domínios, com separação entre rotas de API,
+componentes de interface, módulos de domínio, acesso a banco e scripts de apoio.
+
+\section{Arquivos e Diretórios Principais}
+
+\begin{table}[htb]
+\centering
+\caption{Principais artefatos de implementação do protótipo funcional.}
+\label{tab:artefatos-implementacao}
+\begin{tabular}{p{5.4cm}p{8.1cm}}
+\hline
+Artefato & Papel no sistema \\
+\hline
+\path{src/app/api} & Rotas HTTP da API BFF. \\
+\path{src/modules/auth} & Regras de autenticação, sessão e persistência de sessões. \\
+\path{src/modules/patients} & Regras de perfil e persistência de paciente. \\
+\path{src/modules/chat} & Orquestração de atendimento, mensagens, histórico e modelos de IA. \\
+\path{src/modules/reports} & Prontidão, geração, disponibilidade e consulta de relatórios. \\
+\path{src/components/chat} & Componentes da interface de conversa e painel de atendimentos. \\
+\path{src/components/patients} & Formulário de perfil do paciente. \\
+\path{src/components/shared} & Estrutura compartilhada do dashboard. \\
+\path{migrations} & Migrations SQL versionadas do banco de dados. \\
+\path{tests} & Testes automatizados de serviços e contratos. \\
+\hline
+\end{tabular}
+\end{table}
+
+\section{Modelo de Dados}
+
+O banco relacional contempla as tabelas \texttt{users}, \texttt{auth\_sessions},
+\texttt{patients}, \texttt{conversations}, \texttt{messages}, \texttt{reports} e
+\texttt{report\_items}. A entidade \texttt{patients} representa o contexto clínico, enquanto
+\texttt{users} representa a conta de acesso. As conversas são vinculadas ao paciente e as
+mensagens são vinculadas ao atendimento correspondente.
+
+\chapter{Artefatos de Teste}
+
+Este apêndice consolida os principais artefatos de avaliação técnica utilizados no protótipo.
+Os testes foram organizados para cobrir regras de chat, relatórios, contratos de API e casos de
+borda que poderiam gerar regressões.
+
+\section{Testes Automatizados}
+
+\begin{table}[htb]
+\centering
+\caption{Suites de teste automatizado do projeto.}
+\label{tab:testes-automatizados}
+\begin{tabular}{p{5.6cm}p{7.9cm}}
+\hline
+Arquivo & Cobertura principal \\
+\hline
+\path{tests/chat-service.test.ts} & Fluxo principal do serviço de chat e persistência de mensagens. \\
+\path{tests/chat-service.edge-cases.test.ts} & Falhas de avaliação de prontidão, sanitização de metadados e paginação. \\
+\path{tests/report-mapper.test.ts} & Extração de seções, prontidão, resumo e combinação de dados extraídos. \\
+\path{tests/reports-service.edge-cases.test.ts} & Negação, JSON malformado, disponibilidade de relatório e identificadores inválidos. \\
+\path{tests/openapi-docs.test.ts} & Consistência básica da documentação OpenAPI. \\
+\hline
+\end{tabular}
+\end{table}
+
+\section{Cenários Exploratórios}
+
+\begin{table}[htb]
+\centering
+\caption{Resumo dos cenários exploratórios de avaliação técnica.}
 \label{tab:apendice-testes}
 \begin{tabular}{p{2.0cm}p{6.0cm}p{5.0cm}}
 \hline
 Caso & Objetivo & Resultado observado \\
 \hline
-CT01 & Validar condução de pergunta única por interação & Comportamento aderente na maior parte das execuções \\
-CT02 & Verificar extração de múltiplas entidades clínicas & Identificação satisfatória dos sintomas centrais \\
-CT03 & Verificar reconhecimento de medicamento informado pelo paciente & Medicamento extraído corretamente no retorno estruturado \\
-CT04 & Observar comportamento em sentenças com negação & Limitação identificada e registrada para tratamento posterior \\
-CT05 & Medir latência ponta a ponta do fluxo principal & Faixa observada entre 2.5 s e 4.0 s em ambiente local \\
+CT01 & Validar condução de pergunta única por interação & Comportamento aderente na maior parte das execuções. \\
+CT02 & Verificar extração de múltiplas entidades clínicas & Identificação dos sintomas centrais em retornos estruturados. \\
+CT03 & Verificar reconhecimento de medicamento informado pelo paciente & Medicamento identificado quando explicitamente mencionado. \\
+CT04 & Observar comportamento em sentenças com negação & Limitação identificada e tratada como ponto de refinamento. \\
+CT05 & Verificar prontidão para relatório & Critérios ausentes são indicados antes da geração. \\
 \hline
 \end{tabular}
 \end{table}
 
-\section{Síntese das Evidências}
+\section{Integração Contínua}
 
-Os testes exploratórios não substituem uma validação com usuários ou um protocolo estatístico
-formal. Ainda assim, servem como evidência inicial de coerência arquitetural, aderência ao
-fluxo conversacional proposto e viabilidade de integração entre o componente generativo e o
-componente extrativo.
+O workflow de integração contínua está definido em \path{.github/workflows/ci.yml}. O pipeline
+executa instalação de dependências, lint, testes automatizados e build no diretório
+\path{medico_digital}. Esse processo fornece evidência de que alterações submetidas ao
+repositório preservam a compilação e os testes principais do protótipo.
+
+\section{Implantação}
+
+A aplicação está configurada para implantação contínua na Vercel a partir da branch
+\texttt{main}. A versão publicada da aplicação está disponível em
+\url{https://medicodigital.vercel.app/}, e a documentação pública da API está disponível em
+\url{https://medicodigital.vercel.app/api/docs}.
 
 \end{apendicesenv}

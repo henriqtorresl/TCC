@@ -1,36 +1,50 @@
 \chapter{Metodologia e Desenvolvimento}
 
-Este capítulo detalha o percurso metodológico adotado, as decisões arquiteturais e a avaliação
-do protótipo funcional de anamnese assistida.
+Este capítulo apresenta a metodologia adotada, a evolução da arquitetura implementada e os
+artefatos utilizados para avaliação técnica do protótipo funcional de anamnese assistida. O
+desenvolvimento foi conduzido de forma incremental, com registro das decisões técnicas em
+notas locais de desenvolvimento e posterior consolidação dos resultados no documento.
 
 \section{Classificação da Pesquisa}
 
 \subsection{Quanto à Natureza}
 
-A pesquisa é aplicada, pois busca resolver problema prático de estruturação de dados clínicos
-em anamnese.
+A pesquisa é aplicada, pois busca resolver um problema prático relacionado à coleta,
+organização e disponibilização de informações clínicas iniciais em atendimentos de saúde.
 
 \subsection{Quanto aos Objetivos}
 
-Trata-se de pesquisa exploratória, com levantamento bibliográfico e avaliação de viabilidade
-técnica da integração entre LLM e NER.
+Trata-se de pesquisa exploratória, pois investiga a viabilidade técnica de uma arquitetura que
+combina modelos generativos, extração estruturada de informações e aplicação web para apoio
+à anamnese.
 
 \subsection{Quanto aos Procedimentos Técnicos}
 
-Adotou-se abordagem experimental e prototipação incremental, com implementação de um
-protótipo funcional para avaliação da hipótese arquitetural.
+Foram empregados levantamento bibliográfico, prototipação incremental e avaliação técnica
+por meio de testes exploratórios e automatizados. A abordagem adotada permitiu observar a
+integração entre interface, serviços de aplicação, persistência, modelos de IA e geração de
+relatórios clínicos estruturados.
 
 \section{Metodologia de Desenvolvimento do Software}
 
-O desenvolvimento do software foi conduzido em ciclos curtos, com refinamento sucessivo dos
-artefatos de arquitetura, backend e interface. O processo foi organizado em quatro etapas:
+O desenvolvimento foi organizado em ciclos curtos, com evolução progressiva da arquitetura e
+do comportamento da aplicação. Inicialmente, foi estruturada uma base backend com camadas de
+serviço, repositório e documentação de API. Em seguida, as funcionalidades foram migradas e
+consolidadas em uma aplicação \textit{fullstack} baseada em Next.js, reunindo interface e rotas
+de API no mesmo projeto.
+
+As etapas de desenvolvimento foram organizadas da seguinte forma:
 
 \begin{itemize}
-\item definição dos requisitos funcionais e não funcionais que orientariam a solução;
-\item implementação da camada BFF para orquestração de chamadas, gestão de estado e
-sanitização de respostas;
-\item integração dos modelos de IA e ajuste de parâmetros para o fluxo conversacional;
-\item execução de testes exploratórios e consolidação dos artefatos apresentados nos apêndices.
+\item definição dos requisitos funcionais e não funcionais do protótipo funcional;
+\item criação do esquema relacional inicial, com migrations versionadas;
+\item migração da API para o projeto Next.js, utilizando Route Handlers;
+\item implementação de autenticação, sessão e proteção de rotas;
+\item criação do módulo de paciente e vinculação dos atendimentos ao paciente autenticado;
+\item implementação do fluxo de atendimento, histórico de mensagens e ciclo de vida dos atendimentos;
+\item implementação do ciclo de relatórios, com prontidão, disponibilidade e exportação;
+\item criação de testes automatizados para regras de chat, relatórios e contratos de API;
+\item configuração de integração contínua e disponibilização da aplicação em ambiente Vercel.
 \end{itemize}
 
 \section{Requisitos do Sistema}
@@ -38,132 +52,141 @@ sanitização de respostas;
 \subsection{Requisitos Funcionais}
 
 \begin{itemize}
-\item RF01: Interação em linguagem natural por chat.
-\item RF02: Condução de anamnese com uma pergunta por vez.
-\item RF03: Extração automática de entidades clínicas.
-\item RF04: Gestão de contexto da conversa por sessão.
-\item RF05: Sanitização de artefatos técnicos nas respostas.
+\item RF01: permitir cadastro, login e logout de usuários.
+\item RF02: manter sessão autenticada para proteger páginas e rotas da aplicação.
+\item RF03: permitir cadastro e atualização do perfil do paciente autenticado.
+\item RF04: conduzir atendimento por conversa em linguagem natural.
+\item RF05: registrar mensagens e entidades extraídas no histórico do atendimento.
+\item RF06: iniciar novo atendimento e encerrar atendimento ativo anterior.
+\item RF07: listar atendimentos e permitir consulta ao histórico de mensagens.
+\item RF08: finalizar e retomar atendimentos com controle de estado.
+\item RF09: avaliar a prontidão da conversa para geração de relatório.
+\item RF10: gerar, consultar e disponibilizar relatório estruturado de anamnese.
+\item RF11: disponibilizar documentação da API em formato OpenAPI.
 \end{itemize}
 
 \subsection{Requisitos Não Funcionais}
 
 \begin{itemize}
-\item RNF01: Latência de inferência até 5 segundos.
-\item RNF02: Não exposição de chaves de API no cliente.
-\item RNF03: Interoperabilidade com saída em JSON.
-\item RNF04: Tolerância a falhas temporárias de inferência externa.
+\item RNF01: manter chaves e tokens sensíveis fora do cliente.
+\item RNF02: usar sessão baseada em cookie \texttt{httpOnly} para reduzir exposição indevida no frontend.
+\item RNF03: persistir dados de usuários, pacientes, atendimentos, mensagens e relatórios em banco relacional.
+\item RNF04: validar entradas de API e retornar erros compatíveis com o tipo de falha observada.
+\item RNF05: documentar contratos HTTP para apoiar testes, manutenção e integração.
+\item RNF06: manter execução automatizada de lint, testes e build no fluxo de integração contínua.
+\item RNF07: tratar falhas temporárias de serviços externos sem interromper indevidamente o fluxo principal.
 \end{itemize}
-
-\section{Plano de Testes}
-
-O plano de testes desta etapa concentrou-se em verificar a coerência da conversação, a
-capacidade de extração de entidades e o comportamento temporal do protótipo. Para isso,
-foram definidos cenários exploratórios com critérios de observação alinhados aos requisitos.
-
-\begin{table}[htb]
-\centering
-\caption{Cenários de teste exploratório do protótipo funcional.}
-\label{tab:plano-testes}
-\begin{tabular}{p{2.1cm}p{5.0cm}p{6.1cm}}
-\hline
-Caso & Entrada principal & Evidência esperada \\
-\hline
-CT01 & Relato de sintoma isolado & Pergunta de seguimento coerente e entidade clínica extraída \\
-CT02 & Relato com múltiplos sintomas & Priorização conversacional e registro das entidades centrais \\
-CT03 & Presença de medicação & Identificação do medicamento no retorno estruturado \\
-CT04 & Sentença com negação & Registro da limitação do modelo e análise do comportamento observado \\
-CT05 & Medição de latência & Resposta dentro do limite de cinco segundos definido em RNF01 \\
-\hline
-\end{tabular}
-\end{table}
 
 \section{Arquitetura da Solução}
 
-A solução foi arquitetada com padrão Backend for Frontend (BFF), no qual o servidor Node.js
-orquestra chamadas entre frontend e serviços de IA.
+A arquitetura consolidada é uma aplicação web \textit{fullstack} em Next.js. A interface do
+usuário, os componentes de domínio e as rotas de API estão no diretório principal
+\texttt{medico\_digital}. A camada de API atua como Backend for Frontend (BFF), concentrando
+autenticação, validação, orquestração de modelos, persistência e geração de relatórios.
 
 \begin{figure}[htb]
   \centering
   \includegraphics[width=0.90\textwidth]{figuras/arquitetura-solucao.eps}
-  \caption{Diagrama de fluxo de dados e componentes da arquitetura proposta.}
+  \caption{Fluxo de dados e componentes da arquitetura proposta.}
   \label{fig:arquitetura-solucao}
 \end{figure}
 
-\section{Modelagem do Sistema}
+A Figura~\ref{fig:arquitetura-solucao} representa a separação entre interface, BFF, banco de
+dados e serviços de IA. O BFF evita que o cliente interaja diretamente com credenciais ou
+serviços externos, centralizando regras de autenticação, autorização e tratamento de erros.
 
-\subsection{Diagrama de Sequência}
+\section{Modelagem e Persistência}
+
+O esquema inicial do banco foi versionado por migrations e contempla usuários, sessões,
+conversas, mensagens, relatórios e itens de relatório. Durante a evolução do protótipo, foi
+adicionada a entidade de paciente para separar a conta de acesso do contexto clínico. Com isso,
+as conversas passaram a ser vinculadas a \texttt{patient\_id}, permitindo que o histórico de
+atendimentos seja organizado sob a perspectiva assistencial.
+
+As migrations aplicadas incluem:
+
+\begin{itemize}
+\item criação do esquema inicial, com usuários, sessões, conversas, mensagens e relatórios;
+\item criação da tabela \texttt{patients};
+\item vinculação de conversas a pacientes, com preenchimento inicial dos dados existentes.
+\end{itemize}
+
+\section{Autenticação, Sessão e Proteção de Rotas}
+
+O fluxo de autenticação foi implementado com rotas de cadastro, login e logout. Após login, a
+sessão é mantida por cookie \texttt{httpOnly}, e o backend resolve o usuário autenticado a
+partir do token persistido em \texttt{auth\_sessions}. Essa decisão removeu a necessidade de
+enviar identificadores de usuário pelo cliente no fluxo de chat, reduzindo o risco de uso
+indevido de identificadores.
+
+O middleware da aplicação foi dividido em dois guardas: um para rotas de API e outro para
+páginas. As páginas protegidas redirecionam usuários sem sessão para o login, preservando a
+rota de destino por meio do parâmetro \texttt{next}. Usuários autenticados que acessam páginas
+de autenticação são redirecionados para a área principal.
+
+\section{Fluxo de Atendimento}
+
+O atendimento é representado por uma conversa vinculada ao paciente autenticado. Ao iniciar
+novo atendimento, o sistema encerra eventual conversa ativa anterior, cria uma nova conversa e
+reinicia o contexto conversacional em memória. As mensagens do paciente e do assistente são
+persistidas no banco, junto às entidades clínicas extraídas quando disponíveis.
 
 \begin{figure}[htb]
   \centering
   \includegraphics[width=0.90\textwidth]{figuras/sequencia.eps}
-  \caption{Diagrama de sequência do fluxo de mensagem.}
+  \caption{Sequência principal de envio de mensagem no atendimento.}
   \label{fig:sequencia}
 \end{figure}
 
-\subsection{Diagrama de Componentes}
-
-\begin{figure}[htb]
-  \centering
-  \includegraphics[width=0.78\textwidth]{figuras/componentes.eps}
-  \caption{Diagrama de componentes da arquitetura BFF.}
-  \label{fig:componentes}
-\end{figure}
-
-\section{Tecnologias e Ferramentas}
-
-Foi adotada uma pilha JavaScript/TypeScript com React no frontend, Node.js e Express no
-backend, Vite como ferramenta de desenvolvimento e a Hugging Face Inference API para
-consumo dos modelos.
+A Figura~\ref{fig:sequencia} sintetiza o fluxo de mensagem. A API autentica a sessão, resolve
+o paciente, registra a mensagem, recupera o histórico, aciona o modelo generativo e persiste a
+resposta do assistente. O histórico pode ser listado posteriormente por meio dos endpoints de
+atendimento.
 
 \section{Estratégia de Inteligência Artificial Híbrida}
 
-O componente generativo usa \texttt{meta-llama/Llama-3.1-8B-Instruct} para condução do
-diálogo clínico. O componente extrativo usa \texttt{d4data/biomedical-ner-all} para
-classificação de entidades.
+O componente generativo utiliza o modelo \texttt{meta-llama/Llama-3.1-8B-Instruct} para
+conduzir a conversa clínica. A escolha foi motivada por disponibilidade de integração via API,
+capacidade de seguir instruções e adequação ao objetivo desta etapa: avaliar a arquitetura de
+orquestração, e não comparar exaustivamente modelos.
 
-\section{Justificativa para Seleção dos Modelos}
+O componente extrativo utiliza \texttt{d4data/biomedical-ner-all} para reconhecer entidades
+biomédicas no texto informado pelo paciente. A estratégia híbrida separa a responsabilidade de
+condução do diálogo da responsabilidade de extração e estruturação de informações.
 
-O modelo Llama-3.1-8B-Instruct foi selecionado por combinar disponibilidade aberta,
-capacidade de seguir instruções e integração direta com a infraestrutura adotada nesta etapa.
-Essa escolha foi considerada suficiente para o objetivo do trabalho, que é avaliar a viabilidade
-da arquitetura proposta, e não comparar exaustivamente famílias de modelos.
+\section{Relatórios Clínicos}
 
-O modelo \texttt{d4data/biomedical-ner-all} foi escolhido por sua aderência ao domínio
-biomédico e por oferecer uma forma direta de estruturar sintomas e medicamentos extraídos do
-texto do paciente.
+O sistema implementa um ciclo de relatório composto por avaliação de prontidão, geração,
+consulta de disponibilidade e visualização para impressão. A prontidão é calculada a partir de
+critérios de anamnese, como queixa principal, início e duração, evolução, fatores de melhora ou
+piora, sintomas associados, antecedentes, medicações, alergias, hábitos e contexto.
 
-\section{Gestão de Estado e Sanitização}
+Quando os critérios mínimos são atendidos, o atendimento pode ser finalizado automaticamente
+e o relatório pode ser gerado com menor ambiguidade. Quando há campos ausentes, o sistema
+mantém a indicação dos itens pendentes, permitindo decisão explícita sobre continuidade da
+coleta ou geração de relatório incompleto.
 
-O estado de sessão é mantido em memória por \texttt{userId}, garantindo continuidade da
-anamnese. A sanitização aplica limpeza de artefatos de metadados com padrões de regex antes
-do retorno ao cliente.
+O relatório gerado contém resumo estruturado, metadados de prontidão e dados do
+atendimento. A visualização em página própria permite impressão ou salvamento em PDF pelo
+navegador.
 
-\section{Planejamento de Testes e Validação}
+\begin{figure}[htb]
+  \centering
+  \includegraphics[width=0.78\textwidth]{figuras/relatorio-anamnese.eps}
+  \caption{Visualização do relatório de anamnese gerado a partir de um atendimento real.}
+  \label{fig:relatorio-anamnese}
+\end{figure}
 
-Foram definidos casos de teste para sintomas únicos, negações, múltiplos sintomas e presença de
-medicação, com critérios de aceitação voltados à qualidade da pergunta subsequente, à
-identificação das entidades clínicas e ao atendimento do requisito de latência.
+A Figura~\ref{fig:relatorio-anamnese} mostra a versão de impressão do relatório, com
+identificação do atendimento, escore de completude, seções clínicas estruturadas e resumo
+consolidado para consulta rápida.
 
-\section{Resultados Preliminares do Protótipo}
+\section{Interface do Usuário}
 
-\subsection{Análise Qualitativa da Interação}
-
-Após ajuste de temperatura para 0.4 e refinamento de prompt, o modelo apresentou boa aderência
-à persona clínica, com redução de respostas fora de contexto.
-
-\subsection{Desempenho da Extração de Entidades}
-
-O modelo NER apresentou desempenho satisfatório na identificação de sintomas e medicamentos
-frequentes. A principal limitação observada foi a desambiguação de negações complexas,
-indicando necessidade de módulo específico na etapa subsequente do projeto.
-
-\subsection{Métricas de Latência}
-
-Em medições exploratórias locais, o tempo de resposta fim a fim oscilou entre 2.5 e 4.0
-segundos, mantendo-se dentro do limite estabelecido em RNF01. Ainda assim, há espaço para
-otimização por streaming e melhorias de infraestrutura.
-
-\section{Interface do Usuário e Validação do Protótipo}
+A interface foi consolidada em componentes por domínio, com áreas para chat, painel de
+atendimentos, perfil de paciente e estrutura compartilhada de dashboard. O design system foi
+padronizado com componentes de interface reutilizáveis, incluindo campos, botões, seleção e
+painel lateral responsivo.
 
 \begin{figure}[htb]
   \centering
@@ -172,44 +195,138 @@ otimização por streaming e melhorias de infraestrutura.
   \label{fig:print-chat}
 \end{figure}
 
-A interface React priorizou clareza visual, feedback de carregamento e manutenção de contexto
-conversacional.
+A Figura~\ref{fig:print-chat} apresenta a interface principal de interação. Além do envio de
+mensagens, a aplicação permite criar novo atendimento, consultar histórico, finalizar ou
+retomar atendimentos e acionar a geração de relatórios quando houver dados suficientes.
+
+\begin{figure}[htb]
+  \centering
+  \includegraphics[width=0.82\textwidth]{figuras/perfil-paciente.eps}
+  \caption{Tela de perfil do paciente autenticado na aplicação.}
+  \label{fig:perfil-paciente}
+\end{figure}
+
+\begin{figure}[htb]
+  \centering
+  \includegraphics[width=0.82\textwidth]{figuras/detalhes-atendimento.eps}
+  \caption{Tela de detalhes de atendimento com histórico persistido de mensagens.}
+  \label{fig:detalhes-atendimento}
+\end{figure}
+
+As Figuras~\ref{fig:perfil-paciente} e~\ref{fig:detalhes-atendimento} complementam a visão
+da interface atual. O perfil permite manter dados cadastrais do paciente vinculados à sessão,
+enquanto a página de detalhes centraliza status do atendimento, horários, volume de mensagens
+e acesso ao relatório correspondente.
+
+\section{Documentação da API}
+
+A aplicação disponibiliza a especificação OpenAPI em \texttt{/api/openapi.json} e uma
+interface de consulta em \texttt{/api/docs}. Essa documentação acompanha os contratos de
+autenticação, paciente, chat, atendimentos e relatórios, apoiando testes manuais,
+integrações futuras e manutenção do BFF.
+
+\begin{figure}[htb]
+  \centering
+  \includegraphics[width=0.92\textwidth]{figuras/api-docs.eps}
+  \caption{Documentação publicada da API em ambiente de produção.}
+  \label{fig:api-docs}
+\end{figure}
+
+A Figura~\ref{fig:api-docs} evidencia a documentação navegável da API, publicada junto à
+aplicação, com agrupamento dos endpoints por domínio e acesso ao documento OpenAPI.
+
+\section{Integração Contínua e Implantação}
+
+O repositório possui workflow de integração contínua no GitHub Actions. Em eventos de
+\textit{push} e \textit{pull request}, o pipeline configura Node.js 20, instala dependências com
+\texttt{npm ci}, executa lint, testes automatizados e build da aplicação.
+
+A implantação contínua ocorre pela configuração do projeto na Vercel. A cada alteração
+integrada à branch \texttt{main}, a aplicação é publicada automaticamente no ambiente
+disponível em \url{https://medicodigital.vercel.app/}. A documentação da API publicada fica
+disponível em \url{https://medicodigital.vercel.app/api/docs}.
+
+\section{Plano de Testes e Avaliação Técnica}
+
+A avaliação técnica combina testes exploratórios e testes automatizados. Os testes
+exploratórios foram usados para observar a coerência da conversa, a extração de entidades e o
+comportamento geral do protótipo em cenários representativos. Os testes automatizados foram
+incluídos para reduzir regressões em regras de chat, relatórios e documentação de API.
+
+\begin{table}[htb]
+\centering
+\caption{Relação entre requisitos e estratégias de verificação.}
+\label{tab:plano-testes}
+\begin{tabular}{p{2.0cm}p{6.0cm}p{5.6cm}}
+\hline
+Requisito & Verificação & Evidência \\
+\hline
+RF01--RF03 & Fluxos de autenticação, sessão e paciente & Testes de API, execução manual e documentação OpenAPI \\
+RF04--RF08 & Fluxo de atendimento e histórico & Testes de serviço, testes exploratórios e inspeção de persistência \\
+RF09--RF10 & Prontidão e geração de relatório & Testes unitários de mapeamento, prontidão e disponibilidade \\
+RF11 & Documentação da API & Teste de contrato OpenAPI e publicação em \texttt{/api/docs} \\
+RNF06 & Integração contínua & Pipeline com lint, testes e build \\
+\hline
+\end{tabular}
+\end{table}
+
+\section{Resultados Técnicos Observados}
+
+A evolução incremental resultou em uma aplicação funcional com autenticação, perfil de
+paciente, atendimento persistido, histórico de mensagens, ciclo de relatórios e documentação
+de API. O fluxo deixou de depender de identificadores enviados pelo cliente e passou a operar
+com sessão autenticada e escopo de paciente.
+
+Nos testes de serviço, foram verificados cenários como continuidade do envio de mensagem
+mesmo quando a avaliação de prontidão falha, remoção de metadados técnicos das respostas do
+modelo, normalização de paginação na listagem de atendimentos, extração de critérios de
+anamnese, cálculo de prontidão, combinação de seções extraídas por regras e por IA, e
+disponibilidade de relatório atualizado.
+
+Esses resultados não substituem validação clínica nem avaliação com usuários finais. No
+entanto, fornecem evidência técnica de que a arquitetura é capaz de organizar o fluxo de
+anamnese, persistir dados por paciente e produzir relatório estruturado a partir das mensagens
+coletadas.
 
 \chapter{Considerações Finais e Cronograma}
 
-Esta etapa do trabalho atingiu o objetivo de avaliar tecnicamente uma arquitetura híbrida para
-anamnese assistida. A abordagem com BFF, modelo generativo e componente extrativo mostrou
-viabilidade técnica e potencial para evolução em ambiente real.
+Esta etapa do trabalho consolidou uma arquitetura web para anamnese assistida, com BFF,
+autenticação, persistência relacional, histórico de atendimentos, avaliação de prontidão e
+geração de relatórios. A principal contribuição técnica foi transformar um fluxo conversacional
+em uma aplicação organizada por paciente, atendimento e relatório, mantendo contratos de API
+documentados e testes automatizados para regras centrais.
 
 \section{Limitações Atuais e Encaminhamentos}
 
 \begin{itemize}
-\item Implementação de RAG para reduzir alucinações e fundamentar respostas em base curada.
-\item Persistência em banco relacional e autenticação para continuidade longitudinal do cuidado.
-\item Expansão da plataforma web além do chat, com requisitos de responsividade e acessibilidade.
-\item Validação com usuários reais para refinamento da persona e da comunicação clínica.
+\item A avaliação realizada é técnica e exploratória, sem validação clínica com usuários reais.
+\item A extração de informações depende de regras e de respostas de modelo, podendo exigir revisão humana.
+\item O tratamento de negações, ambiguidades e contexto temporal ainda demanda refinamento.
+\item A geração de relatório deve ser interpretada como apoio à anamnese, não como diagnóstico.
+\item A etapa subsequente deve ampliar testes de integração, acessibilidade, segurança e usabilidade.
 \end{itemize}
 
 \section{Cronograma de Atividades}
 
 \begin{table}[htb]
 \centering
-\caption{Cronograma de atividades previstas para a etapa subsequente do projeto (4 meses).}
+\caption{Cronograma de atividades previstas para consolidação da etapa subsequente.}
 \label{tab:cronograma-tcc2}
 \begin{tabular}{lcccc}
 \hline
 Atividade / Mês & Mês 1 & Mês 2 & Mês 3 & Mês 4 \\
 \hline
-Infraestrutura de Dados e Segurança & X &   &   &   \\
-Implementação do RAG e Vetorização  & X & X &   &   \\
-Consolidação da Plataforma Web      &   & X & X &   \\
-Testes de Usabilidade e Refinamento &   &   & X &   \\
-Escrita da Monografia Final e Defesa&   &   & X & X \\
+Revisão de requisitos e riscos técnicos        & X &   &   &   \\
+Ampliação de testes automatizados e integração & X & X &   &   \\
+Refinamento do relatório e critérios clínicos  &   & X & X &   \\
+Avaliação de usabilidade e acessibilidade      &   &   & X &   \\
+Homologação, ajustes finais e escrita          &   &   & X & X \\
 \hline
 \end{tabular}
 \end{table}
 
-A etapa subsequente do projeto concentra dois desafios centrais: a integração de RAG com
-garantia de segurança clínica e a consolidação do fluxo completo da aplicação, incluindo
-autenticação, histórico e avaliação com usuários.
+A etapa subsequente deve priorizar evidências de qualidade do software, revisão dos critérios
+de relatório, avaliação com usuários e preparação do documento final com base nos artefatos
+técnicos já produzidos.
+
 \part{Texto e Pós Texto}
