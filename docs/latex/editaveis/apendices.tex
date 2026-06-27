@@ -182,6 +182,17 @@ Arquivo & Cobertura principal \\
 \end{tabular}
 \end{table}
 
+Como evidência complementar da execução local da suíte, a Figura~\ref{fig:testes-automatizados}
+apresenta uma execução bem-sucedida do comando \texttt{npm run test}, destacando a aprovação
+dos casos automatizados associados aos serviços centrais da aplicação.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.92\textwidth]{figuras/testes-automatizados.eps}
+  \caption{Execução local da suíte de testes automatizados, com todos os casos concluídos com sucesso.}
+  \label{fig:testes-automatizados}
+\end{figure}
+
 \section{Cenários Exploratórios}
 
 \begin{table}[htb]
@@ -207,6 +218,13 @@ O workflow de integração contínua está definido em \path{.github/workflows/c
 executa instalação de dependências, lint, testes automatizados e build no diretório
 \path{medico_digital}. Esse processo fornece evidência de que alterações submetidas ao
 repositório preservam a compilação e os testes principais do protótipo.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.96\textwidth]{figuras/github-actions-ci.eps}
+  \caption{Execução bem-sucedida do workflow de integração contínua no GitHub Actions, com etapas de instalação, lint, testes e build.}
+  \label{fig:github-actions-ci}
+\end{figure}
 
 \section{Implantação}
 
