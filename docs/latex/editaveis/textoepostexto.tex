@@ -90,7 +90,7 @@ usuário, os componentes de domínio e as rotas de API estão no diretório prin
 \texttt{medico\_digital}. A camada de API atua como Backend for Frontend (BFF), concentrando
 autenticação, validação, orquestração de modelos, persistência e geração de relatórios.
 
-\begin{figure}[htb]
+\begin{figure}[H]
   \centering
   \includegraphics[width=0.90\textwidth]{figuras/arquitetura-solucao.eps}
   \caption{Fluxo de dados e componentes da arquitetura proposta.}
@@ -137,7 +137,7 @@ novo atendimento, o sistema encerra eventual conversa ativa anterior, cria uma n
 reinicia o contexto conversacional em memória. As mensagens do paciente e do assistente são
 persistidas no banco, junto às entidades clínicas extraídas quando disponíveis.
 
-\begin{figure}[htb]
+\begin{figure}[H]
   \centering
   \includegraphics[width=0.90\textwidth]{figuras/sequencia.eps}
   \caption{Sequência principal de envio de mensagem no atendimento.}
@@ -176,7 +176,7 @@ O relatório gerado contém resumo estruturado, metadados de prontidão e dados 
 atendimento. A visualização em página própria permite impressão ou salvamento em PDF pelo
 navegador.
 
-\begin{figure}[htb]
+\begin{figure}[H]
   \centering
   \includegraphics[width=0.78\textwidth]{figuras/relatorio-anamnese.eps}
   \caption{Visualização do relatório de anamnese gerado a partir de um atendimento real.}
@@ -194,7 +194,7 @@ atendimentos, perfil de paciente e estrutura compartilhada de dashboard. O desig
 padronizado com componentes de interface reutilizáveis, incluindo campos, botões, seleção e
 painel lateral responsivo.
 
-\begin{figure}[htb]
+\begin{figure}[H]
   \centering
   \includegraphics[width=0.85\textwidth]{figuras/print-chat.eps}
   \caption{Interface de interação do paciente com o assistente virtual de anamnese.}
@@ -205,14 +205,14 @@ A Figura~\ref{fig:print-chat} apresenta a interface principal de interação. Al
 mensagens, a aplicação permite criar novo atendimento, consultar histórico, finalizar ou
 retomar atendimentos e acionar a geração de relatórios quando houver dados suficientes.
 
-\begin{figure}[htb]
+\begin{figure}[H]
   \centering
   \includegraphics[width=0.82\textwidth]{figuras/perfil-paciente.eps}
   \caption{Tela de perfil do paciente autenticado na aplicação.}
   \label{fig:perfil-paciente}
 \end{figure}
 
-\begin{figure}[htb]
+\begin{figure}[H]
   \centering
   \includegraphics[width=0.82\textwidth]{figuras/detalhes-atendimento.eps}
   \caption{Tela de detalhes de atendimento com histórico persistido de mensagens.}
@@ -231,7 +231,7 @@ interface de consulta em \texttt{/api/docs}. Essa documentação acompanha os co
 autenticação, paciente, chat, atendimentos e relatórios, apoiando testes manuais,
 integrações futuras e manutenção do BFF.
 
-\begin{figure}[htb]
+\begin{figure}[H]
   \centering
   \includegraphics[width=0.92\textwidth]{figuras/api-docs.eps}
   \caption{Documentação publicada da API em ambiente de produção.}
@@ -259,7 +259,7 @@ exploratórios foram usados para observar a coerência da conversa, a extração
 comportamento geral do protótipo em cenários representativos. Os testes automatizados foram
 incluídos para reduzir regressões em regras de chat, relatórios e documentação de API.
 
-\begin{table}[htb]
+\begin{table}[H]
 \centering
 \caption{Relação entre requisitos e estratégias de verificação.}
 \label{tab:plano-testes}
@@ -314,7 +314,7 @@ documentados e testes automatizados para regras centrais.
 
 \section{Cronograma de Atividades}
 
-\begin{table}[htb]
+\begin{table}[H]
 \centering
 \caption{Cronograma de atividades previstas para consolidação da etapa subsequente.}
 \label{tab:cronograma-tcc2}
