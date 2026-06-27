@@ -314,14 +314,29 @@ documentados e testes automatizados para regras centrais.
 
 \section{Cronograma Executado por Sprints}
 
-\begin{table}[H]
-\centering
+\setlength{\LTpre}{0pt}
+\setlength{\LTpost}{0pt}
+\begin{longtable}{p{2.0cm}p{3.3cm}p{7.8cm}}
 \caption{Resumo das sprints semanais executadas e registradas no quadro Kanban do projeto.}
-\label{tab:cronograma-sprints}
-\begin{tabular}{p{2.0cm}p{3.5cm}p{8.0cm}}
+\label{tab:cronograma-sprints}\\
 \hline
 Sprint & Período & Entregas principais \\
 \hline
+\endfirsthead
+
+\multicolumn{3}{l}{\textit{Continuação da Tabela~\ref{tab:cronograma-sprints}}}\\
+\hline
+Sprint & Período & Entregas principais \\
+\hline
+\endhead
+
+\hline
+\multicolumn{3}{r}{\textit{Continua na próxima página}}\\
+\endfoot
+
+\hline
+\endlastfoot
+
 Semana 1  & 02/03 a 08/03 & Definição inicial do escopo do trabalho, organização do tema da etapa e estruturação preliminar das frentes técnica e documental do projeto. \\
 Semana 2  & 09/03 a 15/03 & Levantamento bibliográfico inicial sobre anamnese assistida, agentes conversacionais e viabilidade de uso de IA no contexto do protótipo. \\
 Semana 3  & 16/03 a 22/03 & Refinamento do problema de pesquisa, delimitação dos objetivos e consolidação dos requisitos iniciais que orientariam a implementação. \\
@@ -338,9 +353,7 @@ Semana 13 & 25/05 a 31/05 & Evolução da interface inicial e integração mais 
 Semana 14 & 01/06 a 07/06 & Refinamento da arquitetura \textit{fullstack}, autenticação, sessão e organização do escopo por paciente e atendimento. \\
 Semana 15 & 08/06 a 14/06 & Implementação do histórico de atendimentos, evolução do ciclo de relatórios e consolidação de regras de negócio centrais. \\
 Semana 16 & 15/06 a 18/06 & Integração contínua, implantação em produção, documentação da API, revisão técnica e consolidação da versão apresentada nesta etapa. \\
-\hline
-\end{tabular}
-\end{table}
+\end{longtable}
 
 O cronograma executado evidencia que a condução do projeto ocorreu em sprints semanais curtas,
 com registro histórico das entregas concluídas na coluna \textit{Pronto} do quadro Kanban no
