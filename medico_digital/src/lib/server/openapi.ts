@@ -1,5 +1,3 @@
-import { env } from "@/lib/server/env";
-
 export function buildOpenApiSpec() {
   return {
     openapi: "3.1.0",
@@ -9,7 +7,12 @@ export function buildOpenApiSpec() {
       description:
         "API para anamnese assistida com modulos de auth, chat, usuarios e relatorios.",
     },
-    servers: [{ url: env.appUrl, description: "Application URL" }],
+    servers: [
+      {
+        url: "https://medicodigital.vercel.app/api",
+        description: "Application URL",
+      },
+    ],
     tags: [
       { name: "Health" },
       { name: "Chat" },
@@ -136,7 +139,9 @@ export function buildOpenApiSpec() {
               description: "New attendance started",
               content: {
                 "application/json": {
-                  schema: { $ref: "#/components/schemas/StartAttendanceResponse" },
+                  schema: {
+                    $ref: "#/components/schemas/StartAttendanceResponse",
+                  },
                 },
               },
             },
@@ -462,7 +467,9 @@ export function buildOpenApiSpec() {
                   schema: {
                     oneOf: [
                       { $ref: "#/components/schemas/ErrorStringResponse" },
-                      { $ref: "#/components/schemas/ConversationNotReadyResponse" },
+                      {
+                        $ref: "#/components/schemas/ConversationNotReadyResponse",
+                      },
                     ],
                   },
                 },
@@ -616,7 +623,9 @@ export function buildOpenApiSpec() {
               description: "Conversation readiness preview",
               content: {
                 "application/json": {
-                  schema: { $ref: "#/components/schemas/ReportReadinessResponse" },
+                  schema: {
+                    $ref: "#/components/schemas/ReportReadinessResponse",
+                  },
                 },
               },
             },
@@ -658,7 +667,8 @@ export function buildOpenApiSpec() {
       "/api/reports/availability": {
         get: {
           tags: ["Reports"],
-          summary: "Check if a conversation has an up-to-date downloadable report",
+          summary:
+            "Check if a conversation has an up-to-date downloadable report",
           parameters: [
             {
               in: "query",
@@ -672,7 +682,9 @@ export function buildOpenApiSpec() {
               description: "Report availability",
               content: {
                 "application/json": {
-                  schema: { $ref: "#/components/schemas/ReportAvailabilityResponse" },
+                  schema: {
+                    $ref: "#/components/schemas/ReportAvailabilityResponse",
+                  },
                 },
               },
             },
@@ -720,7 +732,9 @@ export function buildOpenApiSpec() {
               description: "Attendances list",
               content: {
                 "application/json": {
-                  schema: { $ref: "#/components/schemas/AttendancesListResponse" },
+                  schema: {
+                    $ref: "#/components/schemas/AttendancesListResponse",
+                  },
                 },
               },
             },
@@ -776,7 +790,9 @@ export function buildOpenApiSpec() {
               description: "Attendance details",
               content: {
                 "application/json": {
-                  schema: { $ref: "#/components/schemas/AttendanceDetailsResponse" },
+                  schema: {
+                    $ref: "#/components/schemas/AttendanceDetailsResponse",
+                  },
                 },
               },
             },
@@ -832,7 +848,9 @@ export function buildOpenApiSpec() {
               description: "Attendance messages",
               content: {
                 "application/json": {
-                  schema: { $ref: "#/components/schemas/AttendanceMessagesResponse" },
+                  schema: {
+                    $ref: "#/components/schemas/AttendanceMessagesResponse",
+                  },
                 },
               },
             },
@@ -888,7 +906,9 @@ export function buildOpenApiSpec() {
               description: "Attendance finalized",
               content: {
                 "application/json": {
-                  schema: { $ref: "#/components/schemas/FinalizeAttendanceResponse" },
+                  schema: {
+                    $ref: "#/components/schemas/FinalizeAttendanceResponse",
+                  },
                 },
               },
             },
@@ -952,7 +972,9 @@ export function buildOpenApiSpec() {
               description: "Attendance resumed",
               content: {
                 "application/json": {
-                  schema: { $ref: "#/components/schemas/FinalizeAttendanceResponse" },
+                  schema: {
+                    $ref: "#/components/schemas/FinalizeAttendanceResponse",
+                  },
                 },
               },
             },
