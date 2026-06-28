@@ -38,7 +38,7 @@ No contexto deste trabalho, o Trello foi adotado como instrumento de apoio à ge
 enquanto o Kanban foi empregado como abordagem para tornar o fluxo de trabalho explícito,
 acompanhar prioridades e manter histórico das entregas concluídas. Essa combinação favoreceu a
 visibilidade do backlog, a identificação de gargalos e a revisão incremental das atividades ao
-longo do semestre \cite{atlassiankanban2025}. A solução foi consolidada como uma
+longo do semestre \cite{atlassiankanban2026}. A solução foi consolidada como uma
 aplicação \textit{fullstack} baseada em Next.js, reunindo interface web, rotas de API e módulos
 de domínio em uma única base de código. A escolha por Next.js foi motivada pela possibilidade
 de integrar renderização de páginas, tratamento de requisições HTTP e organização modular do
@@ -135,10 +135,10 @@ atendimentos seja organizado sob a perspectiva assistencial. A persistência rel
 implementada com PostgreSQL, acessado a partir do ecossistema Node.js, por ser um SGBD maduro
 para aplicações transacionais e por oferecer suporte consistente a integridade relacional e
 execução transacional, características relevantes para entidades como usuários, sessões,
-atendimentos, mensagens e relatórios \cite{postgresql2025,node2024}. As migrations
+atendimentos, mensagens e relatórios \cite{postgresql2026,node2024}. As migrations
 versionadas foram adotadas para tornar a evolução do esquema reprodutível e rastreável,
 evitando alterações manuais não documentadas e facilitando a reprodução do ambiente em
-execuções futuras \cite{postgresql2025}.
+execuções futuras \cite{postgresql2026}.
 
 No modelo de dados consolidado, a tabela \texttt{users} representa a conta de acesso do sistema
 e se relaciona com \texttt{auth\_sessions}, responsável pelo controle de sessões autenticadas por
@@ -191,7 +191,7 @@ enviar identificadores de usuário pelo cliente no fluxo de atendimento, reduzin
 indevido de identificadores. O uso de cookie \texttt{httpOnly}, associado no projeto a
 atributos de expiração, \texttt{SameSite} e proteção por ambiente de produção, foi escolhido
 para restringir o acesso direto do JavaScript do navegador ao token de sessão e reduzir a
-exposição da credencial de autenticação na camada cliente \cite{mdnsetcookie2025,owasp2025}.
+exposição da credencial de autenticação na camada cliente \cite{mdnsetcookie2026,owasp2026}.
 
 O middleware da aplicação foi dividido em dois guardas: um para rotas de API e outro para
 páginas. As páginas protegidas redirecionam usuários sem sessão para o login, preservando a
@@ -320,7 +320,7 @@ autenticação, paciente, chat, atendimentos e relatórios, apoiando testes manu
 integrações futuras e manutenção da API. A escolha por OpenAPI foi motivada pela necessidade de
 formalizar os contratos HTTP do sistema em um formato amplamente reconhecido, favorecendo
 consistência entre implementação e documentação, além de apoiar integração futura com outros
-consumidores da API \cite{openapi2025}.
+consumidores da API \cite{openapi2026}.
 
 \begin{figure}[H]
   \centering
@@ -341,7 +341,7 @@ O repositório possui workflow de integração contínua no GitHub Actions. Em e
 GitHub Actions foi motivada pela integração nativa com o repositório e pela capacidade de
 executar um processo automatizado e reprodutível a cada alteração relevante, reduzindo o risco
 de integração de mudanças que quebrem compilação, regras estáticas ou testes centrais
-\cite{githubactions2025}. O uso de Node.js 20 no pipeline e no ambiente de execução também
+\cite{githubactions2026}. O uso de Node.js 20 no pipeline e no ambiente de execução também
 mantém coerência com a base tecnológica da aplicação e com o executor nativo de testes
 adotado no projeto \cite{node2024}.
 
@@ -351,7 +351,7 @@ disponível em \url{https://medicodigital.vercel.app/}. A documentação da API 
 disponível em \url{https://medicodigital.vercel.app/api/docs}. A escolha por Vercel foi
 motivada pela integração direta com repositórios Git e pela afinidade com aplicações Next.js,
 simplificando a publicação contínua da aplicação sem a necessidade de gerenciar infraestrutura
-própria \cite{vercelgit2025}.
+própria \cite{vercelgit2026}.
 
 \section{Plano de Testes e Avaliação Técnica}
 
@@ -364,7 +364,7 @@ unitários de funções determinísticas, testes de serviço com uso de dublês 
 cliente de IA, e um teste de consistência entre rotas implementadas e a especificação OpenAPI.
 Essa composição é coerente com o princípio de privilegiar testes rápidos e de menor granularidade
 na base da estratégia de verificação, preservando ciclos curtos de feedback durante a evolução
-incremental do software \cite{microsofttesting2026,fowler2018,nodejsTestRunner2025}.
+incremental do software \cite{microsofttesting2026,fowler2018,nodejsTestRunner2026}.
 
 Os testes unitários foram empregados para validar funções puras relacionadas à extração de
 seções clínicas, cálculo de prontidão, combinação de seções e geração de resumo. Esse tipo de
