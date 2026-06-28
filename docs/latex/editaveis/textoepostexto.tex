@@ -155,7 +155,7 @@ persistidas no banco, junto às entidades clínicas extraídas quando disponíve
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.90\textwidth]{figuras/sequencia.eps}
-  \caption{Sequência principal de envio de mensagem no atendimento.}
+  \caption[Fluxo principal de envio de mensagem]{Sequência principal de envio de mensagem no atendimento.}
   \label{fig:sequencia}
 \end{figure}
 
@@ -207,7 +207,7 @@ navegador.
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.78\textwidth]{figuras/relatorio-anamnese.eps}
-  \caption{Visualização do relatório de anamnese gerado a partir de um atendimento real.}
+  \caption[Visualização do relatório de anamnese]{Visualização do relatório de anamnese gerado a partir de um atendimento real.}
   \label{fig:relatorio-anamnese}
 \end{figure}
 
@@ -225,7 +225,7 @@ painel lateral responsivo.
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.85\textwidth]{figuras/print-chat.eps}
-  \caption{Interface de interação do paciente com o assistente virtual de anamnese.}
+  \caption[Interface principal do atendimento]{Interface de interação do paciente com o assistente virtual de anamnese.}
   \label{fig:print-chat}
 \end{figure}
 
@@ -236,14 +236,14 @@ retomar atendimentos e acionar a geração de relatórios quando houver dados su
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.82\textwidth]{figuras/perfil-paciente.eps}
-  \caption{Tela de perfil do paciente autenticado na aplicação.}
+  \caption[Tela de perfil do paciente]{Tela de perfil do paciente autenticado na aplicação.}
   \label{fig:perfil-paciente}
 \end{figure}
 
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.82\textwidth]{figuras/detalhes-atendimento.eps}
-  \caption{Tela de detalhes de atendimento com histórico persistido de mensagens.}
+  \caption[Tela de detalhes do atendimento]{Tela de detalhes de atendimento com histórico persistido de mensagens.}
   \label{fig:detalhes-atendimento}
 \end{figure}
 
@@ -265,7 +265,7 @@ consumidores da API \cite{openapi2025}.
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.92\textwidth]{figuras/api-docs.eps}
-  \caption{Documentação publicada da API em ambiente de produção.}
+  \caption[Documentação publicada da API]{Documentação publicada da API em ambiente de produção.}
   \label{fig:api-docs}
 \end{figure}
 
@@ -328,7 +328,7 @@ clareza das respostas \cite{fowler2018}.
 \centering
 \caption{Relação entre requisitos e estratégias de verificação.}
 \label{tab:plano-testes}
-\begin{tabular}{p{2.0cm}p{6.0cm}p{5.6cm}}
+\begin{tabularx}{\textwidth}{p{2.0cm}p{5.2cm}Y}
 \hline
 Requisito & Verificação & Evidência \\
 \hline
@@ -338,7 +338,7 @@ RF09--RF10 & Prontidão e geração de relatório & Testes unitários de mapeame
 RF11 & Documentação da API & Teste de consistência OpenAPI e publicação em \texttt{/api/docs} \\
 RNF06 & Integração contínua & Pipeline com lint, testes e build \\
 \hline
-\end{tabular}
+\end{tabularx}
 \end{table}
 
 \section{Resultados Técnicos Observados}

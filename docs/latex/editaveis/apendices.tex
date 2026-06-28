@@ -15,15 +15,15 @@ interface \texttt{/api/docs}.
 \centering
 \caption{Endpoints de autenticação e sessão.}
 \label{tab:api-auth}
-\begin{tabular}{p{3.0cm}p{4.3cm}p{6.1cm}}
+\begin{tabularx}{\textwidth}{p{2.2cm}p{4.1cm}Y}
 \hline
 Método & Rota & Finalidade \\
 \hline
-\texttt{POST} & \texttt{/api/auth/register} & Criar conta de usuário com nome, e-mail e senha. \\
-\texttt{POST} & \texttt{/api/auth/login} & Autenticar usuário e criar sessão por cookie \texttt{httpOnly}. \\
-\texttt{POST} & \texttt{/api/auth/logout} & Revogar sessão e remover cookie de autenticação. \\
+\texttt{POST} & \rota{/api/auth/register} & Criar conta de usuário com nome, e-mail e senha. \\
+\texttt{POST} & \rota{/api/auth/login} & Autenticar usuário e criar sessão por cookie \texttt{httpOnly}. \\
+\texttt{POST} & \rota{/api/auth/logout} & Revogar sessão e remover cookie de autenticação. \\
 \hline
-\end{tabular}
+\end{tabularx}
 \end{table}
 
 As rotas de autenticação validam corpo da requisição, retornam erro de entrada inválida com
@@ -35,14 +35,14 @@ status \texttt{400} e separam falhas de credencial, sessão e indisponibilidade 
 \centering
 \caption{Endpoints do perfil do paciente autenticado.}
 \label{tab:api-paciente}
-\begin{tabular}{p{3.0cm}p{4.3cm}p{6.1cm}}
+\begin{tabularx}{\textwidth}{p{2.2cm}p{4.1cm}Y}
 \hline
 Método & Rota & Finalidade \\
 \hline
-\texttt{GET} & \texttt{/api/patients/me} & Consultar o perfil de paciente vinculado à sessão atual. \\
-\texttt{PUT} & \texttt{/api/patients/me} & Atualizar dados básicos do paciente autenticado. \\
+\texttt{GET} & \rota{/api/patients/me} & Consultar o perfil de paciente vinculado à sessão atual. \\
+\texttt{PUT} & \rota{/api/patients/me} & Atualizar dados básicos do paciente autenticado. \\
 \hline
-\end{tabular}
+\end{tabularx}
 \end{table}
 
 \section{Rotas de Atendimento e Chat}
@@ -51,19 +51,19 @@ Método & Rota & Finalidade \\
 \centering
 \caption{Endpoints de atendimento, mensagens e histórico.}
 \label{tab:api-atendimentos}
-\begin{tabular}{p{3.0cm}p{5.2cm}p{5.2cm}}
+\begin{tabularx}{\textwidth}{p{2.2cm}p{5.0cm}Y}
 \hline
 Método & Rota & Finalidade \\
 \hline
-\texttt{POST} & \texttt{/api/message} & Enviar mensagem ao assistente virtual de anamnese. \\
-\texttt{POST} & \texttt{/api/message/attendance/start} & Iniciar novo atendimento para o paciente autenticado. \\
-\texttt{GET} & \texttt{/api/attendances} & Listar atendimentos do paciente autenticado. \\
-\texttt{GET} & \texttt{/api/attendances/\{id\}} & Consultar dados resumidos de um atendimento. \\
-\texttt{GET} & \texttt{/api/attendances/\{id\}/messages} & Consultar mensagens de um atendimento. \\
-\texttt{POST} & \texttt{/api/attendances/\{id\}/finalize} & Finalizar atendimento ativo. \\
-\texttt{POST} & \texttt{/api/attendances/\{id\}/resume} & Retomar atendimento finalizado. \\
+\texttt{POST} & \rota{/api/message} & Enviar mensagem ao assistente virtual de anamnese. \\
+\texttt{POST} & \rota{/api/message/attendance/start} & Iniciar novo atendimento para o paciente autenticado. \\
+\texttt{GET} & \rota{/api/attendances} & Listar atendimentos do paciente autenticado. \\
+\texttt{GET} & \rota{/api/attendances/:id} & Consultar dados resumidos de um atendimento. \\
+\texttt{GET} & \rota{/api/attendances/:id/messages} & Consultar mensagens de um atendimento. \\
+\texttt{POST} & \rota{/api/attendances/:id/finalize} & Finalizar atendimento ativo. \\
+\texttt{POST} & \rota{/api/attendances/:id/resume} & Retomar atendimento finalizado. \\
 \hline
-\end{tabular}
+\end{tabularx}
 \end{table}
 
 \section{Rotas de Relatório}
@@ -72,17 +72,17 @@ Método & Rota & Finalidade \\
 \centering
 \caption{Endpoints do ciclo de relatórios clínicos.}
 \label{tab:api-relatorios}
-\begin{tabular}{p{3.0cm}p{5.2cm}p{5.2cm}}
+\begin{tabularx}{\textwidth}{p{2.2cm}p{5.0cm}Y}
 \hline
 Método & Rota & Finalidade \\
 \hline
-\texttt{GET} & \texttt{/api/reports/readiness} & Avaliar prontidão da conversa para geração de relatório. \\
-\texttt{GET} & \texttt{/api/reports/availability} & Verificar se há relatório atual disponível para download. \\
-\texttt{POST} & \texttt{/api/reports/generate} & Gerar relatório de anamnese. \\
-\texttt{GET} & \texttt{/api/reports/\{id\}} & Consultar relatório por identificador. \\
-\texttt{GET} & \texttt{/api/reports/\{id\}/download} & Obter dados estruturados para visualização e impressão. \\
+\texttt{GET} & \rota{/api/reports/readiness} & Avaliar prontidão da conversa para geração de relatório. \\
+\texttt{GET} & \rota{/api/reports/availability} & Verificar se há relatório atual disponível para download. \\
+\texttt{POST} & \rota{/api/reports/generate} & Gerar relatório de anamnese. \\
+\texttt{GET} & \rota{/api/reports/:id} & Consultar relatório por identificador. \\
+\texttt{GET} & \rota{/api/reports/:id/download} & Obter dados estruturados para visualização e impressão. \\
 \hline
-\end{tabular}
+\end{tabularx}
 \end{table}
 
 \section{Rotas de Suporte}
@@ -91,16 +91,16 @@ Método & Rota & Finalidade \\
 \centering
 \caption{Endpoints de suporte, documentação e saúde da aplicação.}
 \label{tab:api-suporte}
-\begin{tabular}{p{3.0cm}p{4.3cm}p{6.1cm}}
+\begin{tabularx}{\textwidth}{p{2.2cm}p{4.1cm}Y}
 \hline
 Método & Rota & Finalidade \\
 \hline
-\texttt{GET} & \texttt{/api/health} & Verificar estado básico da aplicação e configuração do banco. \\
-\texttt{GET} & \texttt{/api/openapi.json} & Obter especificação OpenAPI em JSON. \\
-\texttt{GET} & \texttt{/api/docs} & Acessar documentação interativa da API. \\
-\texttt{GET} & \texttt{/api/users/\{id\}} & Consultar dados básicos de usuário por identificador. \\
+\texttt{GET} & \rota{/api/health} & Verificar estado básico da aplicação e configuração do banco. \\
+\texttt{GET} & \rota{/api/openapi.json} & Obter especificação OpenAPI em JSON. \\
+\texttt{GET} & \rota{/api/docs} & Acessar documentação interativa da API. \\
+\texttt{GET} & \rota{/api/users/:id} & Consultar dados básicos de usuário por identificador. \\
 \hline
-\end{tabular}
+\end{tabularx}
 \end{table}
 
 \chapter{Artefatos de Implementação}
@@ -153,7 +153,7 @@ condução incremental do projeto.
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.96\textwidth]{figuras/kanban-trello.eps}
-  \caption{Quadro Kanban utilizado no Trello para planejamento e acompanhamento das sprints do projeto.}
+  \caption[Quadro Kanban do projeto]{Quadro Kanban utilizado no Trello para planejamento e acompanhamento das sprints do projeto.}
   \label{fig:kanban-trello}
 \end{figure}
 
@@ -169,7 +169,7 @@ borda que poderiam gerar regressões.
 \centering
 \caption{Suites de teste automatizado do projeto.}
 \label{tab:testes-automatizados}
-\begin{tabular}{p{5.6cm}p{7.9cm}}
+\begin{tabularx}{\textwidth}{p{5.1cm}Y}
 \hline
 Arquivo & Cobertura principal \\
 \hline
@@ -179,7 +179,7 @@ Arquivo & Cobertura principal \\
 \path{tests/reports-service.edge-cases.test.ts} & Negação, JSON malformado, disponibilidade de relatório e identificadores inválidos. \\
 \path{tests/openapi-docs.test.ts} & Consistência básica da documentação OpenAPI. \\
 \hline
-\end{tabular}
+\end{tabularx}
 \end{table}
 
 Como evidência complementar da execução local da suíte, a Figura~\ref{fig:testes-automatizados}
@@ -189,7 +189,7 @@ dos casos automatizados associados aos serviços centrais da aplicação.
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.92\textwidth]{figuras/testes-automatizados.eps}
-  \caption{Execução local da suíte de testes automatizados, com todos os casos concluídos com sucesso.}
+  \caption[Execução da suíte de testes automatizados]{Execução local da suíte de testes automatizados, com todos os casos concluídos com sucesso.}
   \label{fig:testes-automatizados}
 \end{figure}
 
@@ -222,7 +222,7 @@ repositório preservam a compilação e os testes principais do sistema.
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.96\textwidth]{figuras/github-actions-ci.eps}
-  \caption{Execução bem-sucedida do workflow de integração contínua no GitHub Actions, com etapas de instalação, lint, testes e build.}
+  \caption[Execução do workflow de integração contínua]{Execução bem-sucedida do workflow de integração contínua no GitHub Actions, com etapas de instalação, lint, testes e build.}
   \label{fig:github-actions-ci}
 \end{figure}
 
