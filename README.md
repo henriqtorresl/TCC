@@ -24,7 +24,7 @@ Toda a aplicação (frontend e backend) está unificada no mesmo projeto, seguin
 
 ## Pasta `docs/` (Monografia LaTeX)
 
-A pasta `docs/` concentra o documento acadêmico do TCC migrado para o template novo.
+A pasta `docs/` concentra o documento acadêmico do TCC feito usando o [template do professor Edson](https://github.com/fga-unb/template-latex-tcc).
 
 - `docs/latex/tcc.tex` — Arquivo principal da monografia.
 - `docs/latex/editaveis/` — Conteúdo editável (introdução, capítulos, resumo, apêndices etc.).
