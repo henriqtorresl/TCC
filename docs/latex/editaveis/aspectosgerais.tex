@@ -63,11 +63,11 @@ grande capacidade paramétrica e ampla competência de linguagem natural. Já a 
 refere-se a \textit{Small Language Model}, categoria útil quando o objetivo é reduzir custo
 computacional, memória e latência em cenários mais restritos.
 
-A proposta desenvolvida nesta etapa adota um LLM por priorizar qualidade de condução
+A proposta desenvolvida adota um LLM por priorizar qualidade de condução
 conversacional e capacidade de manter contexto clínico ao longo da anamnese. A escolha do
 Llama-3.1-8B-Instruct foi motivada por disponibilidade aberta, integração viável com a
-infraestrutura utilizada e alinhamento com o objetivo de construir um protótipo funcional
-auditável \cite{metaai2024}.
+infraestrutura utilizada e alinhamento com o objetivo de construir uma solução auditável
+\cite{metaai2024}.
 
 \subsection{Reconhecimento de Entidades Nomeadas}
 
@@ -96,5 +96,5 @@ para apoiar etapas clínicas subsequentes.
 \section{Aspectos Éticos e Legais na Saúde Digital}
 
 O tratamento de dados de saúde exige conformidade com a LGPD e princípios de Privacy by
-Design. Na arquitetura proposta, o BFF atua como ponto de controle para desidentificação e
-governança antes de chamadas a serviços externos de inferência.
+Design. Na arquitetura adotada, a camada servidor da aplicação atua como ponto de controle
+para desidentificação e governança antes de chamadas a serviços externos de inferência.

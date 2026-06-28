@@ -1,7 +1,7 @@
 \chapter{Metodologia e Desenvolvimento}
 
-Este capítulo apresenta a metodologia adotada, a evolução da arquitetura implementada e os
-artefatos utilizados para avaliação técnica do protótipo funcional de anamnese assistida. O
+Este capítulo apresenta a metodologia adotada, a arquitetura implementada e os
+artefatos utilizados para avaliação técnica do software de anamnese assistida. O
 desenvolvimento foi conduzido de forma incremental, com registro das decisões técnicas em
 notas locais de desenvolvimento e posterior consolidação dos resultados no documento.
 
@@ -14,13 +14,13 @@ organização e disponibilização de informações clínicas iniciais em atendi
 
 \subsection{Quanto aos Objetivos}
 
-Trata-se de pesquisa exploratória, pois investiga a viabilidade técnica de uma arquitetura que
+Trata-se de pesquisa exploratória, pois investiga tecnicamente uma solução que
 combina modelos generativos, extração estruturada de informações e aplicação web para apoio
 à anamnese.
 
 \subsection{Quanto aos Procedimentos Técnicos}
 
-Foram empregados levantamento bibliográfico, prototipação incremental e avaliação técnica
+Foram empregados levantamento bibliográfico, desenvolvimento incremental e avaliação técnica
 por meio de testes exploratórios e automatizados. A abordagem adotada permitiu observar a
 integração entre interface, serviços de aplicação, persistência, modelos de IA e geração de
 relatórios clínicos estruturados.
@@ -30,7 +30,7 @@ relatórios clínicos estruturados.
 O desenvolvimento foi organizado em ciclos curtos, com evolução progressiva da arquitetura e
 do comportamento da aplicação. Esses ciclos foram conduzidos como sprints, permitindo
 planejamento incremental, definição de entregas parciais e revisão contínua das prioridades
-ao longo da implementação do protótipo. Para apoiar essa organização, foi utilizado o Trello
+ao longo da implementação do sistema. Para apoiar essa organização, foi utilizado o Trello
 como ferramenta de acompanhamento, por meio de um quadro Kanban com colunas compatíveis com
 o fluxo de execução das atividades. Esse quadro foi empregado para distribuir requisitos
 funcionais e não funcionais, registrar tarefas técnicas e monitorar o andamento de cada sprint.
@@ -38,19 +38,17 @@ No contexto deste trabalho, o Trello foi adotado como instrumento de apoio à ge
 enquanto o Kanban foi empregado como abordagem para tornar o fluxo de trabalho explícito,
 acompanhar prioridades e manter histórico das entregas concluídas. Essa combinação favoreceu a
 visibilidade do backlog, a identificação de gargalos e a revisão incremental das atividades ao
-longo do semestre \cite{anderson2010,atlassiankanban2025}. Inicialmente, foi estruturada uma
-base backend com camadas de serviço, repositório e documentação de API. Em seguida, as
-funcionalidades foram migradas e consolidadas em uma aplicação \textit{fullstack} baseada em
-Next.js, reunindo interface e rotas de API no mesmo projeto. A escolha por Next.js foi
-motivada pela possibilidade de manter interface web e camada HTTP em uma única base de código,
-reduzindo o custo de sincronização entre projetos distintos e favorecendo a implementação de
-uma camada Backend for Frontend (BFF) voltada às necessidades da interface do paciente
-\cite{nextjsroutehandlers2026,nextjsbff2026}.
+longo do semestre \cite{anderson2010,atlassiankanban2025}. A solução foi consolidada como uma
+aplicação \textit{fullstack} baseada em Next.js, reunindo interface web, rotas de API e módulos
+de domínio em uma única base de código. A escolha por Next.js foi motivada pela possibilidade
+de integrar renderização de páginas, tratamento de requisições HTTP e organização modular do
+sistema em um mesmo projeto, reduzindo o custo de sincronização entre componentes distribuídos
+e favorecendo a evolução coordenada das funcionalidades \cite{nextjsroutehandlers2026}.
 
 As etapas de desenvolvimento foram organizadas da seguinte forma:
 
 \begin{itemize}
-\item definição dos requisitos funcionais e não funcionais do protótipo funcional;
+\item definição dos requisitos funcionais e não funcionais do sistema;
 \item criação do esquema relacional inicial, com migrations versionadas;
 \item migração da API para o projeto Next.js, utilizando Route Handlers;
 \item implementação de autenticação, sessão e proteção de rotas;
@@ -94,31 +92,24 @@ As etapas de desenvolvimento foram organizadas da seguinte forma:
 \section{Arquitetura da Solução}
 
 A arquitetura consolidada é uma aplicação web \textit{fullstack} em Next.js. A interface do
-usuário, os componentes de domínio e as rotas de API estão no diretório principal
-\texttt{medico\_digital}. A camada de API atua como Backend for Frontend (BFF), concentrando
-autenticação, validação, orquestração de modelos, persistência e geração de relatórios.
+usuário, as rotas de API e os módulos de domínio estão organizados no diretório principal
+\texttt{medico\_digital}, com separação lógica entre autenticação, pacientes, atendimento,
+relatórios e suporte. Nessa estrutura, as páginas da aplicação são responsáveis pela interação
+com o usuário, enquanto as rotas de API concentram autenticação, validação, acesso a banco,
+orquestração dos modelos de IA e geração de relatórios.
 
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.90\textwidth]{figuras/arquitetura-solucao.eps}
-  \caption{Fluxo de dados e componentes da arquitetura proposta.}
-  \label{fig:arquitetura-solucao}
-\end{figure}
-
-A Figura~\ref{fig:arquitetura-solucao} representa a separação entre interface, BFF, banco de
-dados e serviços de IA. O BFF evita que o cliente interaja diretamente com credenciais ou
-serviços externos, centralizando regras de autenticação, autorização e tratamento de erros.
-Essa escolha é coerente com a literatura do padrão BFF, que recomenda uma camada intermediária
-adaptada às necessidades de um frontend específico, reduzindo acoplamento com serviços
-compartilhados e permitindo que decisões de segurança e integração permaneçam no lado servidor
-\cite{newman2015,azurebff2025}. No caso deste projeto, o BFF também se mostrou adequado para
-preservar tokens e chaves de acesso fora do cliente, além de concentrar a orquestração entre
-persistência relacional, documentação da API e modelos de IA.
+Do ponto de vista arquitetural, a solução adota uma organização modular em camadas dentro de uma
+única base de código. A camada de apresentação é composta pelas páginas e componentes de
+interface; a camada de aplicação é formada pelos serviços e regras de domínio; e a camada de
+persistência reúne repositórios e scripts de migração do banco relacional. Essa distribuição
+favorece coesão por responsabilidade, reduz acoplamento entre interface e regras de negócio e
+facilita a manutenção evolutiva do sistema, preservando no servidor o tratamento de credenciais,
+sessões e integrações externas.
 
 \section{Modelagem e Persistência}
 
 O esquema inicial do banco foi versionado por migrations e contempla usuários, sessões,
-conversas, mensagens, relatórios e itens de relatório. Durante a evolução do protótipo, foi
+conversas, mensagens, relatórios e itens de relatório. Durante a evolução do sistema, foi
 adicionada a entidade de paciente para separar a conta de acesso do contexto clínico. Com isso,
 as conversas passaram a ser vinculadas a \texttt{patient\_id}, permitindo que o histórico de
 atendimentos seja organizado sob a perspectiva assistencial. A persistência relacional foi
@@ -143,7 +134,7 @@ As migrations aplicadas incluem:
 O fluxo de autenticação foi implementado com rotas de cadastro, login e logout. Após login, a
 sessão é mantida por cookie \texttt{httpOnly}, e o backend resolve o usuário autenticado a
 partir do token persistido em \texttt{auth\_sessions}. Essa decisão removeu a necessidade de
-enviar identificadores de usuário pelo cliente no fluxo de chat, reduzindo o risco de uso
+enviar identificadores de usuário pelo cliente no fluxo de atendimento, reduzindo o risco de uso
 indevido de identificadores. O uso de cookie \texttt{httpOnly}, associado no projeto a
 atributos de expiração, \texttt{SameSite} e proteção por ambiente de produção, foi escolhido
 para restringir o acesso direto do JavaScript do navegador ao token de sessão e reduzir a
@@ -177,8 +168,9 @@ atendimento.
 
 O componente generativo utiliza o modelo \texttt{meta-llama/Llama-3.1-8B-Instruct} para
 conduzir a conversa clínica. A escolha foi motivada por disponibilidade de integração via API,
-capacidade de seguir instruções e adequação ao objetivo desta etapa: avaliar a arquitetura de
-orquestração, e não comparar exaustivamente modelos. Como se trata de um modelo instruído, sua
+capacidade de seguir instruções e adequação ao objetivo do sistema: conduzir o fluxo
+conversacional de forma controlada, sem exigir comparação exaustiva entre modelos. Como se
+trata de um modelo instruído, sua
 adoção foi coerente com a necessidade de conduzir um diálogo progressivo, orientado por
 restrições de comportamento, como perguntar uma informação por vez e evitar emitir diagnósticos
 conclusivos \cite{metaai2024,llama3herd2024}. O acesso a esse modelo foi realizado por meio do
@@ -265,7 +257,7 @@ e acesso ao relatório correspondente.
 A aplicação disponibiliza a especificação OpenAPI em \texttt{/api/openapi.json} e uma
 interface de consulta em \texttt{/api/docs}. Essa documentação acompanha os contratos de
 autenticação, paciente, chat, atendimentos e relatórios, apoiando testes manuais,
-integrações futuras e manutenção do BFF. A escolha por OpenAPI foi motivada pela necessidade de
+integrações futuras e manutenção da API. A escolha por OpenAPI foi motivada pela necessidade de
 formalizar os contratos HTTP do sistema em um formato amplamente reconhecido, favorecendo
 consistência entre implementação e documentação, além de apoiar integração futura com outros
 consumidores da API \cite{openapi2025}.
@@ -297,21 +289,21 @@ integrada à branch \texttt{main}, a aplicação é publicada automaticamente no
 disponível em \url{https://medicodigital.vercel.app/}. A documentação da API publicada fica
 disponível em \url{https://medicodigital.vercel.app/api/docs}. A escolha por Vercel foi
 motivada pela integração direta com repositórios Git e pela afinidade com aplicações Next.js,
-simplificando a publicação contínua do protótipo sem a necessidade de gerenciar infraestrutura
-própria para esta etapa do trabalho \cite{vercelgit2025}.
+simplificando a publicação contínua da aplicação sem a necessidade de gerenciar infraestrutura
+própria \cite{vercelgit2025}.
 
 \section{Plano de Testes e Avaliação Técnica}
 
 A avaliação técnica combina testes exploratórios e testes automatizados. Os testes
 exploratórios foram usados para observar a coerência da conversa, a extração de entidades e o
-comportamento geral do protótipo em cenários representativos. Os testes automatizados foram
+comportamento geral do sistema em cenários representativos. Os testes automatizados foram
 incluídos para reduzir regressões em regras de chat, relatórios e documentação de API. No
 estado atual do repositório, a suíte automatizada é composta principalmente por testes
 unitários de funções determinísticas, testes de serviço com uso de dublês para repositório e
 cliente de IA, e um teste de consistência entre rotas implementadas e a especificação OpenAPI.
 Essa composição é coerente com o princípio de privilegiar testes rápidos e de menor granularidade
 na base da estratégia de verificação, preservando ciclos curtos de feedback durante a evolução
-incremental do protótipo \cite{beck2003,fowler2018,nodejsTestRunner2025}.
+incremental do software \cite{beck2003,fowler2018,nodejsTestRunner2025}.
 
 Os testes unitários foram empregados para validar funções puras relacionadas à extração de
 seções clínicas, cálculo de prontidão, combinação de seções e geração de resumo. Esse tipo de
@@ -363,17 +355,17 @@ anamnese, cálculo de prontidão, combinação de seções extraídas por regras
 disponibilidade de relatório atualizado.
 
 Esses resultados não substituem validação clínica nem avaliação com usuários finais. No
-entanto, fornecem evidência técnica de que a arquitetura é capaz de organizar o fluxo de
+entanto, fornecem evidência técnica de que a solução é capaz de organizar o fluxo de
 anamnese, persistir dados por paciente e produzir relatório estruturado a partir das mensagens
-coletadas. Também é importante registrar que ainda não há, nesta etapa, evidência suficiente
-para afirmar cobertura por testes de integração com banco real, testes ponta a ponta em
-navegador ou validação sistemática de desempenho, segurança e acessibilidade. Esses aspectos
-permanecem como oportunidades concretas de aprofundamento para a etapa subsequente.
+coletadas. Também é importante registrar que ainda não há evidência suficiente para afirmar
+cobertura por testes de integração com banco real, testes ponta a ponta em navegador ou
+validação sistemática de desempenho, segurança e acessibilidade. Esses aspectos permanecem
+como oportunidades concretas de aprofundamento futuro.
 
-\chapter{Considerações Finais e Cronograma}
+\chapter{Considerações Finais}
 
-Esta etapa do trabalho consolidou uma arquitetura web para anamnese assistida, com BFF,
-autenticação, persistência relacional, histórico de atendimentos, avaliação de prontidão e
+Este trabalho consolidou um software web para anamnese assistida, com autenticação,
+persistência relacional, histórico de atendimentos, avaliação de prontidão e
 geração de relatórios. A principal contribuição técnica foi transformar um fluxo conversacional
 em uma aplicação organizada por paciente, atendimento e relatório, mantendo contratos de API
 documentados e testes automatizados para regras centrais.
@@ -385,62 +377,7 @@ documentados e testes automatizados para regras centrais.
 \item A extração de informações depende de regras e de respostas de modelo, podendo exigir revisão humana.
 \item O tratamento de negações, ambiguidades e contexto temporal ainda demanda refinamento.
 \item A geração de relatório deve ser interpretada como apoio à anamnese, não como diagnóstico.
-\item A etapa subsequente deve ampliar testes de integração, acessibilidade, segurança e usabilidade.
+\item A ampliação de testes de integração, acessibilidade, segurança e usabilidade permanece como evolução desejável.
 \end{itemize}
-
-\section{Cronograma Executado por Sprints}
-
-\setlength{\LTpre}{0pt}
-\setlength{\LTpost}{0pt}
-\begin{longtable}{p{2.0cm}p{3.3cm}p{7.8cm}}
-\caption{Resumo das sprints semanais executadas e registradas no quadro Kanban do projeto.}
-\label{tab:cronograma-sprints}\\
-\hline
-Sprint & Período & Entregas principais \\
-\hline
-\endfirsthead
-
-\multicolumn{3}{l}{\textit{Continuação da Tabela~\ref{tab:cronograma-sprints}}}\\
-\hline
-Sprint & Período & Entregas principais \\
-\hline
-\endhead
-
-\hline
-\multicolumn{3}{r}{\textit{Continua na próxima página}}\\
-\endfoot
-
-\hline
-\endlastfoot
-
-Semana 1  & 02/03 a 08/03 & Definição inicial do escopo do trabalho, organização do tema da etapa e estruturação preliminar das frentes técnica e documental do projeto. \\
-Semana 2  & 09/03 a 15/03 & Levantamento bibliográfico inicial sobre anamnese assistida, agentes conversacionais e viabilidade de uso de IA no contexto do protótipo. \\
-Semana 3  & 16/03 a 22/03 & Refinamento do problema de pesquisa, delimitação dos objetivos e consolidação dos requisitos iniciais que orientariam a implementação. \\
-Semana 4  & 23/03 a 29/03 & Definição da abordagem arquitetural preliminar, análise das tecnologias candidatas e preparação do ambiente de desenvolvimento. \\
-Semana 5  & 30/03 a 05/04 & Estruturação inicial do repositório, organização dos artefatos de trabalho e preparação da base para backend, banco de dados e documentação. \\
-Semana 6  & 06/04 a 12/04 & Modelagem inicial do fluxo de atendimento, estudo das integrações com modelos de IA e consolidação dos primeiros experimentos técnicos. \\
-Semana 7  & 13/04 a 19/04 & Revisão da estratégia de implementação, ajustes no backlog e preparação do plano incremental de desenvolvimento em sprints semanais. \\
-Semana 8  & 20/04 a 26/04 & Consolidação do planejamento operacional do semestre, revisão das prioridades do backlog e organização das entregas que passariam a ser acompanhadas no Kanban. \\
-Semana 9  & 27/04 a 03/05 & Organização inicial do backlog semanal, definição da lógica de acompanhamento do semestre e preparação da estrutura de gestão do projeto. \\
-Semana 10 & 04/05 a 10/05 & Estrutura inicial da aplicação, primeiros fluxos de backend e interface básica de chat para interação com a API inicial. \\
-Semana 11 & 11/05 a 17/05 & Consolidação do ambiente de escrita do TCC e alinhamento entre artefatos técnicos e documentação do projeto. \\
-Semana 12 & 18/05 a 24/05 & Estudo dos modelos selecionados, compreensão do papel de cada componente de IA e registro técnico das decisões adotadas. \\
-Semana 13 & 25/05 a 31/05 & Evolução da interface inicial e integração mais consistente entre frontend, atendimento conversacional e serviços da aplicação. \\
-Semana 14 & 01/06 a 07/06 & Refinamento da arquitetura \textit{fullstack}, autenticação, sessão e organização do escopo por paciente e atendimento. \\
-Semana 15 & 08/06 a 14/06 & Implementação do histórico de atendimentos, evolução do ciclo de relatórios e consolidação de regras de negócio centrais. \\
-Semana 16 & 15/06 a 18/06 & Integração contínua, implantação em produção, documentação da API, revisão técnica e consolidação da versão apresentada nesta etapa. \\
-\end{longtable}
-
-O cronograma executado evidencia que a condução do projeto ocorreu em sprints semanais curtas,
-com registro histórico das entregas concluídas na coluna \textit{Pronto} do quadro Kanban no
-Trello. Essa organização permitiu acompanhar a progressão do protótipo desde o planejamento
-inicial e da estrutura técnica básica até a consolidação da aplicação em produção, com testes,
-documentação e integração contínua.
-
-A etapa subsequente deve priorizar evidências adicionais de qualidade do software, revisão dos
-critérios de relatório, avaliação com usuários e preparação do documento final com base nos
-artefatos técnicos já produzidos. Mantendo consistência com a condução desta etapa, as próximas
-atividades poderão continuar sendo organizadas em sprints e acompanhadas pelo mesmo quadro
-Kanban.
 
 \part{Texto e Pós Texto}

@@ -4,7 +4,7 @@
 
 \chapter{Especificação da API REST}
 
-Este apêndice resume o contrato de interface da API Backend for Frontend (BFF) implementada
+Este apêndice resume o contrato de interface da API implementada
 na aplicação \texttt{medico\_digital}. A comunicação é realizada via HTTP, com dados em JSON.
 A especificação completa é publicada em \texttt{/api/openapi.json} e pode ser consultada pela
 interface \texttt{/api/docs}.
@@ -105,7 +105,7 @@ Método & Rota & Finalidade \\
 
 \chapter{Artefatos de Implementação}
 
-Os códigos-fonte do protótipo funcional estão concentrados no diretório \path{medico_digital}.
+Os códigos-fonte do software desenvolvido estão concentrados no diretório \path{medico_digital}.
 A aplicação foi organizada por camadas e domínios, com separação entre rotas de API,
 componentes de interface, módulos de domínio, acesso a banco e scripts de apoio.
 
@@ -113,13 +113,13 @@ componentes de interface, módulos de domínio, acesso a banco e scripts de apoi
 
 \begin{table}[htb]
 \centering
-\caption{Principais artefatos de implementação do protótipo funcional.}
+\caption{Principais artefatos de implementação do software desenvolvido.}
 \label{tab:artefatos-implementacao}
 \begin{tabular}{p{5.4cm}p{8.1cm}}
 \hline
 Artefato & Papel no sistema \\
 \hline
-\path{src/app/api} & Rotas HTTP da API BFF. \\
+\path{src/app/api} & Rotas HTTP da API integrada à aplicação. \\
 \path{src/modules/auth} & Regras de autenticação, sessão e persistência de sessões. \\
 \path{src/modules/patients} & Regras de perfil e persistência de paciente. \\
 \path{src/modules/chat} & Orquestração de atendimento, mensagens, histórico e modelos de IA. \\
@@ -159,7 +159,7 @@ condução incremental do projeto.
 
 \chapter{Artefatos de Teste}
 
-Este apêndice consolida os principais artefatos de avaliação técnica utilizados no protótipo.
+Este apêndice consolida os principais artefatos de avaliação técnica utilizados no sistema.
 Os testes foram organizados para cobrir regras de chat, relatórios, contratos de API e casos de
 borda que poderiam gerar regressões.
 
@@ -217,7 +217,7 @@ CT05 & Verificar prontidão para relatório & Critérios ausentes são indicados
 O workflow de integração contínua está definido em \path{.github/workflows/ci.yml}. O pipeline
 executa instalação de dependências, lint, testes automatizados e build no diretório
 \path{medico_digital}. Esse processo fornece evidência de que alterações submetidas ao
-repositório preservam a compilação e os testes principais do protótipo.
+repositório preservam a compilação e os testes principais do sistema.
 
 \begin{figure}[H]
   \centering
