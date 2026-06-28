@@ -38,7 +38,7 @@ No contexto deste trabalho, o Trello foi adotado como instrumento de apoio à ge
 enquanto o Kanban foi empregado como abordagem para tornar o fluxo de trabalho explícito,
 acompanhar prioridades e manter histórico das entregas concluídas. Essa combinação favoreceu a
 visibilidade do backlog, a identificação de gargalos e a revisão incremental das atividades ao
-longo do semestre \cite{anderson2010,atlassiankanban2025}. A solução foi consolidada como uma
+longo do semestre \cite{atlassiankanban2025}. A solução foi consolidada como uma
 aplicação \textit{fullstack} baseada em Next.js, reunindo interface web, rotas de API e módulos
 de domínio em uma única base de código. A escolha por Next.js foi motivada pela possibilidade
 de integrar renderização de páginas, tratamento de requisições HTTP e organização modular do
@@ -356,17 +356,17 @@ unitários de funções determinísticas, testes de serviço com uso de dublês 
 cliente de IA, e um teste de consistência entre rotas implementadas e a especificação OpenAPI.
 Essa composição é coerente com o princípio de privilegiar testes rápidos e de menor granularidade
 na base da estratégia de verificação, preservando ciclos curtos de feedback durante a evolução
-incremental do software \cite{beck2003,fowler2018,nodejsTestRunner2025}.
+incremental do software \cite{microsofttesting2026,fowler2018,nodejsTestRunner2025}.
 
 Os testes unitários foram empregados para validar funções puras relacionadas à extração de
 seções clínicas, cálculo de prontidão, combinação de seções e geração de resumo. Esse tipo de
 teste foi escolhido porque essas rotinas possuem entrada e saída bem definidas, permitindo
 verificação objetiva das regras implementadas e rápida identificação de regressões lógicas
-\cite{beck2003,myers2011}. Já os testes de serviço foram adotados para verificar a orquestração
+\cite{microsofttesting2026}. Já os testes de serviço foram adotados para verificar a orquestração
 do fluxo de mensagens, o tratamento de falhas na avaliação de prontidão, a sanitização de
 respostas do provedor de IA e a normalização de parâmetros de paginação. Nesses casos, o uso
 de dublês tornou possível validar comportamento de negócio sem depender de banco real ou de
-serviços externos durante cada execução \cite{fowler2018}.
+serviços externos durante cada execução \cite{microsofttesting2026,fowler2018}.
 
 Além disso, foi implementado um teste de contrato interno da documentação OpenAPI, cujo papel
 é verificar se as rotas existentes e seus métodos HTTP permanecem alinhados com a especificação
