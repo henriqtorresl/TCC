@@ -91,20 +91,38 @@ As etapas de desenvolvimento foram organizadas da seguinte forma:
 
 \section{Arquitetura da Solução}
 
-A arquitetura consolidada é uma aplicação web \textit{fullstack} em Next.js. A interface do
-usuário, as rotas de API e os módulos de domínio estão organizados no diretório principal
-\texttt{medico\_digital}, com separação lógica entre autenticação, pacientes, atendimento,
-relatórios e suporte. Nessa estrutura, as páginas da aplicação são responsáveis pela interação
-com o usuário, enquanto as rotas de API concentram autenticação, validação, acesso a banco,
-orquestração dos modelos de IA e geração de relatórios.
+A arquitetura adotada no sistema é a de um monólito modular implementado com Next.js. Nesse
+modelo, a interface web e a API da aplicação coexistem no mesmo repositório, aproveitando a
+estrutura de rotas do framework para concentrar tanto as páginas acessadas pelo usuário quanto os
+endpoints HTTP responsáveis pelo processamento das operações do sistema. Essa decisão favorece a
+evolução coordenada entre frontend e backend, reduz o custo de integração entre projetos
+separados e simplifica a manutenção da base de código \cite{nextjsroutehandlers2026}.
 
-Do ponto de vista arquitetural, a solução adota uma organização modular em camadas dentro de uma
-única base de código. A camada de apresentação é composta pelas páginas e componentes de
-interface; a camada de aplicação é formada pelos serviços e regras de domínio; e a camada de
-persistência reúne repositórios e scripts de migração do banco relacional. Essa distribuição
-favorece coesão por responsabilidade, reduz acoplamento entre interface e regras de negócio e
-facilita a manutenção evolutiva do sistema, preservando no servidor o tratamento de credenciais,
-sessões e integrações externas.
+Internamente, o sistema está organizado por domínios e camadas. A camada de apresentação reúne
+páginas e componentes de interface executados no navegador, enquanto a camada de processamento
+concentra regras de negócio, serviços de aplicação e rotas de API. A partir dessa camada
+servidora, o sistema realiza acesso ao banco de dados relacional para persistência de usuários,
+pacientes, atendimentos, mensagens e relatórios, além de integrar uma API externa de inteligência
+artificial para suportar o fluxo conversacional e a extração de informações clínicas.
+
+Essa organização modular preserva coesão por responsabilidade e reduz acoplamento entre interface,
+processamento e persistência. Como o tratamento de autenticação, sessão, validação e integração
+com IA permanece no lado servidor, credenciais e tokens sensíveis não precisam ser expostos ao
+cliente. Para as funcionalidades de inteligência artificial, o sistema realiza chamadas à API da
+Hugging Face, incorporando modelos pré-treinados ao fluxo de negócio da aplicação e mantendo essa
+integração encapsulada na camada de processamento \cite{huggingface2024}.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.92\textwidth]{figuras/arquitetura-monolito.eps}
+  \caption[Arquitetura atual do sistema]{Arquitetura atual do sistema, estruturada como monolito modular com camadas de apresentacao e processamento.}
+  \label{fig:arquitetura-solucao}
+\end{figure}
+
+A Figura~\ref{fig:arquitetura-solucao} sintetiza a organizacao geral da aplicacao. O usuario
+interage com o sistema por meio do navegador, enquanto o monolito modular centraliza a camada de
+apresentacao, a camada de processamento, o acesso ao banco de dados e a integracao com a API
+externa de inteligencia artificial.
 
 \section{Modelagem e Persistência}
 
@@ -120,6 +138,39 @@ atendimentos, mensagens e relatórios \cite{postgresql2025,node2024}. As migrati
 versionadas foram adotadas para tornar a evolução do esquema reprodutível e rastreável,
 evitando alterações manuais não documentadas e facilitando a reprodução do ambiente em
 execuções futuras \cite{postgresql2025}.
+
+No modelo de dados consolidado, a tabela \texttt{users} representa a conta de acesso do sistema
+e se relaciona com \texttt{auth\_sessions}, responsável pelo controle de sessões autenticadas por
+meio de \textit{refresh tokens}. A tabela \texttt{patients} armazena o contexto cadastral do
+paciente vinculado ao usuário autenticado, preservando a separação entre identidade de acesso e
+informações clínicas. A tabela \texttt{conversations} registra cada atendimento realizado e se
+relaciona tanto ao usuário quanto ao paciente, permitindo rastrear autoria, contexto clínico e
+estado do atendimento ao longo do tempo.
+
+As mensagens trocadas durante cada atendimento são persistidas em \texttt{messages}, com
+identificação do papel emissor, conteúdo textual e um campo \texttt{jsonb} opcional para
+entidades clínicas extraídas durante o processamento. Já o ciclo de relatório é estruturado pelas
+tabelas \texttt{reports} e \texttt{report\_items}. A primeira armazena o resumo, o status e
+metadados do relatório gerado para uma conversa; a segunda organiza as seções clínicas em ordem
+posicional, permitindo montar a saída estruturada apresentada ao usuário. Esse mapeamento
+relacional é sintetizado por um diagrama entidade-relacionamento, mantido coerente com a evolução
+incremental das regras de autenticação, atendimento e geração de relatórios.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.88\textwidth]{figuras/diagrama-entidade-relacionamento.eps}
+  \caption[DER do banco de dados da aplicação]{Diagrama entidade-relacionamento do banco de dados da aplicação, elaborado a partir do esquema relacional implementado.}
+  \label{fig:der-banco}
+\end{figure}
+
+A Figura~\ref{fig:der-banco} evidencia a separação entre conta de acesso, perfil de paciente,
+atendimento, mensagens, sessões autenticadas e relatórios, além dos vínculos que sustentam a
+rastreabilidade do fluxo clínico persistido.
+
+Em produção, a persistência é disponibilizada por uma instância gerenciada de PostgreSQL na
+plataforma Supabase. Essa escolha preserva o uso de um banco Postgres completo, sem camada de
+abstração proprietária sobre o modelo relacional, e agrega facilidades operacionais de ambiente
+gerenciado, como administração centralizada do serviço de banco de dados \cite{supabase2026}.
 
 As migrations aplicadas incluem:
 
@@ -154,15 +205,17 @@ persistidas no banco, junto às entidades clínicas extraídas quando disponíve
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=0.90\textwidth]{figuras/sequencia.eps}
-  \caption[Fluxo principal de envio de mensagem]{Sequência principal de envio de mensagem no atendimento.}
+  \includegraphics[width=0.96\textwidth]{figuras/sequencia-atendimento.eps}
+  \caption[Sequência de processamento da mensagem]{Sequência de processamento da mensagem enviada pelo usuário no atendimento.}
   \label{fig:sequencia}
 \end{figure}
 
-A Figura~\ref{fig:sequencia} sintetiza o fluxo de mensagem. A API autentica a sessão, resolve
-o paciente, registra a mensagem, recupera o histórico, aciona o modelo generativo e persiste a
-resposta do assistente. O histórico pode ser listado posteriormente por meio dos endpoints de
-atendimento.
+A Figura~\ref{fig:sequencia} sintetiza o fluxo principal de processamento da mensagem. O usuário
+envia o texto por meio da interface, que encaminha a requisição à API da aplicação. A camada
+servidora registra a mensagem no banco de dados, solicita o processamento à API externa de
+inteligência artificial e, após receber a resposta do modelo, persiste o retorno gerado antes de
+enviá-lo novamente à interface. Esse fluxo assegura rastreabilidade das interações e preserva no
+servidor a orquestração entre persistência e serviços externos.
 
 \section{Estratégia de Inteligência Artificial Híbrida}
 

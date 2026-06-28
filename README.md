@@ -19,7 +19,6 @@ Toda a aplicação (frontend e backend) está unificada no mesmo projeto, seguin
 
 ## Estrutura do Repositório
 
-- `tests/` — Testes e protótipos de integração.
 - `docs/` — Monografia do TCC em LaTeX (template FGA/UnB) e arquivos de compilação.
 - `medico_digital/` — Diretório principal contendo todo o código-fonte do projeto.
 
