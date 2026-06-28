@@ -34,10 +34,18 @@ ao longo da implementação do protótipo. Para apoiar essa organização, foi u
 como ferramenta de acompanhamento, por meio de um quadro Kanban com colunas compatíveis com
 o fluxo de execução das atividades. Esse quadro foi empregado para distribuir requisitos
 funcionais e não funcionais, registrar tarefas técnicas e monitorar o andamento de cada sprint.
-Inicialmente, foi estruturada uma base backend com camadas de serviço, repositório e
-documentação de API. Em seguida, as funcionalidades foram migradas e consolidadas em uma
-aplicação \textit{fullstack} baseada em Next.js, reunindo interface e rotas de API no mesmo
-projeto.
+No contexto deste trabalho, o Trello foi adotado como instrumento de apoio à gestão visual,
+enquanto o Kanban foi empregado como abordagem para tornar o fluxo de trabalho explícito,
+acompanhar prioridades e manter histórico das entregas concluídas. Essa combinação favoreceu a
+visibilidade do backlog, a identificação de gargalos e a revisão incremental das atividades ao
+longo do semestre \cite{anderson2010,atlassiankanban2025}. Inicialmente, foi estruturada uma
+base backend com camadas de serviço, repositório e documentação de API. Em seguida, as
+funcionalidades foram migradas e consolidadas em uma aplicação \textit{fullstack} baseada em
+Next.js, reunindo interface e rotas de API no mesmo projeto. A escolha por Next.js foi
+motivada pela possibilidade de manter interface web e camada HTTP em uma única base de código,
+reduzindo o custo de sincronização entre projetos distintos e favorecendo a implementação de
+uma camada Backend for Frontend (BFF) voltada às necessidades da interface do paciente
+\cite{nextjsroutehandlers2026,nextjsbff2026}.
 
 As etapas de desenvolvimento foram organizadas da seguinte forma:
 
@@ -100,6 +108,12 @@ autenticação, validação, orquestração de modelos, persistência e geraçã
 A Figura~\ref{fig:arquitetura-solucao} representa a separação entre interface, BFF, banco de
 dados e serviços de IA. O BFF evita que o cliente interaja diretamente com credenciais ou
 serviços externos, centralizando regras de autenticação, autorização e tratamento de erros.
+Essa escolha é coerente com a literatura do padrão BFF, que recomenda uma camada intermediária
+adaptada às necessidades de um frontend específico, reduzindo acoplamento com serviços
+compartilhados e permitindo que decisões de segurança e integração permaneçam no lado servidor
+\cite{newman2015,azurebff2025}. No caso deste projeto, o BFF também se mostrou adequado para
+preservar tokens e chaves de acesso fora do cliente, além de concentrar a orquestração entre
+persistência relacional, documentação da API e modelos de IA.
 
 \section{Modelagem e Persistência}
 
@@ -107,7 +121,14 @@ O esquema inicial do banco foi versionado por migrations e contempla usuários, 
 conversas, mensagens, relatórios e itens de relatório. Durante a evolução do protótipo, foi
 adicionada a entidade de paciente para separar a conta de acesso do contexto clínico. Com isso,
 as conversas passaram a ser vinculadas a \texttt{patient\_id}, permitindo que o histórico de
-atendimentos seja organizado sob a perspectiva assistencial.
+atendimentos seja organizado sob a perspectiva assistencial. A persistência relacional foi
+implementada com PostgreSQL, acessado a partir do ecossistema Node.js, por ser um SGBD maduro
+para aplicações transacionais e por oferecer suporte consistente a integridade relacional e
+execução transacional, características relevantes para entidades como usuários, sessões,
+atendimentos, mensagens e relatórios \cite{postgresql2025,node2024}. As migrations
+versionadas foram adotadas para tornar a evolução do esquema reprodutível e rastreável,
+evitando alterações manuais não documentadas e facilitando a reprodução do ambiente em
+execuções futuras \cite{postgresql2025}.
 
 As migrations aplicadas incluem:
 
@@ -123,7 +144,10 @@ O fluxo de autenticação foi implementado com rotas de cadastro, login e logout
 sessão é mantida por cookie \texttt{httpOnly}, e o backend resolve o usuário autenticado a
 partir do token persistido em \texttt{auth\_sessions}. Essa decisão removeu a necessidade de
 enviar identificadores de usuário pelo cliente no fluxo de chat, reduzindo o risco de uso
-indevido de identificadores.
+indevido de identificadores. O uso de cookie \texttt{httpOnly}, associado no projeto a
+atributos de expiração, \texttt{SameSite} e proteção por ambiente de produção, foi escolhido
+para restringir o acesso direto do JavaScript do navegador ao token de sessão e reduzir a
+exposição da credencial de autenticação na camada cliente \cite{mdnsetcookie2025,owasp2025}.
 
 O middleware da aplicação foi dividido em dois guardas: um para rotas de API e outro para
 páginas. As páginas protegidas redirecionam usuários sem sessão para o login, preservando a
@@ -154,11 +178,23 @@ atendimento.
 O componente generativo utiliza o modelo \texttt{meta-llama/Llama-3.1-8B-Instruct} para
 conduzir a conversa clínica. A escolha foi motivada por disponibilidade de integração via API,
 capacidade de seguir instruções e adequação ao objetivo desta etapa: avaliar a arquitetura de
-orquestração, e não comparar exaustivamente modelos.
+orquestração, e não comparar exaustivamente modelos. Como se trata de um modelo instruído, sua
+adoção foi coerente com a necessidade de conduzir um diálogo progressivo, orientado por
+restrições de comportamento, como perguntar uma informação por vez e evitar emitir diagnósticos
+conclusivos \cite{metaai2024,llama3herd2024}. O acesso a esse modelo foi realizado por meio do
+cliente \texttt{@huggingface/inference}, que oferece uma interface unificada para inferência em
+modelos hospedados no ecossistema Hugging Face, preservando o token de acesso no lado servidor
+\cite{huggingface2024}.
 
 O componente extrativo utiliza \texttt{d4data/biomedical-ner-all} para reconhecer entidades
 biomédicas no texto informado pelo paciente. A estratégia híbrida separa a responsabilidade de
-condução do diálogo da responsabilidade de extração e estruturação de informações.
+condução do diálogo da responsabilidade de extração e estruturação de informações. Essa
+separação foi adotada para reduzir dependência de geração livre em uma tarefa de rotulação
+estruturada, alinhando a solução ao uso de modelos especializados para mineração de texto
+biomédico \cite{d4data2024,lee2020}. No entanto, é importante registrar uma limitação técnica:
+o modelo citado foi treinado para reconhecimento de entidades biomédicas em inglês, o que
+impõe cautela na interpretação de seu desempenho quando aplicado a mensagens em português
+\cite{d4data2024}.
 
 \section{Relatórios Clínicos}
 
@@ -229,7 +265,10 @@ e acesso ao relatório correspondente.
 A aplicação disponibiliza a especificação OpenAPI em \texttt{/api/openapi.json} e uma
 interface de consulta em \texttt{/api/docs}. Essa documentação acompanha os contratos de
 autenticação, paciente, chat, atendimentos e relatórios, apoiando testes manuais,
-integrações futuras e manutenção do BFF.
+integrações futuras e manutenção do BFF. A escolha por OpenAPI foi motivada pela necessidade de
+formalizar os contratos HTTP do sistema em um formato amplamente reconhecido, favorecendo
+consistência entre implementação e documentação, além de apoiar integração futura com outros
+consumidores da API \cite{openapi2025}.
 
 \begin{figure}[H]
   \centering
@@ -245,19 +284,53 @@ aplicação, com agrupamento dos endpoints por domínio e acesso ao documento Op
 
 O repositório possui workflow de integração contínua no GitHub Actions. Em eventos de
 \textit{push} e \textit{pull request}, o pipeline configura Node.js 20, instala dependências com
-\texttt{npm ci}, executa lint, testes automatizados e build da aplicação.
+\texttt{npm ci}, executa lint, testes automatizados e build da aplicação. A escolha por
+GitHub Actions foi motivada pela integração nativa com o repositório e pela capacidade de
+executar um processo automatizado e reprodutível a cada alteração relevante, reduzindo o risco
+de integração de mudanças que quebrem compilação, regras estáticas ou testes centrais
+\cite{githubactions2025}. O uso de Node.js 20 no pipeline e no ambiente de execução também
+mantém coerência com a base tecnológica da aplicação e com o executor nativo de testes
+adotado no projeto \cite{node2024}.
 
 A implantação contínua ocorre pela configuração do projeto na Vercel. A cada alteração
 integrada à branch \texttt{main}, a aplicação é publicada automaticamente no ambiente
 disponível em \url{https://medicodigital.vercel.app/}. A documentação da API publicada fica
-disponível em \url{https://medicodigital.vercel.app/api/docs}.
+disponível em \url{https://medicodigital.vercel.app/api/docs}. A escolha por Vercel foi
+motivada pela integração direta com repositórios Git e pela afinidade com aplicações Next.js,
+simplificando a publicação contínua do protótipo sem a necessidade de gerenciar infraestrutura
+própria para esta etapa do trabalho \cite{vercelgit2025}.
 
 \section{Plano de Testes e Avaliação Técnica}
 
 A avaliação técnica combina testes exploratórios e testes automatizados. Os testes
 exploratórios foram usados para observar a coerência da conversa, a extração de entidades e o
 comportamento geral do protótipo em cenários representativos. Os testes automatizados foram
-incluídos para reduzir regressões em regras de chat, relatórios e documentação de API.
+incluídos para reduzir regressões em regras de chat, relatórios e documentação de API. No
+estado atual do repositório, a suíte automatizada é composta principalmente por testes
+unitários de funções determinísticas, testes de serviço com uso de dublês para repositório e
+cliente de IA, e um teste de consistência entre rotas implementadas e a especificação OpenAPI.
+Essa composição é coerente com o princípio de privilegiar testes rápidos e de menor granularidade
+na base da estratégia de verificação, preservando ciclos curtos de feedback durante a evolução
+incremental do protótipo \cite{beck2003,fowler2018,nodejsTestRunner2025}.
+
+Os testes unitários foram empregados para validar funções puras relacionadas à extração de
+seções clínicas, cálculo de prontidão, combinação de seções e geração de resumo. Esse tipo de
+teste foi escolhido porque essas rotinas possuem entrada e saída bem definidas, permitindo
+verificação objetiva das regras implementadas e rápida identificação de regressões lógicas
+\cite{beck2003,myers2011}. Já os testes de serviço foram adotados para verificar a orquestração
+do fluxo de mensagens, o tratamento de falhas na avaliação de prontidão, a sanitização de
+respostas do provedor de IA e a normalização de parâmetros de paginação. Nesses casos, o uso
+de dublês tornou possível validar comportamento de negócio sem depender de banco real ou de
+serviços externos durante cada execução \cite{fowler2018}.
+
+Além disso, foi implementado um teste de contrato interno da documentação OpenAPI, cujo papel
+é verificar se as rotas existentes e seus métodos HTTP permanecem alinhados com a especificação
+publicada. Esse teste não substitui testes funcionais HTTP completos dos endpoints, mas
+contribui para reduzir divergências entre implementação e documentação, o que é relevante para
+manutenção e futuras integrações. Complementarmente, os testes exploratórios foram mantidos por
+permitirem observar aspectos qualitativos do comportamento conversacional que não ficam
+integralmente cobertos por asserções automatizadas simples, como progressão do diálogo e
+clareza das respostas \cite{fowler2018}.
 
 \begin{table}[H]
 \centering
@@ -267,10 +340,10 @@ incluídos para reduzir regressões em regras de chat, relatórios e documentaç
 \hline
 Requisito & Verificação & Evidência \\
 \hline
-RF01--RF03 & Fluxos de autenticação, sessão e paciente & Testes de API, execução manual e documentação OpenAPI \\
+RF01--RF03 & Fluxos de autenticação, sessão e paciente & Execução manual, inspeção das rotas protegidas e documentação OpenAPI \\
 RF04--RF08 & Fluxo de atendimento e histórico & Testes de serviço, testes exploratórios e inspeção de persistência \\
-RF09--RF10 & Prontidão e geração de relatório & Testes unitários de mapeamento, prontidão e disponibilidade \\
-RF11 & Documentação da API & Teste de contrato OpenAPI e publicação em \texttt{/api/docs} \\
+RF09--RF10 & Prontidão e geração de relatório & Testes unitários de mapeamento, prontidão, disponibilidade e casos de borda \\
+RF11 & Documentação da API & Teste de consistência OpenAPI e publicação em \texttt{/api/docs} \\
 RNF06 & Integração contínua & Pipeline com lint, testes e build \\
 \hline
 \end{tabular}
@@ -292,7 +365,10 @@ disponibilidade de relatório atualizado.
 Esses resultados não substituem validação clínica nem avaliação com usuários finais. No
 entanto, fornecem evidência técnica de que a arquitetura é capaz de organizar o fluxo de
 anamnese, persistir dados por paciente e produzir relatório estruturado a partir das mensagens
-coletadas.
+coletadas. Também é importante registrar que ainda não há, nesta etapa, evidência suficiente
+para afirmar cobertura por testes de integração com banco real, testes ponta a ponta em
+navegador ou validação sistemática de desempenho, segurança e acessibilidade. Esses aspectos
+permanecem como oportunidades concretas de aprofundamento para a etapa subsequente.
 
 \chapter{Considerações Finais e Cronograma}
 
