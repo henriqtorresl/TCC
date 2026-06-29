@@ -251,17 +251,23 @@ conversacional de forma controlada, sem exigir comparação exaustiva entre mode
 trata de um modelo instruído, sua
 adoção foi coerente com a necessidade de conduzir um diálogo progressivo, orientado por
 restrições de comportamento, como perguntar uma informação por vez e evitar emitir diagnósticos
-conclusivos \cite{metaai2024,llama3herd2024}. O acesso a esse modelo foi realizado por meio do
-cliente \texttt{@huggingface/inference}, que oferece uma interface unificada para inferência em
-modelos hospedados no ecossistema Hugging Face, preservando o token de acesso no lado servidor
-\cite{huggingface2024}.
+conclusivos \cite{metaai2024,llama3herd2024}. A configuração comportamental detalhada do modelo, 
+que viabiliza essa condução sequencial da anamnese através de diretrizes de \textit{System Prompt}, 
+encontra-se documentada na Seção~\ref{ap:prompt-chat} do Apêndice~\ref{ap:prompt}.
+O acesso a esse modelo foi realizado por meio do cliente \texttt{@huggingface/inference}, 
+que oferece uma interface unificada para inferência em modelos hospedados no ecossistema Hugging Face, 
+preservando o token de acesso no lado servidor \cite{huggingface2024}.
 
 O componente extrativo utiliza \texttt{d4data/biomedical-ner-all} para reconhecer entidades
 biomédicas no texto informado pelo paciente. A estratégia híbrida separa a responsabilidade de
 condução do diálogo da responsabilidade de extração e estruturação de informações. Essa
 separação foi adotada para reduzir dependência de geração livre em uma tarefa de rotulação
 estruturada, alinhando a solução ao uso de modelos especializados para mineração de texto
-biomédico \cite{d4data2024,lee2020}. No entanto, é importante registrar uma limitação técnica:
+biomédico \cite{d4data2024,lee2020}. Para garantir a precisão na extração de entidades e a 
+estruturação das informações coletadas para o relatório, o sistema utiliza instruções específicas 
+de extração, cujos detalhes técnicos e a estrutura do prompt aplicado podem ser consultados 
+na Seção~\ref{ap:prompt-relatorio} do Apêndice~\ref{ap:prompt}..
+No entanto, é importante registrar uma limitação técnica:
 o modelo citado foi treinado para reconhecimento de entidades biomédicas em inglês, o que
 impõe cautela na interpretação de seu desempenho quando aplicado a mensagens em português
 \cite{d4data2024}.
