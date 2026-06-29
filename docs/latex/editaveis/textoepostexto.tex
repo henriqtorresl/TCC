@@ -84,7 +84,7 @@ As etapas de desenvolvimento foram organizadas da seguinte forma:
 \item RNF03: persistir dados de usuários, pacientes, atendimentos, mensagens e relatórios em banco relacional.
 \item RNF04: validar entradas de API e retornar erros compatíveis com o tipo de falha observada.
 \item RNF05: documentar contratos HTTP para apoiar testes, manutenção e integração.
-\item RNF06: manter execução automatizada de lint, testes e build no fluxo de integração contínua.
+\item RNF06: manter execução automatizada de \textit{lint}, testes e \textit{build} no fluxo de integração contínua.
 \item RNF07: tratar falhas temporárias de serviços externos sem interromper indevidamente o fluxo principal.
 \item RNF08: a interface do sistema deve ser responsiva, adaptando-se adequadamente a diferentes tamanhos de tela e dispositivos.
 \end{itemize}
@@ -209,7 +209,7 @@ sessão precisou ser delegado integralmente ao banco de dados relacional. Assim,
 \texttt{auth\_sessions} atua como mecanismo persistente de controle de sessão, enquanto o cookie
 \texttt{httpOnly} funciona como identificador enviado a cada nova interação HTTP.
 
-O middleware da aplicação foi dividido em dois guardas: um para rotas de API e outro para
+O \textit{middleware} da aplicação foi dividido em dois guardas: um para rotas de API e outro para
 páginas. As páginas protegidas redirecionam usuários sem sessão para o \textit{login}, preservando a
 rota de destino. Usuários autenticados que acessam páginas
 de autenticação são redirecionados para a área principal.
@@ -368,13 +368,13 @@ aplicação, com agrupamento dos endpoints por domínio e acesso ao documento Op
 
 \section{Integração Contínua e Implantação}
 
-O repositório possui workflow de integração contínua no GitHub Actions. Em eventos de
-\textit{push} e \textit{pull request}, o pipeline configura Node.js 20, instala dependências com
-\texttt{npm ci}, executa lint, testes automatizados e build da aplicação. A escolha por
+O repositório possui \textit{workflow} de integração contínua no GitHub Actions. Em eventos de
+\textit{push} e \textit{pull request}, o \textit{pipeline} configura Node.js 20, instala dependências com
+\texttt{npm ci}, executa \textit{lint}, testes automatizados e \textit{build} da aplicação. A escolha por
 GitHub Actions foi motivada pela integração nativa com o repositório e pela capacidade de
 executar um processo automatizado e reprodutível a cada alteração relevante, reduzindo o risco
 de integração de mudanças que quebrem compilação, regras estáticas ou testes centrais
-\cite{githubactions2026}. O uso de Node.js 20 no pipeline e no ambiente de execução também
+\cite{githubactions2026}. O uso de Node.js 20 no \textit{pipeline} e no ambiente de execução também
 mantém coerência com a base tecnológica da aplicação e com o executor nativo de testes
 adotado no projeto \cite{node2024}.
 
@@ -433,7 +433,7 @@ RF01--RF03 & Fluxos de autenticação, sessão e paciente & Execução manual, i
 RF04--RF08 & Fluxo de atendimento e histórico & Testes de serviço, testes exploratórios e inspeção de persistência \\
 RF09--RF11 & Prontidão, encerramento e geração de relatório & Testes unitários de mapeamento, prontidão, disponibilidade e casos de borda \\
 RF12 & Documentação da API & Teste de consistência OpenAPI e publicação em \texttt{/api/docs} \\
-RNF06 & Integração contínua & Pipeline com lint, testes e build \\
+RNF06 & Integração contínua & \textit{Pipeline} com \textit{lint}, testes e \textit{build} \\
 RNF08 & Responsividade da interface & Execução manual em diferentes larguras de tela e inspeção das telas de autenticação, chat, perfil e detalhes do atendimento \\
 \hline
 \end{tabularx}
