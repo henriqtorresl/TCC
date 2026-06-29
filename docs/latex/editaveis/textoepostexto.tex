@@ -455,27 +455,26 @@ disponibilidade de relatório atualizado.
 Esses resultados não substituem validação clínica nem avaliação com usuários finais. No
 entanto, fornecem evidência técnica de que a solução é capaz de organizar o fluxo de
 anamnese, persistir dados por paciente e produzir relatório estruturado a partir das mensagens
-coletadas. Também é importante registrar que ainda não há evidência suficiente para afirmar
-cobertura por testes de integração com banco real, testes ponta a ponta em navegador ou
-validação sistemática de desempenho, segurança e acessibilidade. Esses aspectos permanecem
-como oportunidades concretas de aprofundamento futuro.
+coletadas.
 
 \chapter{Considerações Finais}
 
-Este trabalho consolidou um software web para anamnese assistida, com autenticação,
-persistência relacional, histórico de atendimentos, avaliação de prontidão e
-geração de relatórios. A principal contribuição técnica foi transformar um fluxo conversacional
-em uma aplicação organizada por paciente, atendimento e relatório, mantendo contratos de API
-documentados e testes automatizados para regras centrais.
+A crescente demanda por eficiência nos serviços de saúde exige soluções capazes de otimizar a triagem clínica sem comprometer a qualidade do relato do paciente. Nesse cenário, este trabalho atingiu seu objetivo geral ao consolidar uma aplicação web para anamnese assistida. A solução destaca-se pela adoção de uma arquitetura híbrida de inteligência artificial, que orquestra um modelo generativo para a condução do diálogo e um modelo extrativo para a estruturação das informações. A principal contribuição técnica da pesquisa foi demonstrar a viabilidade de transformar um fluxo conversacional livre em dados estruturados, organizados por paciente, atendimento e relatório de anamnese. Ao associar essa estratégia a boas práticas de Engenharia de Software, o projeto estabelece uma base técnica sólida, rastreável e passível de evolução.
 
-\section{Limitações Atuais e Encaminhamentos}
+\section{Limitações Atuais e Trabalhos Futuros}
+
+A avaliação deste trabalho concentrou-se na viabilidade técnica da solução desenvolvida, o que impõe limitações metodológicas importantes. O sistema foi submetido a avaliação técnica e exploratória, sem contemplar, até o presente momento, processos de validação clínica e de usabilidade com pacientes e profissionais de saúde em contexto real. Em razão disso, a aplicação deve ser compreendida como uma ferramenta de apoio à estruturação da anamnese, e não como um sistema de diagnóstico automatizado ou determinístico.
+
+Além disso, a extração de informações clínicas ainda depende da combinação entre regras lógicas e respostas produzidas pelo modelo de linguagem, o que torna desejável o aprofundamento de mecanismos capazes de tratar com maior precisão ambiguidades semânticas, negações complexas e referências temporais presentes nos relatos dos pacientes.
+
+Com base na arquitetura consolidada, identificam-se possibilidades concretas de evolução, organizadas nos seguintes eixos de desenvolvimento:
 
 \begin{itemize}
-\item A avaliação realizada é técnica e exploratória, sem validação clínica com usuários reais.
-\item A extração de informações depende de regras e de respostas de modelo, podendo exigir revisão humana.
-\item O tratamento de negações, ambiguidades e contexto temporal ainda demanda refinamento.
-\item A geração de relatório deve ser interpretada como apoio à anamnese, não como diagnóstico.
-\item A ampliação de testes de integração, acessibilidade, segurança e usabilidade permanece como evolução desejável.
-\end{itemize}
+\item \textbf{Aprimoramento da inteligência artificial:} como evolução futura, pode-se incorporar uma arquitetura do tipo Retrieval-Augmented Generation (RAG), permitindo que o modelo consulte fontes médicas confiáveis antes de formular respostas ou conduzir novas perguntas. Essa abordagem tende a reduzir inconsistências geradas pelo modelo e a aumentar o rigor informacional do processo conversacional.
 
-\part{Texto e Pós Texto}
+\item \textbf{Ampliação do apoio à análise clínica:} o registro estruturado de pacientes, atendimentos, mensagens e relatórios cria condições para futuras análises de correlação entre informações clínicas recorrentes. Em uma etapa posterior, esses dados poderão subsidiar mecanismos de apoio à identificação de padrões, sempre sob supervisão profissional e sem substituir o julgamento médico.
+
+\item \textbf{Expansão de perfis e funcionalidades profissionais:} a separação entre conta de acesso e perfil de paciente também abre espaço para a implementação futura de funcionalidades específicas para profissionais de saúde e administradores, com recursos de acompanhamento de atendimentos, revisão de relatórios e gestão operacional do sistema.
+
+\item \textbf{Maturidade de engenharia e qualidade:} no plano técnico, a continuidade do projeto demanda ampliação da esteira de qualidade, com inclusão de testes de integração com banco de dados real, testes ponta a ponta (E2E), avaliações de desempenho, verificações de segurança e análises de acessibilidade, de modo a elevar a robustez da aplicação para cenários de uso mais amplos.
+\end{itemize}
