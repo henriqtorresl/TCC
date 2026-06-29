@@ -1,4 +1,5 @@
 \chapter{Metodologia e Desenvolvimento}
+\label{cap:metodologia}
 
 Este capítulo apresenta a metodologia adotada, a arquitetura implementada e os
 artefatos utilizados para avaliação técnica do software de anamnese assistida. O
@@ -32,11 +33,12 @@ planejamento incremental, definição de entregas parciais e revisão contínua 
 ao longo da implementação do sistema. Para apoiar essa organização, foi utilizado o Trello
 como ferramenta de acompanhamento, por meio de um quadro Kanban com colunas compatíveis com
 o fluxo de execução das atividades. Esse quadro foi empregado para distribuir requisitos
-funcionais e não funcionais, registrar tarefas técnicas e monitorar o andamento de cada sprint.
-No contexto deste trabalho, o Kanban foi empregado como abordagem para tornar o fluxo de trabalho explícito,
-acompanhar prioridades e manter histórico das entregas concluídas. Essa combinação favoreceu a
-visibilidade do backlog, a identificação de gargalos e a revisão incremental das atividades ao
-longo do semestre \cite{atlassiankanban2026}. A solução foi consolidada como uma
+funcionais e não funcionais, registrar tarefas técnicas e monitorar o andamento de cada sprint. 
+O detalhamento da gestão do projeto e do quadro Kanban pode ser consultado na Seção~\ref{ap:impl-gestao} 
+do Apêndice~\ref{ap:impl}. No contexto deste trabalho, o Kanban foi empregado como abordagem para 
+tornar o fluxo de trabalho explícito, acompanhar prioridades e manter histórico das entregas concluídas. 
+Essa combinação favoreceu a visibilidade do backlog, a identificação de gargalos e a revisão incremental 
+das atividades ao longo do semestre \cite{atlassiankanban2026}. A solução foi consolidada como uma
 aplicação \textit{fullstack} baseada em Next.js, reunindo interface web, rotas de API e módulos
 de domínio em uma única base de código. A escolha por Next.js foi motivada pela possibilidade
 de integrar renderização de páginas, tratamento de requisições HTTP e organização modular do
@@ -126,7 +128,9 @@ integração encapsulada na camada de processamento \cite{huggingface2024}.
 A Figura~\ref{fig:arquitetura-solucao} sintetiza a organizacao geral da aplicacao. O usuario
 interage com o sistema por meio do navegador, enquanto o monólito modular centraliza a camada de
 apresentacao, a camada de processamento, o acesso ao banco de dados e a integracao com a API
-externa de inteligencia artificial, provida pela Hugging Face.
+externa de inteligencia artificial, provida pela Hugging Face. A implementação técnica dessa arquitetura, 
+incluindo a organização dos módulos de domínio e a estrutura de diretórios, encontra-se detalhada na 
+Seção~\ref{ap:impl-arquivos} do Apêndice~\ref{ap:impl} deste trabalho.
 
 \section{Modelagem e Persistência}
 
@@ -141,7 +145,9 @@ execução transacional, características relevantes para entidades como usuári
 atendimentos, mensagens e relatórios \cite{postgresql2026,node2024}. As migrations
 versionadas foram adotadas para tornar a evolução do esquema reprodutível e rastreável,
 evitando alterações manuais não documentadas e facilitando a reprodução do ambiente em
-execuções futuras \cite{geekhuntermigrations2025}.
+execuções futuras \cite{geekhuntermigrations2025}. O detalhamento estrutural das entidades, 
+a organização dos arquivos e diretórios do projeto e os artefatos complementares 
+de implementação podem ser consultados na na Seção~\ref{ap:impl-modelo} do Apêndice~\ref{ap:impl}.
 
 No modelo de dados consolidado, a tabela \texttt{users} representa a conta de acesso do sistema
 e se relaciona com \texttt{auth\_sessions}, responsável pelo controle de sessões autenticadas por
@@ -354,6 +360,7 @@ integrações futuras e manutenção da API. A escolha por OpenAPI foi motivada 
 formalizar os contratos HTTP do sistema em um formato amplamente reconhecido, favorecendo
 consistência entre implementação e documentação, além de apoiar integração futura com outros
 consumidores da API \cite{openapi2026}.
+A especificação detalhada de todos os contratos HTTP desenvolvidos, incluindo autenticação, paciente, atendimento, relatórios e suporte, encontra-se disponível no Apêndice~\ref{ap:api} deste trabalho.
 
 \begin{figure}[H]
   \centering
@@ -376,7 +383,8 @@ executar um processo automatizado e reprodutível a cada alteração relevante, 
 de integração de mudanças que quebrem compilação, regras estáticas ou testes centrais
 \cite{githubactions2026}. O uso de Node.js 20 no \textit{pipeline} e no ambiente de execução também
 mantém coerência com a base tecnológica da aplicação e com o executor nativo de testes
-adotado no projeto \cite{node2024}.
+adotado no projeto \cite{node2024}. O detalhamento da configuração deste fluxo de integração contínua 
+e a evidência de sua execução podem ser consultados na Seção~\ref{ap:testes-ci} do Apêndice~\ref{ap:testes}.
 
 A implantação contínua ocorre pela configuração do projeto na Vercel. A cada alteração
 integrada à branch \texttt{main}, a aplicação é publicada automaticamente no ambiente
@@ -387,16 +395,19 @@ simplificando a publicação contínua da aplicação sem a necessidade de geren
 própria \cite{vercelgit2026}. Esse modelo também se beneficia da execução por funções
 \textit{serverless}, o que favorece escalabilidade operacional para componentes \textit{stateless}
 e reforça a decisão de concentrar a persistência de sessões, atendimentos e relatórios no banco
-PostgreSQL \cite{vercelfunctions2026,redhatstateless2025}.
+PostgreSQL \cite{vercelfunctions2026,redhatstateless2025}. As informações detalhadas sobre o ambiente 
+de produção, incluindo os endereços de acesso à aplicação e à documentação da API, encontram-se 
+descritas na Seção~\ref{ap:testes-implantacao} do Apêndice~\ref{ap:testes}.
 
 \section{Plano de Testes e Avaliação Técnica}
 
 A avaliação técnica combina testes exploratórios e testes automatizados. Os testes
 exploratórios foram usados para observar a coerência da conversa, a extração de entidades e o
 comportamento geral do sistema em cenários representativos. Os testes automatizados foram
-incluídos para reduzir regressões em regras de chat, relatórios e documentação de API. No
-estado atual do repositório, a suíte automatizada é composta principalmente por testes
-unitários de funções determinísticas, testes de serviço com uso de dublês para repositório e
+incluídos para reduzir regressões em regras de chat, relatórios e documentação de API. Os
+artefatos completos de teste encontram-se consolidados na Seção~\ref{ap:testes-automatizados} do 
+Apêndice~\ref{ap:testes}. No estado atual do repositório, a suíte automatizada é composta principalmente 
+por testes unitários de funções determinísticas, testes de serviço com uso de dublês para repositório e
 cliente de IA, e um teste de consistência entre rotas implementadas e a especificação OpenAPI.
 Essa composição é coerente com o princípio de privilegiar testes rápidos e de menor granularidade
 na base da estratégia de verificação, preservando ciclos curtos de feedback durante a evolução
@@ -439,6 +450,11 @@ RNF08 & Responsividade da interface & Execução manual em diferentes larguras d
 \end{tabularx}
 \end{table}
 
+Além dos testes automatizados, a validação técnica incluiu uma bateria de testes exploratórios, desenhados 
+para avaliar a consistência da interação conversacional e a fidelidade da extração de entidades em situações de uso real. 
+O detalhamento desses cenários, contendo os objetivos definidos para cada caso de teste e os resultados observados 
+durante as avaliações, encontra-se documentado documentado na Seção~\ref{ap:testes-cenarios} do Apêndice~\ref{ap:testes} deste trabalho.
+
 \section{Resultados Técnicos Observados}
 
 A evolução incremental resultou em uma aplicação funcional com autenticação, perfil de
@@ -458,6 +474,7 @@ anamnese, persistir dados por paciente e produzir relatório estruturado a parti
 coletadas.
 
 \chapter{Considerações Finais}
+\label{cap:consideracoes}
 
 A presente investigação demonstrou que a adoção de uma arquitetura híbrida de inteligência artificial é uma solução viável e eficaz para a automação da anamnese prévia. Retomando a questão de pesquisa que norteou este estudo, constatou-se que a orquestração entre um modelo generativo (\textit{Llama-3.1-8B-Instruct}) -- focado na condução empática e humanizada do diálogo -- e um modelo extrativo determinístico (\textit{Biomedical-NER}) -- dedicado à estruturação de entidades clínicas -- mitiga severamente os riscos de alucinação factual e perda de informações. A separação de responsabilidades comprovou que é possível unir a fluidez de uma interface conversacional à rigidez estrutural necessária para a geração de relatórios clínicos (Prontuário Eletrônico do Paciente), otimizando o tempo de triagem sem comprometer a confiabilidade dos dados coletados.
 
