@@ -7,44 +7,66 @@ triagem e aspectos éticos e legais.
 
 \section{Inteligência Artificial na Medicina}
 
-A intersecção entre Medicina e Computação não é recente. Desde os sistemas especialistas da
-era simbólica até modelos de aprendizado de máquina, o objetivo central tem sido apoiar a
-decisão clínica com maior consistência e escala \cite{shortliffe1975,richens2020}.
+A intersecção entre Medicina e Computação não é um fenômeno recente, mas tem passado por 
+transformações profundas que alteram a prática clínica. Historicamente, desde os primeiros 
+sistemas especialistas da era simbólica até a atual consolidação do aprendizado de máquina, 
+o objetivo central da área tem sido apoiar a decisão clínica, buscando proporcionar maior 
+consistência, escalabilidade e precisão no diagnóstico e tratamento \cite{shortliffe1975,
+richens2020}. Esse processo evolutivo é marcado pela transição de modelos estáticos para 
+sistemas dinâmicos.
 
 \subsection{Sistemas Baseados em Regras e a Era Simbólica}
 
-Nas décadas de 1970 e 1980, sistemas especialistas como o MYCIN adotavam regras IF-THEN
-codificadas manualmente. Apesar de resultados promissores em cenários controlados, sua
-aplicação prática era limitada pela baixa adaptabilidade e manutenção onerosa
-\cite{shortliffe1975}.
+Nas décadas de 1970 e 1980, o paradigma predominante era o dos sistemas especialistas, como 
+o famoso MYCIN. Esses sistemas baseavam-se em regras \textit{IF-THEN} codificadas manualmente 
+por especialistas humanos, tentando mapear o conhecimento médico em árvores de decisão lógicas. 
+Embora tenham demonstrado resultados promissores em cenários controlados e ambientes 
+laboratoriais, a aplicação prática desses sistemas era severamente limitada. A principal 
+barreira era a baixa adaptabilidade: qualquer alteração no protocolo médico exigia uma reescrita 
+manual de centenas de regras, tornando a manutenção onerosa e pouco escalável para a complexidade 
+crescente das instituições de saúde da época \cite{shortliffe1975}.
 
 \subsection{Sistemas de Apoio à Decisão Clínica Modernos}
 
-Com avanço de Machine Learning e disponibilidade de dados em saúde, os CDSS evoluíram de
-regras rígidas para modelos probabilísticos. Na triagem, o objetivo passou a incluir redução da
-sobrecarga cognitiva e ganho de eficiência documental \cite{richens2020,shortliffe1975}.
+Com a evolução das técnicas de \textit{Machine Learning} e o aumento exponencial na 
+disponibilidade de dados digitais em saúde, os Sistemas de Apoio à Decisão Clínica (CDSS) 
+superaram a rigidez das regras simbólicas, migrando para modelos probabilísticos e estatísticos. 
+Em vez de depender de uma árvore de decisão predefinida, os sistemas modernos aprendem padrões 
+a partir de grandes bases de dados, oferecendo predições que evoluem com a entrada de novas 
+informações. No contexto da triagem, essa mudança de paradigma foi fundamental: o objetivo 
+passou a ser a redução da sobrecarga cognitiva do profissional e o ganho de eficiência documental, 
+permitindo que a tecnologia atue como um filtro de relevância frente ao volume massivo de 
+informações geradas diariamente em um hospital \cite{richens2020,shortliffe1975}.
 
 \section{Processamento de Linguagem Natural}
 
-O PLN trata da interação entre sistemas computacionais e linguagem humana. Em saúde, seu
-uso exige alta robustez, pois ambiguidades semânticas impactam diretamente a qualidade da
-informação clínica estruturada \cite{devlin2018,lee2020}.
+O Processamento de Linguagem Natural (PLN) estuda a interação entre sistemas computacionais e 
+a linguagem humana. No domínio da saúde, a aplicação de técnicas de PLN exige robustez elevada, 
+uma vez que ambiguidades semânticas podem comprometer a qualidade da informação clínica 
+estruturada, impactando a tomada de decisão \cite{devlin2018,lee2020}. Para mitigar esses 
+riscos, a arquitetura de sistemas modernos baseia-se na combinação de representações vetoriais 
+precisas com mecanismos de atenção contextual.
 
-\subsection{Representação Vetorial e Tokenização}
+\subsection{Representação e Codificação de Texto}
+A base da representação semântica em modelos contemporâneos reside na transformação de texto 
+bruto em representações numéricas densas. Técnicas de \textit{embeddings} permitem capturar 
+as relações latentes entre termos clínicos, um diferencial fundamental para o domínio biomédico 
+\cite{devlin2018,lee2020}. Para viabilizar esse processamento sem que o vocabulário se torne 
+excessivamente vasto ao lidar com terminologias médicas raras, modelos como o Llama empregam a 
+tokenização por subpalavras, notadamente o algoritmo BPE (\textit{Byte Pair Encoding}). Essa 
+estratégia possibilita a decomposição eficiente de termos complexos, mantendo a integridade do 
+significado sem comprometer a eficiência computacional \cite{metaai2024,llama3herd2024}.
 
-Modelos modernos transformam texto em representações numéricas densas. Técnicas de
-embeddings permitiram capturar semântica de termos relacionados, o que é fundamental para
-domínio biomédico \cite{devlin2018,lee2020}.
-
-\subsubsection{Tokenização por Subpalavras}
-
-Modelos como Llama utilizam tokenização por subpalavras, como BPE, para lidar com termos
-médicos complexos e raros sem explosão de vocabulário \cite{metaai2024,llama3herd2024}.
-
-\subsection{A Revolução Transformer}
-
-A arquitetura Transformer substituiu processamento sequencial por mecanismos de atenção,
-permitindo paralelização e melhor captura de contexto de longo alcance \cite{vaswani2017}.
+\subsection{A Revolução Transformer e a Atenção Contextual}
+Além da representação individual, a compreensão de contextos longos foi revolucionada pela 
+arquitetura Transformer \cite{vaswani2017}. Ao substituir o processamento sequencial tradicional 
+por mecanismos de atenção, essa arquitetura permite a paralelização do processamento e a análise 
+global de sequências. O mecanismo de \textit{Self-Attention} (autoatenção), em particular, é o 
+que permite à rede ponderar dinamicamente a relevância entre diferentes partes de um relato 
+clínico. Essa capacidade de resolução de ambiguidades de longo alcance é essencial para anamneses 
+assistidas, permitindo que o modelo relacione sintomas descritos inicialmente com observações 
+temporais inseridas em etapas posteriores do diálogo, garantindo maior fidelidade na extração 
+de dados clínicos \cite{vaswani2017}.
 
 \subsubsection{Self-Attention}
 
