@@ -8,40 +8,96 @@ probabilísticos e, mais recentemente, para arquiteturas baseadas em Transformer
 O ELIZA, na década de 1960, demonstrou a viabilidade de interação conversacional em saúde
 mental com base em padrões linguísticos simples. Apesar da ausência de compreensão
 semântica, estabeleceu fundamentos de interação humano-computador em contexto clínico.
-\cite{weizenbaum1966}
+Mesmo com limitações evidentes de interpretação, esse tipo de sistema mostrou que o diálogo
+computacional poderia ser utilizado como interface de apoio, ainda que de forma altamente
+estruturada e dependente de regras fixas \cite{weizenbaum1966}.
 
 \section{Sistemas de Triagem Probabilística}
 
 Soluções baseadas em redes Bayesianas e grafos causais avançaram o diagnóstico computacional
 por inferência probabilística, porém com limitação de interação natural e dependência de entradas
-estruturadas \cite{richens2020}.
+estruturadas \cite{richens2020}. Em termos práticos, esses sistemas contribuem para apoiar
+priorização e análise de risco, mas ainda exigem modelos conceituais rígidos para representar
+as relações clínicas e costumam ser menos adequados quando o objetivo é capturar narrativas
+longas e progressivas do paciente.
 
 \section{Agentes Conversacionais em Saúde Mental}
 
 Sistemas como Woebot mostraram que interfaces conversacionais podem apoiar acompanhamento
 de saúde mental com impacto mensurável, desde que o desenho conversacional priorize empatia e
-clareza \cite{fitzpatrick2017}.
+clareza \cite{fitzpatrick2017}. A relevância desses trabalhos está em demonstrar que o valor de
+um agente conversacional não se limita à geração de respostas, mas também à capacidade de
+estabelecer continuidade, reduzir atrito de uso e sustentar uma interação suficientemente
+natural para adesão do usuário.
 
 \section{Modelos de Linguagem Biomédicos}
 
 Com BioBERT, observou-se ganho de desempenho em tarefas de mineração de texto clínico,
 principalmente NER, quando comparado a modelos generalistas não especializados em domínio
-biomédico \cite{lee2020}.
+biomédico \cite{lee2020}. Esse resultado reforça a importância de especialização de domínio
+quando a tarefa envolve extração estruturada de entidades, pois a adaptação ao vocabulário
+técnico tende a aumentar a qualidade da representação semântica aplicada a textos médicos.
 
 \section{Grandes Modelos de Linguagem na Clínica}
 
 \subsection{Modelos Especialistas}
 
 Modelos como Med-PaLM indicam potencial de alto desempenho em tarefas médicas específicas,
-mas exigem validação rigorosa para uso em cenário real \cite{singhal2023}.
+mas exigem validação rigorosa para uso em cenário real \cite{singhal2023}. Isso evidencia que,
+em contextos críticos, a avaliação não deve considerar apenas fluência textual, mas também
+aderência a protocolos clínicos, robustez de comportamento e segurança na geração de conteúdo.
 
 \subsection{Modelos Generalistas}
 
 Modelos generalistas apresentam forte capacidade de linguagem, porém trazem desafios de custo,
-governança e risco de alucinação factual em aplicações críticas.
+governança e risco de alucinação factual em aplicações críticas \cite{ouyang2022,metaai2024}.
+Quando aplicados à saúde, esses modelos exigem estratégias adicionais de alinhamento e
+restrição operacional para evitar respostas incoerentes ou pouco confiáveis.
 
 \section{Paradigma RAG}
 
 A estratégia Retrieval-Augmented Generation combina geração e recuperação de conhecimento
 externo para reduzir alucinações. Essa direção constitui uma possibilidade de evolução
-arquitetural futura para o sistema \cite{lewis2020,aws2026}.
+arquitetural futura para o sistema \cite{lewis2020,aws2026}. Ao desacoplar geração e
+recuperação, o paradigma RAG amplia o potencial de rastreabilidade da resposta e pode ser útil
+em cenários nos quais o modelo precisa consultar fontes confiáveis antes de formular uma saída.
+
+\section{Síntese e Posicionamento do Trabalho}
+
+A análise da literatura demonstra uma evolução clara na interseção entre inteligência artificial
+e saúde, partindo de agentes baseados em regras rígidas, como o ELIZA, até a adoção de Grandes
+Modelos de Linguagem na prática clínica. Contudo, as soluções existentes apresentam lacunas
+quando aplicadas diretamente ao contexto da anamnese prévia autônoma.
+
+Sistemas de triagem probabilística, embora úteis na classificação de risco, carecem de fluidez
+conversacional, exigindo que o paciente interaja com formulários engessados. Por outro lado, o
+uso direto de LLMs generalistas ou de modelos biomédicos mais robustos para a coleta de dados
+esbarra no alto custo de inferência, na latência e, criticamente, no risco de alucinação
+factual e geração de dados não estruturados, o que dificulta a integração com os Prontuários
+Eletrônicos do Paciente (PEP) \cite{richens2020,singhal2023,metaai2024}.
+
+Diante desse cenário, o presente trabalho se diferencia ao propor uma arquitetura híbrida.
+Conforme sumarizado na Tabela~\ref{tab:comparativo-trabalhos}, a solução desenvolvida
+orquestra a fluidez de um LLM leve instruído (\textit{Llama-3.1-8B-Instruct}) exclusivamente
+para a condução do diálogo, enquanto delega a responsabilidade de identificação e
+estruturação dos dados clínicos para um modelo extrativo especializado
+(\textit{Biomedical-NER}). Esse desacoplamento mitiga os riscos de alucinação inerentes às
+abordagens puramente generativas e supera a rigidez dos sistemas clássicos, posicionando-se
+como uma alternativa viável, estruturada e de baixo custo computacional para a triagem clínica
+automatizada.
+
+\begin{table}[H]
+\centering
+\caption{Comparativo entre as abordagens analisadas e o sistema proposto.}
+\label{tab:comparativo-trabalhos}
+\begin{tabularx}{\textwidth}{p{3.7cm}Y Y Y Y}
+\hline
+Abordagem / Sistema & Interação em linguagem natural & Extração estruturada de dados & Mitigação de alucinações & Custo computacional / latência \\
+\hline
+Sistemas simbólicos (ELIZA) & Sim, baseado em padrões & Não & Alta, pois não gera fatos novos & Muito baixo \\
+Sistemas probabilísticos & Não, baseado em opções ou regras & Sim & Alta, por saída determinística & Baixo \\
+LLMs puros / Med-PaLM & Sim, com alta fluidez & Parcial, com risco de falhas na formatação & Baixa, devido ao risco de alucinação & Muito alto \\
+Sistema proposto (híbrido) & Sim, com \textit{Llama-3.1} & Sim, com \textit{Biomedical-NER} & Média/alta, com restrição do componente extrativo & Médio \\
+\hline
+\end{tabularx}
+\end{table}
