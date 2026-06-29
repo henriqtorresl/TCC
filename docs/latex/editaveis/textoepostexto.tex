@@ -41,7 +41,7 @@ aplicação \textit{fullstack} baseada em Next.js, reunindo interface web, rotas
 de domínio em uma única base de código. A escolha por Next.js foi motivada pela possibilidade
 de integrar renderização de páginas, tratamento de requisições HTTP e organização modular do
 sistema em um mesmo diretório, reduzindo o custo de sincronização entre componentes distribuídos
-e favorecendo a evolução coordenada das funcionalidades \cite{nextjsroutehandlers2026}.
+e favorecendo a evolução coordenada das funcionalidades \cite{nextjsroutehandlers2026,jovanovic2024}.
 
 As etapas de desenvolvimento foram organizadas da seguinte forma:
 
@@ -52,7 +52,7 @@ As etapas de desenvolvimento foram organizadas da seguinte forma:
 \item implementação de autenticação, sessão e proteção de rotas;
 \item criação do módulo de paciente e vinculação dos atendimentos ao paciente autenticado;
 \item implementação do fluxo de atendimento, histórico de mensagens e ciclo de vida dos atendimentos;
-\item implementação do ciclo de relatórios, com prontidão, autoencerramento e exportação;
+\item implementação do ciclo de relatórios, com prontidão, encerramento automático por critérios mínimos, encerramento manual e exportação;
 \item criação de testes automatizados para regras de chat, relatórios e contratos de API;
 \item configuração de integração contínua e disponibilização da aplicação em ambiente Vercel.
 \end{itemize}
@@ -95,7 +95,10 @@ modelo, a interface web e a API da aplicação coexistem no mesmo repositório, 
 estrutura de rotas do framework para concentrar tanto as páginas acessadas pelo usuário quanto os
 endpoints HTTP responsáveis pelo processamento das operações do sistema. Essa decisão favorece a
 evolução coordenada entre frontend e backend, reduz o custo de integração entre projetos
-separados e simplifica a manutenção da base de código \cite{nextjsroutehandlers2026}.
+separados e simplifica a manutenção da base de código. No padrão de monólito modular, a aplicação
+permanece em uma única unidade de implantação, porém estruturada em módulos com fronteiras bem
+definidas e baixo acoplamento, o que melhora a coesão interna e preserva a possibilidade de
+evolução arquitetural gradual \cite{nextjsroutehandlers2026,jovanovic2024}.
 
 Internamente, o sistema está organizado por domínios e camadas. A camada de apresentação reúne
 páginas e componentes de interface executados no navegador, enquanto a camada de processamento
@@ -114,15 +117,15 @@ integração encapsulada na camada de processamento \cite{huggingface2024}.
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.92\textwidth]{figuras/arquitetura-monolito.eps}
-  \caption[Arquitetura atual do sistema]{Arquitetura atual do sistema, estruturada como monolito modular com camadas de apresentacao e processamento.}
+  \caption[Arquitetura do sistema]{Arquitetura do sistema, estruturada como monolito modular com camadas de apresentacao e processamento.}
   \fontetcc{o autor (2026).}
   \label{fig:arquitetura-solucao}
 \end{figure}
 
 A Figura~\ref{fig:arquitetura-solucao} sintetiza a organizacao geral da aplicacao. O usuario
-interage com o sistema por meio do navegador, enquanto o monolito modular centraliza a camada de
+interage com o sistema por meio do navegador, enquanto o monólito modular centraliza a camada de
 apresentacao, a camada de processamento, o acesso ao banco de dados e a integracao com a API
-externa de inteligencia artificial.
+externa de inteligencia artificial, provida pela Hugging Face.
 
 \section{Modelagem e Persistência}
 
@@ -394,8 +397,8 @@ Requisito & Verificação & Evidência \\
 \hline
 RF01--RF03 & Fluxos de autenticação, sessão e paciente & Execução manual, inspeção das rotas protegidas e documentação OpenAPI \\
 RF04--RF08 & Fluxo de atendimento e histórico & Testes de serviço, testes exploratórios e inspeção de persistência \\
-RF09--RF10 & Prontidão e geração de relatório & Testes unitários de mapeamento, prontidão, disponibilidade e casos de borda \\
-RF11 & Documentação da API & Teste de consistência OpenAPI e publicação em \texttt{/api/docs} \\
+RF09--RF11 & Prontidão, encerramento e geração de relatório & Testes unitários de mapeamento, prontidão, disponibilidade e casos de borda \\
+RF12 & Documentação da API & Teste de consistência OpenAPI e publicação em \texttt{/api/docs} \\
 RNF06 & Integração contínua & Pipeline com lint, testes e build \\
 \hline
 \end{tabularx}
