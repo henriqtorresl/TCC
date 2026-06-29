@@ -68,20 +68,31 @@ assistidas, permitindo que o modelo relacione sintomas descritos inicialmente co
 temporais inseridas em etapas posteriores do diálogo, garantindo maior fidelidade na extração 
 de dados clínicos \cite{vaswani2017}.
 
-\subsubsection{Self-Attention}
-
-No mecanismo de autoatenção (Self-Attention), cada token pondera sua relação com os demais tokens da sequência, independentemente da distância física entre as palavras no texto. Diferente de modelos sequenciais mais antigos, o Self-Attention permite que a rede analise todo o contexto de entrada simultaneamente, calculando matematicamente quais partes da frase possuem maior relevância (peso) para a compreensão de um termo específico. Essa capacidade de cruzar informações e resolver ambiguidades semânticas de longo alcance é o que melhora a interpretação contextual em relatos clínicos extensos, permitindo, por exemplo, que o modelo relacione um sintoma descrito no início do atendimento com um detalhe temporal mencionado várias mensagens depois \cite{vaswani2017}.
+No mecanismo de autoatenção (\textit{Self-Attention}), cada \textit{token} pondera sua relação com os demais 
+tokens da sequência, independentemente da distância física entre as palavras no texto. 
+Diferente de modelos sequenciais mais antigos, o \textit{Self-Attention} permite que a rede analise 
+todo o contexto de entrada simultaneamente, calculando matematicamente quais partes da frase 
+possuem maior relevância (peso) para a compreensão de um termo específico. Essa capacidade de 
+cruzar informações e resolver ambiguidades semânticas de longo alcance é o que melhora a 
+interpretação contextual em relatos clínicos extensos, permitindo, por exemplo, que o modelo 
+relacione um sintoma descrito no início do atendimento com um detalhe temporal mencionado 
+várias mensagens depois \cite{vaswani2017}.
 
 \subsection{Modelos de Linguagem de Grande Escala}
-
-LLMs operam por previsão do próximo token e passam por ciclo de pré-treinamento e ajuste
+LLMs operam por previsão do próximo \textit{token} e passam por ciclo de pré-treinamento e ajuste
 fino. Em saúde, o alinhamento comportamental é essencial para reduzir respostas inadequadas
 \cite{ouyang2022,singhal2023,metaai2024}.
 
-A aplicação prática desses Modelos de Linguagem de Grande Escala (LLMs) diretamente ao usuário final frequentemente se dá por meio de agentes conversacionais, comumente chamados de Chatbots. No contexto tecnológico, um chatbot é uma interface de software projetada para simular conversas humanas, recebendo entradas em linguagem natural e processando respostas de forma interativa. Com a integração dos LLMs, esses agentes deixaram de ser sistemas engessados baseados em árvores de decisão simples para se tornarem assistentes dinâmicos, capazes de conduzir diálogos fluidos, inferir intenções em tempo real e reter o contexto da conversa, características essenciais para a coleta de dados de saúde \cite{fitzpatrick2017,ouyang2022}.
+A aplicação prática desses Modelos de Linguagem de Grande Escala (LLMs) diretamente ao usuário 
+final frequentemente se dá por meio de agentes conversacionais, comumente chamados de Chatbots. 
+No contexto tecnológico, um chatbot é uma interface de software projetada para simular conversas 
+humanas, recebendo entradas em linguagem natural e processando respostas de forma interativa. 
+Com a integração dos LLMs, esses agentes deixaram de ser sistemas engessados baseados em árvores 
+de decisão simples para se tornarem assistentes dinâmicos, capazes de conduzir diálogos fluidos, 
+inferir intenções em tempo real e reter o contexto da conversa, características essenciais para a 
+coleta de dados de saúde \cite{fitzpatrick2017,ouyang2022}.
 
 \subsection{LLMs, SLMs e Critério de Escolha do Modelo}
-
 Neste trabalho, a sigla LLM refere-se a \textit{Large Language Model}, isto é, modelos com
 grande capacidade paramétrica e ampla competência de linguagem natural. Já a sigla SLM
 refere-se a \textit{Small Language Model}, categoria útil quando o objetivo é reduzir custo
@@ -94,14 +105,23 @@ infraestrutura utilizada e alinhamento com o objetivo de construir uma solução
 \cite{metaai2024,llama3herd2024,huggingface2024}.
 
 \subsection{Reconhecimento de Entidades Nomeadas}
+O Reconhecimento de Entidades Nomeadas — do inglês, \textit{Named Entity Recognition} (NER) — 
+é uma tarefa especializada de extração de informação que visa identificar e classificar 
+automaticamente elementos textuais em categorias predefinidas. Tecnicamente, esse processo 
+opera por meio da classificação de cada unidade léxica (token) presente em uma sentença, 
+permitindo que o sistema converta dados não estruturados em informações codificadas e 
+semanticamente relevantes \cite{devlin2018,sang2003,lee2020}.
 
-NER é tarefa extrativa para identificar entidades clínicas como sintomas e medicamentos, com
-base em classificação de tokens \cite{devlin2018,sang2003,lee2020}.
-
-\subsection{Métricas para NER}
-
-Em cenários desbalanceados, acurácia isolada não é suficiente. As métricas mais relevantes são
-Precisão, Revocação e F1-Score \cite{devlin2018,sang2003}.
+No escopo desta pesquisa, a aplicação do NER é fundamental para a viabilização da anamnese 
+assistida por IA. O assistente virtual não atua apenas como um conversador fluido, mas como 
+um extrator de dados clínicos. Ao processar o relato do paciente, o modelo utiliza técnicas 
+de NER para identificar, em tempo real, entidades como sintomas, patologias prévias e 
+fármacos em uso. Essa extração estruturada transforma a narrativa do usuário — muitas vezes 
+dispersa e coloquial — em dados organizados que podem ser posteriormente integrados ao 
+prontuário médico. Portanto, o NER é o componente responsável por realizar a ligação entre a 
+linguagem natural da interação e a precisão necessária para o registro clínico, garantindo que 
+informações críticas relatadas durante o diálogo não se percam no processamento, mas sejam 
+capturadas com alta fidelidade para suporte à decisão do profissional de saúde.
 
 \section{Protocolos de Classificação de Risco e Triagem}
 

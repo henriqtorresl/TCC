@@ -199,11 +199,11 @@ repositório do projeto, no diretório \path{medico_digital/migrations}, dispon�
 
 O fluxo de autenticação foi implementado com rotas de cadastro, \textit{login} e logout. Após \textit{login}, a
 sessão é mantida por cookie \texttt{httpOnly}, e o \textit{backend} resolve o usuário autenticado a
-partir do token persistido em \texttt{auth\_sessions}. Essa decisão removeu a necessidade de
+partir do \textit{token} persistido em \texttt{auth\_sessions}. Essa decisão removeu a necessidade de
 enviar identificadores de usuário pelo cliente no fluxo de atendimento, reduzindo o risco de uso
 indevido de identificadores. O uso de cookie \texttt{httpOnly}, associado no projeto a
 atributos de expiração, \texttt{SameSite} e proteção por ambiente de produção, foi escolhido
-para restringir o acesso direto do JavaScript do navegador ao token de sessão e reduzir a
+para restringir o acesso direto do JavaScript do navegador ao \textit{token} de sessão e reduzir a
 exposição da credencial de autenticação na camada cliente \cite{mdnsetcookie2026,owasp2026}.
 
 Do ponto de vista da infraestrutura, as rotas da API executadas pela aplicação seguem o modelo
@@ -256,7 +256,7 @@ que viabiliza essa condução sequencial da anamnese através de diretrizes de \
 encontra-se documentada na Seção~\ref{ap:prompt-chat} do Apêndice~\ref{ap:prompt}.
 O acesso a esse modelo foi realizado por meio do cliente \texttt{@huggingface/inference}, 
 que oferece uma interface unificada para inferência em modelos hospedados no ecossistema Hugging Face, 
-preservando o token de acesso no lado servidor \cite{huggingface2024}.
+preservando o \textit{token} de acesso no lado servidor \cite{huggingface2024}.
 
 O componente extrativo utiliza \texttt{d4data/biomedical-ner-all} para reconhecer entidades
 biomédicas no texto informado pelo paciente. A estratégia híbrida separa a responsabilidade de
