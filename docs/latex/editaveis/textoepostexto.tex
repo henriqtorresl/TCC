@@ -86,6 +86,7 @@ As etapas de desenvolvimento foram organizadas da seguinte forma:
 \item RNF05: documentar contratos HTTP para apoiar testes, manutenção e integração.
 \item RNF06: manter execução automatizada de lint, testes e build no fluxo de integração contínua.
 \item RNF07: tratar falhas temporárias de serviços externos sem interromper indevidamente o fluxo principal.
+\item RNF08: a interface do sistema deve ser responsiva, adaptando-se adequadamente a diferentes tamanhos de tela e dispositivos.
 \end{itemize}
 
 \section{Arquitetura da Solução}
@@ -210,7 +211,7 @@ sessão precisou ser delegado integralmente ao banco de dados relacional. Assim,
 
 O middleware da aplicação foi dividido em dois guardas: um para rotas de API e outro para
 páginas. As páginas protegidas redirecionam usuários sem sessão para o login, preservando a
-rota de destino por meio do parâmetro \texttt{next}. Usuários autenticados que acessam páginas
+rota de destino. Usuários autenticados que acessam páginas
 de autenticação são redirecionados para a área principal.
 
 \section{Fluxo de Atendimento}
@@ -278,7 +279,7 @@ navegador.
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.78\textwidth]{figuras/relatorio-anamnese.eps}
-  \caption[Visualização do relatório de anamnese]{Visualização do relatório de anamnese gerado a partir de um atendimento real.}
+  \caption[Visualização do relatório de anamnese]{Visualização do relatório de anamnese gerado a partir de um atendimento simulado durante os testes exploratórios.}
   \fontetcc{o autor (2026).}
   \label{fig:relatorio-anamnese}
 \end{figure}
@@ -289,10 +290,7 @@ consolidado para consulta rápida.
 
 \section{Interface do Usuário}
 
-A interface foi consolidada em componentes por domínio, com áreas para chat, painel de
-atendimentos, perfil de paciente e estrutura compartilhada de dashboard. O design system foi
-padronizado com componentes de interface reutilizáveis, incluindo campos, botões, seleção e
-painel lateral responsivo.
+Concebida para ser totalmente responsiva, a interface foi estruturada em módulos funcionais, englobando as telas de autenticação (login e cadastro), o ambiente principal de chat — que integra a interface conversacional e a listagem de atendimentos —, a visão de detalhes do atendimento e a página de perfil para edição dos dados cadastrais do paciente.
 
 \begin{figure}[H]
   \centering
@@ -416,6 +414,7 @@ RF04--RF08 & Fluxo de atendimento e histórico & Testes de serviço, testes expl
 RF09--RF11 & Prontidão, encerramento e geração de relatório & Testes unitários de mapeamento, prontidão, disponibilidade e casos de borda \\
 RF12 & Documentação da API & Teste de consistência OpenAPI e publicação em \texttt{/api/docs} \\
 RNF06 & Integração contínua & Pipeline com lint, testes e build \\
+RNF08 & Responsividade da interface & Execução manual em diferentes larguras de tela e inspeção das telas de autenticação, chat, perfil e detalhes do atendimento \\
 \hline
 \end{tabularx}
 \end{table}
