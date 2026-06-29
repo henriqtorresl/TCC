@@ -48,7 +48,7 @@ As etapas de desenvolvimento foram organizadas da seguinte forma:
 \begin{itemize}
 \item definição dos requisitos funcionais e não funcionais do sistema;
 \item criação do esquema relacional inicial, com migrations versionadas;
-\item desenvolvimento da API em Next.js, utilizando Route Handlers;
+\item desenvolvimento da API em Next.js, utilizando \textit{Route Handlers};
 \item implementação de autenticação, sessão e proteção de rotas;
 \item criação do módulo de paciente e vinculação dos atendimentos ao paciente autenticado;
 \item implementação do fluxo de atendimento, histórico de mensagens e ciclo de vida dos atendimentos;
@@ -62,7 +62,7 @@ As etapas de desenvolvimento foram organizadas da seguinte forma:
 \subsection{Requisitos Funcionais}
 
 \begin{itemize}
-\item RF01: permitir cadastro, login e logout de usuários.
+\item RF01: permitir cadastro, \textit{login} e \textit{logout} de usuários.
 \item RF02: manter sessão autenticada para proteger páginas e rotas da aplicação.
 \item RF03: permitir cadastro e atualização do perfil do paciente autenticado.
 \item RF04: conduzir atendimento por conversa em linguagem natural.
@@ -80,7 +80,7 @@ As etapas de desenvolvimento foram organizadas da seguinte forma:
 
 \begin{itemize}
 \item RNF01: manter chaves e tokens sensíveis fora do cliente.
-\item RNF02: usar sessão baseada em cookie \texttt{httpOnly} para reduzir exposição indevida no frontend.
+\item RNF02: usar sessão baseada em cookie \texttt{httpOnly} para reduzir exposição indevida no \textit{frontend}.
 \item RNF03: persistir dados de usuários, pacientes, atendimentos, mensagens e relatórios em banco relacional.
 \item RNF04: validar entradas de API e retornar erros compatíveis com o tipo de falha observada.
 \item RNF05: documentar contratos HTTP para apoiar testes, manutenção e integração.
@@ -93,9 +93,9 @@ As etapas de desenvolvimento foram organizadas da seguinte forma:
 
 A arquitetura adotada no sistema é a de um monólito modular implementado com Next.js. Nesse
 modelo, a interface web e a API da aplicação coexistem no mesmo repositório, aproveitando a
-estrutura de rotas do framework para concentrar tanto as páginas acessadas pelo usuário quanto os
+estrutura de rotas do \textit{framework} para concentrar tanto as páginas acessadas pelo usuário quanto os
 endpoints HTTP responsáveis pelo processamento das operações do sistema. Essa decisão favorece a
-evolução coordenada entre frontend e backend, reduz o custo de integração entre projetos
+evolução coordenada entre \textit{frontend} e \textit{backend}, reduz o custo de integração entre projetos
 separados e simplifica a manutenção da base de código. No padrão de monólito modular, a aplicação
 permanece em uma única unidade de implantação, porém estruturada em módulos com fronteiras bem
 definidas e baixo acoplamento, o que melhora a coesão interna e preserva a possibilidade de
@@ -191,8 +191,8 @@ repositório do projeto, no diretório \path{medico_digital/migrations}, dispon�
 
 \section{Autenticação, Sessão e Proteção de Rotas}
 
-O fluxo de autenticação foi implementado com rotas de cadastro, login e logout. Após login, a
-sessão é mantida por cookie \texttt{httpOnly}, e o backend resolve o usuário autenticado a
+O fluxo de autenticação foi implementado com rotas de cadastro, \textit{login} e logout. Após \textit{login}, a
+sessão é mantida por cookie \texttt{httpOnly}, e o \textit{backend} resolve o usuário autenticado a
 partir do token persistido em \texttt{auth\_sessions}. Essa decisão removeu a necessidade de
 enviar identificadores de usuário pelo cliente no fluxo de atendimento, reduzindo o risco de uso
 indevido de identificadores. O uso de cookie \texttt{httpOnly}, associado no projeto a
@@ -210,7 +210,7 @@ sessão precisou ser delegado integralmente ao banco de dados relacional. Assim,
 \texttt{httpOnly} funciona como identificador enviado a cada nova interação HTTP.
 
 O middleware da aplicação foi dividido em dois guardas: um para rotas de API e outro para
-páginas. As páginas protegidas redirecionam usuários sem sessão para o login, preservando a
+páginas. As páginas protegidas redirecionam usuários sem sessão para o \textit{login}, preservando a
 rota de destino. Usuários autenticados que acessam páginas
 de autenticação são redirecionados para a área principal.
 
@@ -290,12 +290,12 @@ consolidado para consulta rápida.
 
 \section{Interface do Usuário}
 
-Concebida para ser totalmente responsiva, a interface foi estruturada em módulos funcionais, englobando as telas de autenticação (login e cadastro), o ambiente principal de chat — que integra a interface conversacional e a listagem de atendimentos —, a visão de detalhes do atendimento e a página de perfil para edição dos dados cadastrais do paciente.
+Concebida para ser totalmente responsiva, a interface foi estruturada em módulos funcionais, englobando as telas de autenticação (\textit{login} e cadastro), o ambiente principal de chat — que integra a interface conversacional e a listagem de atendimentos —, a visão de detalhes do atendimento e a página de perfil para edição dos dados cadastrais do paciente.
 
 \begin{figure}[H]
   \centering
   \includegraphics[width=1.0\textwidth]{figuras/login.eps}
-  \caption[Tela de login]{Tela de login da aplicação.}
+  \caption[Tela de \textit{login}]{Tela de \textit{login} da aplicação.}
   \fontetcc{o autor (2026).}
   \label{fig:login}
 \end{figure}
