@@ -2,8 +2,7 @@
 
 Este capítulo apresenta a metodologia adotada, a arquitetura implementada e os
 artefatos utilizados para avaliação técnica do software de anamnese assistida. O
-desenvolvimento foi conduzido de forma incremental, com registro das decisões técnicas em
-notas locais de desenvolvimento e posterior consolidação dos resultados no documento.
+desenvolvimento foi conduzido de forma incremental, e os resultados foram posteriormente consolidados no documento.
 
 \section{Classificação da Pesquisa}
 
@@ -34,15 +33,14 @@ ao longo da implementação do sistema. Para apoiar essa organização, foi util
 como ferramenta de acompanhamento, por meio de um quadro Kanban com colunas compatíveis com
 o fluxo de execução das atividades. Esse quadro foi empregado para distribuir requisitos
 funcionais e não funcionais, registrar tarefas técnicas e monitorar o andamento de cada sprint.
-No contexto deste trabalho, o Trello foi adotado como instrumento de apoio à gestão visual,
-enquanto o Kanban foi empregado como abordagem para tornar o fluxo de trabalho explícito,
+No contexto deste trabalho, o Kanban foi empregado como abordagem para tornar o fluxo de trabalho explícito,
 acompanhar prioridades e manter histórico das entregas concluídas. Essa combinação favoreceu a
 visibilidade do backlog, a identificação de gargalos e a revisão incremental das atividades ao
 longo do semestre \cite{atlassiankanban2026}. A solução foi consolidada como uma
 aplicação \textit{fullstack} baseada em Next.js, reunindo interface web, rotas de API e módulos
 de domínio em uma única base de código. A escolha por Next.js foi motivada pela possibilidade
 de integrar renderização de páginas, tratamento de requisições HTTP e organização modular do
-sistema em um mesmo projeto, reduzindo o custo de sincronização entre componentes distribuídos
+sistema em um mesmo diretório, reduzindo o custo de sincronização entre componentes distribuídos
 e favorecendo a evolução coordenada das funcionalidades \cite{nextjsroutehandlers2026}.
 
 As etapas de desenvolvimento foram organizadas da seguinte forma:
@@ -50,11 +48,11 @@ As etapas de desenvolvimento foram organizadas da seguinte forma:
 \begin{itemize}
 \item definição dos requisitos funcionais e não funcionais do sistema;
 \item criação do esquema relacional inicial, com migrations versionadas;
-\item migração da API para o projeto Next.js, utilizando Route Handlers;
+\item desenvolvimento da API em Next.js, utilizando Route Handlers;
 \item implementação de autenticação, sessão e proteção de rotas;
 \item criação do módulo de paciente e vinculação dos atendimentos ao paciente autenticado;
 \item implementação do fluxo de atendimento, histórico de mensagens e ciclo de vida dos atendimentos;
-\item implementação do ciclo de relatórios, com prontidão, disponibilidade e exportação;
+\item implementação do ciclo de relatórios, com prontidão, autoencerramento e exportação;
 \item criação de testes automatizados para regras de chat, relatórios e contratos de API;
 \item configuração de integração contínua e disponibilização da aplicação em ambiente Vercel.
 \end{itemize}
@@ -72,9 +70,10 @@ As etapas de desenvolvimento foram organizadas da seguinte forma:
 \item RF06: iniciar novo atendimento e encerrar atendimento ativo anterior.
 \item RF07: listar atendimentos e permitir consulta ao histórico de mensagens.
 \item RF08: finalizar e retomar atendimentos com controle de estado.
-\item RF09: avaliar a prontidão da conversa para geração de relatório.
-\item RF10: gerar, consultar e disponibilizar relatório estruturado de anamnese.
-\item RF11: disponibilizar documentação da API em formato OpenAPI.
+\item RF09: Avaliar a prontidão da conversa e encerrar o atendimento automaticamente ao atingir os critérios clínicos mínimos.
+\item RF10: Permitir o encerramento manual do atendimento pelo usuário para a geração de um relatório parcial, mesmo com dados incompletos.
+\item RF11: gerar, consultar e disponibilizar relatório estruturado de anamnese.
+\item RF12: disponibilizar documentação da API em formato OpenAPI.
 \end{itemize}
 
 \subsection{Requisitos Não Funcionais}
