@@ -8,7 +8,7 @@ triagem e aspectos éticos e legais.
 
 A intersecção entre Medicina e Computação não é recente. Desde os sistemas especialistas da
 era simbólica até modelos de aprendizado de máquina, o objetivo central tem sido apoiar a
-decisão clínica com maior consistência e escala.
+decisão clínica com maior consistência e escala \cite{shortliffe1975,richens2020}.
 
 \subsection{Sistemas Baseados em Regras e a Era Simbólica}
 
@@ -21,24 +21,24 @@ aplicação prática era limitada pela baixa adaptabilidade e manutenção onero
 
 Com avanço de Machine Learning e disponibilidade de dados em saúde, os CDSS evoluíram de
 regras rígidas para modelos probabilísticos. Na triagem, o objetivo passou a incluir redução da
-sobrecarga cognitiva e ganho de eficiência documental.
+sobrecarga cognitiva e ganho de eficiência documental \cite{richens2020,shortliffe1975}.
 
 \section{Processamento de Linguagem Natural}
 
 O PLN trata da interação entre sistemas computacionais e linguagem humana. Em saúde, seu
 uso exige alta robustez, pois ambiguidades semânticas impactam diretamente a qualidade da
-informação clínica estruturada.
+informação clínica estruturada \cite{devlin2018,lee2020}.
 
 \subsection{Representação Vetorial e Tokenização}
 
 Modelos modernos transformam texto em representações numéricas densas. Técnicas de
 embeddings permitiram capturar semântica de termos relacionados, o que é fundamental para
-domínio biomédico.
+domínio biomédico \cite{devlin2018,lee2020}.
 
 \subsubsection{Tokenização por Subpalavras}
 
 Modelos como Llama utilizam tokenização por subpalavras, como BPE, para lidar com termos
-médicos complexos e raros sem explosão de vocabulário.
+médicos complexos e raros sem explosão de vocabulário \cite{metaai2024,llama3herd2024}.
 
 \subsection{A Revolução Transformer}
 
@@ -47,51 +47,48 @@ permitindo paralelização e melhor captura de contexto de longo alcance \cite{v
 
 \subsubsection{Self-Attention}
 
-No mecanismo de autoatenção, cada token pondera sua relação com os demais tokens da
-sequência. Isso melhora a interpretação contextual em relatos clínicos extensos.
+No mecanismo de autoatenção (Self-Attention), cada token pondera sua relação com os demais tokens da sequência, independentemente da distância física entre as palavras no texto. Diferente de modelos sequenciais mais antigos, o Self-Attention permite que a rede analise todo o contexto de entrada simultaneamente, calculando matematicamente quais partes da frase possuem maior relevância (peso) para a compreensão de um termo específico. Essa capacidade de cruzar informações e resolver ambiguidades semânticas de longo alcance é o que melhora a interpretação contextual em relatos clínicos extensos, permitindo, por exemplo, que o modelo relacione um sintoma descrito no início do atendimento com um detalhe temporal mencionado várias mensagens depois \cite{vaswani2017}.
 
 \subsection{Modelos de Linguagem de Grande Escala}
 
 LLMs operam por previsão do próximo token e passam por ciclo de pré-treinamento e ajuste
 fino. Em saúde, o alinhamento comportamental é essencial para reduzir respostas inadequadas
-\cite{ouyang2022,singhal2023}.
+\cite{ouyang2022,singhal2023,metaai2024}.
+
+A aplicação prática desses Modelos de Linguagem de Grande Escala (LLMs) diretamente ao usuário final frequentemente se dá por meio de agentes conversacionais, comumente chamados de Chatbots. No contexto tecnológico, um chatbot é uma interface de software projetada para simular conversas humanas, recebendo entradas em linguagem natural e processando respostas de forma interativa. Com a integração dos LLMs, esses agentes deixaram de ser sistemas engessados baseados em árvores de decisão simples para se tornarem assistentes dinâmicos, capazes de conduzir diálogos fluidos, inferir intenções em tempo real e reter o contexto da conversa, características essenciais para a coleta de dados de saúde \cite{fitzpatrick2017,ouyang2022}.
 
 \subsection{LLMs, SLMs e Critério de Escolha do Modelo}
 
 Neste trabalho, a sigla LLM refere-se a \textit{Large Language Model}, isto é, modelos com
 grande capacidade paramétrica e ampla competência de linguagem natural. Já a sigla SLM
 refere-se a \textit{Small Language Model}, categoria útil quando o objetivo é reduzir custo
-computacional, memória e latência em cenários mais restritos.
+computacional, memória e latência em cenários mais restritos \cite{metaai2024,llama3herd2024}.
 
 A proposta desenvolvida adota um LLM por priorizar qualidade de condução
 conversacional e capacidade de manter contexto clínico ao longo da anamnese. A escolha do
 Llama-3.1-8B-Instruct foi motivada por disponibilidade aberta, integração viável com a
 infraestrutura utilizada e alinhamento com o objetivo de construir uma solução auditável
-\cite{metaai2024}.
+\cite{metaai2024,llama3herd2024,huggingface2024}.
 
 \subsection{Reconhecimento de Entidades Nomeadas}
 
 NER é tarefa extrativa para identificar entidades clínicas como sintomas e medicamentos, com
-base em classificação de tokens \cite{devlin2018,sang2003}.
+base em classificação de tokens \cite{devlin2018,sang2003,lee2020}.
 
 \subsection{Métricas para NER}
 
 Em cenários desbalanceados, acurácia isolada não é suficiente. As métricas mais relevantes são
-Precisão, Revocação e F1-Score.
+Precisão, Revocação e F1-Score \cite{devlin2018,sang2003}.
 
 \section{Protocolos de Classificação de Risco e Triagem}
 
 \subsection{Sistema de Triagem de Manchester}
 
-O protocolo de Manchester classifica risco clínico por níveis de prioridade e tempos máximos
-de atendimento. Em uma arquitetura de IA, o foco está em coletar discriminadores úteis ao
-profissional de saúde, sem substituir decisão médica.
+O Sistema de Triagem de Manchester (STM) é um protocolo internacionalmente reconhecido que classifica o risco clínico dos pacientes por meio de cinco níveis de prioridade, representados por cores (vermelho, laranja, amarelo, verde e azul), onde cada um é associado a um tempo máximo seguro para a espera do atendimento médico. O processo é guiado por fluxogramas e discriminadores específicos (como nível de dor, temperatura corporal e histórico recente) que padronizam a urgência da queixa. Em uma arquitetura de Inteligência Artificial, o foco da aplicação não é realizar a classificação final de cor — o que configuraria risco ético —, mas sim atuar na etapa prévia, coletando ativamente os discriminadores úteis ao profissional de saúde sem substituir a decisão médica. Dessa forma, o sistema entrega um relato rico e organizado, otimizando o tempo da triagem humana \cite{shortliffe1975,richens2020}.
 
 \subsection{Anamnese no Modelo SOAP}
 
-O método SOAP organiza o registro clínico em Subjetivo, Objetivo, Avaliação e Plano. A
-proposta deste trabalho concentra-se no componente Subjetivo, estruturando o relato do paciente
-para apoiar etapas clínicas subsequentes.
+O método SOAP é um padrão de documentação amplamente utilizado na prática médica para organizar o registro clínico de forma sistemática em quatro blocos: Subjetivo (a queixa principal e o histórico relatados pelo paciente), Objetivo (os dados mensuráveis, como sinais vitais e exames físicos), Avaliação (o raciocínio clínico e o diagnóstico provável) e Plano (a conduta terapêutica a ser seguida). Devido à natureza puramente conversacional do assistente virtual, a proposta deste trabalho concentra-se exclusivamente no componente Subjetivo. O objetivo do sistema é registrar a história da moléstia atual e os antecedentes do paciente de forma padronizada, capturando a perspectiva do usuário com alta fidelidade. Ao estruturar esse relato inicial, a aplicação visa apoiar e agilizar as etapas clínicas subsequentes (Objetivo, Avaliação e Plano), que permanecem sob total responsabilidade do profissional humano \cite{shortliffe1975,richens2020}.
 
 \section{Aspectos Éticos e Legais na Saúde Digital}
 
