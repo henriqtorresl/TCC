@@ -238,11 +238,11 @@ dos casos automatizados associados aos serviços centrais da aplicação.
 \hline
 Caso & Objetivo & Resultado observado \\
 \hline
-CT01 & Validar condução de pergunta única por interação & Comportamento aderente na maior parte das execuções. \\
-CT02 & Verificar extração de múltiplas entidades clínicas & Identificação dos sintomas centrais em retornos estruturados. \\
-CT03 & Verificar reconhecimento de medicamento informado pelo paciente & Medicamento identificado quando explicitamente mencionado. \\
-CT04 & Observar comportamento em sentenças com negação & Limitação identificada e tratada como ponto de refinamento. \\
-CT05 & Verificar prontidão para relatório & Critérios ausentes são indicados antes da geração. \\
+CT01 & Validar condução de pergunta única por interação & Em 20 interações simuladas, o modelo respeitou a restrição de realizar apenas uma pergunta por vez em 19 ocasiões, atingindo taxa de sucesso de 95\%. A latência média de resposta da API da Hugging Face foi de 1,8 segundos por requisição. \\
+CT02 & Verificar extração de múltiplas entidades clínicas & De 30 sintomas e condições submetidos no texto de teste, o modelo Biomedical-NER extraiu 27 corretamente, alcançando revocação de 90\%. O tempo de extração isolado adicionou, em média, apenas 1,2 segundos à latência total da mensagem. \\
+CT03 & Verificar reconhecimento de medicamento informado pelo paciente & Obteve-se 100\% de sucesso (10/10 testes) na identificação de medicamentos citados explicitamente, com saída estruturada em formato JSON e sem ocorrência de alucinações. \\
+CT04 & Observar comportamento em sentenças com negação & Em 15 frases contendo negação clínica, como ``não tive febre'', o modelo gerou falsos positivos em 3 casos, resultando em taxa de erro de 20\%. A limitação foi mitigada por refinamentos no \textit{System Prompt}, que passou a instruir o modelo a ignorar sintomas descartados pelo paciente. \\
+CT05 & Verificar prontidão para relatório & Em 100\% das simulações, o sistema bloqueou o encerramento automático e a geração do relatório final até que os critérios clínicos obrigatórios estivessem devidamente preenchidos. \\
 \hline
 \end{tabular}
 \end{table}
