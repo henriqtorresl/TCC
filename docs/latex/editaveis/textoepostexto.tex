@@ -117,7 +117,7 @@ integração encapsulada na camada de processamento \cite{huggingface2024}.
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.92\textwidth]{figuras/arquitetura-monolito.eps}
-  \caption[Arquitetura do sistema]{Arquitetura do sistema, estruturada como monolito modular com camadas de apresentacao e processamento.}
+  \caption[Arquitetura do sistema]{Arquitetura do sistema, estruturada como monólito modular com camadas de apresentacao e processamento.}
   \fontetcc{o autor (2026).}
   \label{fig:arquitetura-solucao}
 \end{figure}
@@ -140,7 +140,7 @@ execução transacional, características relevantes para entidades como usuári
 atendimentos, mensagens e relatórios \cite{postgresql2026,node2024}. As migrations
 versionadas foram adotadas para tornar a evolução do esquema reprodutível e rastreável,
 evitando alterações manuais não documentadas e facilitando a reprodução do ambiente em
-execuções futuras \cite{postgresql2026}.
+execuções futuras \cite{geekhuntermigrations2025}.
 
 No modelo de dados consolidado, a tabela \texttt{users} representa a conta de acesso do sistema
 e se relaciona com \texttt{auth\_sessions}, responsável pelo controle de sessões autenticadas por
@@ -184,6 +184,10 @@ As migrations aplicadas incluem:
 \item vinculação de conversas a pacientes, com preenchimento inicial dos dados existentes.
 \end{itemize}
 
+Os scripts versionados responsáveis por essas evoluções do esquema podem ser consultados no
+repositório do projeto, no diretório \path{medico_digital/migrations}, disponível em
+\url{https://github.com/henriqtorresl/TCC/tree/main/medico_digital/migrations}.
+
 \section{Autenticação, Sessão e Proteção de Rotas}
 
 O fluxo de autenticação foi implementado com rotas de cadastro, login e logout. Após login, a
@@ -194,6 +198,15 @@ indevido de identificadores. O uso de cookie \texttt{httpOnly}, associado no pro
 atributos de expiração, \texttt{SameSite} e proteção por ambiente de produção, foi escolhido
 para restringir o acesso direto do JavaScript do navegador ao token de sessão e reduzir a
 exposição da credencial de autenticação na camada cliente \cite{mdnsetcookie2026,owasp2026}.
+
+Do ponto de vista da infraestrutura, as rotas da API executadas pela aplicação seguem o modelo
+\textit{stateless} típico de arquiteturas \textit{serverless}, no qual cada requisição deve ser
+tratada de forma isolada, sem depender de contexto mantido em memória entre chamadas
+\cite{redhatstateless2025,vercelfunctions2026,nextjsroutehandlers2026}. Por esse motivo, embora
+a interação de autenticação do sistema seja \textit{stateful} no nível de negócio, o estado da
+sessão precisou ser delegado integralmente ao banco de dados relacional. Assim, a tabela
+\texttt{auth\_sessions} atua como mecanismo persistente de controle de sessão, enquanto o cookie
+\texttt{httpOnly} funciona como identificador enviado a cada nova interação HTTP.
 
 O middleware da aplicação foi dividido em dois guardas: um para rotas de API e outro para
 páginas. As páginas protegidas redirecionam usuários sem sessão para o login, preservando a
@@ -353,7 +366,10 @@ disponível em \url{https://medicodigital.vercel.app/}. A documentação da API 
 disponível em \url{https://medicodigital.vercel.app/api/docs}. A escolha por Vercel foi
 motivada pela integração direta com repositórios Git e pela afinidade com aplicações Next.js,
 simplificando a publicação contínua da aplicação sem a necessidade de gerenciar infraestrutura
-própria \cite{vercelgit2026}.
+própria \cite{vercelgit2026}. Esse modelo também se beneficia da execução por funções
+\textit{serverless}, o que favorece escalabilidade operacional para componentes \textit{stateless}
+e reforça a decisão de concentrar a persistência de sessões, atendimentos e relatórios no banco
+PostgreSQL \cite{vercelfunctions2026,redhatstateless2025}.
 
 \section{Plano de Testes e Avaliação Técnica}
 
