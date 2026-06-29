@@ -117,10 +117,10 @@ cliente. Para as funcionalidades de inteligência artificial, o sistema realiza 
 Hugging Face, incorporando modelos pré-treinados ao fluxo de negócio da aplicação e mantendo essa
 integração encapsulada na camada de processamento \cite{huggingface2024}.
 
-\begin{figure}[H]
+\begin{figure}[htb]
   \centering
-  \includegraphics[width=0.92\textwidth]{figuras/arquitetura-monolito.eps}
   \caption[Arquitetura do sistema]{Arquitetura do sistema, estruturada como monólito modular com camadas de apresentacao e processamento.}
+  \includegraphics[width=0.8\textwidth]{figuras/arquitetura-monolito.eps}
   \fontetcc{o autor (2026).}
   \label{fig:arquitetura-solucao}
 \end{figure}
@@ -166,10 +166,10 @@ posicional, permitindo montar a saída estruturada apresentada ao usuário. Esse
 relacional é sintetizado por um diagrama entidade-relacionamento, mantido coerente com a evolução
 incremental das regras de autenticação, atendimento e geração de relatórios.
 
-\begin{figure}[H]
+\begin{figure}[htb]
   \centering
-  \includegraphics[width=0.88\textwidth]{figuras/diagrama-entidade-relacionamento.eps}
   \caption[DER do banco de dados da aplicação]{Diagrama entidade-relacionamento do banco de dados da aplicação, elaborado a partir do esquema relacional implementado.}
+  \includegraphics[width=0.8\textwidth]{figuras/diagrama-entidade-relacionamento.eps}
   \fontetcc{o autor (2026).}
   \label{fig:der-banco}
 \end{figure}
@@ -227,10 +227,10 @@ novo atendimento, o sistema encerra eventual conversa ativa anterior, cria uma n
 reinicia o contexto conversacional em memória. As mensagens do paciente e do assistente são
 persistidas no banco, junto às entidades clínicas extraídas quando disponíveis.
 
-\begin{figure}[H]
+\begin{figure}[htb]
   \centering
-  \includegraphics[width=0.96\textwidth]{figuras/sequencia-atendimento.eps}
   \caption[Sequência de processamento da mensagem]{Sequência de processamento da mensagem enviada pelo usuário no atendimento.}
+  \includegraphics[width=1\textwidth]{figuras/sequencia-atendimento.eps}
   \fontetcc{o autor (2026).}
   \label{fig:sequencia}
 \end{figure}
@@ -288,10 +288,10 @@ O relatório gerado contém resumo estruturado, metadados de prontidão e dados 
 atendimento. A visualização em página própria permite impressão ou salvamento em PDF pelo
 navegador.
 
-\begin{figure}[H]
+\begin{figure}[htb]
   \centering
-  \includegraphics[width=1.0\textwidth]{figuras/relatorio-anamnese.eps}
   \caption[Visualização do relatório de anamnese]{Visualização do relatório de anamnese gerado pela aplicação a partir de um atendimento concluído.}
+  \includegraphics[width=1.0\textwidth]{figuras/relatorio-anamnese.eps}
   \fontetcc{o autor (2026).}
   \label{fig:relatorio-anamnese}
 \end{figure}
@@ -304,18 +304,18 @@ consolidado para consulta rápida.
 
 Concebida para ser totalmente responsiva, a interface foi estruturada em módulos funcionais, englobando as telas de autenticação (\textit{login} e cadastro), o ambiente principal de chat — que integra a interface conversacional e a listagem de atendimentos —, a visão de detalhes do atendimento e a página de perfil para edição dos dados cadastrais do paciente.
 
-\begin{figure}[H]
+\begin{figure}[htb]
   \centering
-  \includegraphics[width=1.0\textwidth]{figuras/login.eps}
   \caption[Tela de \textit{login}]{Tela de \textit{login} da aplicação.}
+  \includegraphics[width=1.0\textwidth]{figuras/login.eps}
   \fontetcc{o autor (2026).}
   \label{fig:login}
 \end{figure}
 
-\begin{figure}[H]
+\begin{figure}[htb]
   \centering
-  \includegraphics[width=1.0\textwidth]{figuras/cadastro.eps}
   \caption[Tela de cadastro]{Tela de cadastro de novos usuários.}
+  \includegraphics[width=1.0\textwidth]{figuras/cadastro.eps}
   \fontetcc{o autor (2026).}
   \label{fig:cadastro}
 \end{figure}
@@ -324,10 +324,10 @@ As Figuras~\ref{fig:login} e~\ref{fig:cadastro} apresentam a camada de autentica
 aplicação, responsável por iniciar a sessão protegida do usuário e viabilizar a criação de
 novas contas sem depender de ferramentas externas ao fluxo principal.
 
-\begin{figure}[H]
+\begin{figure}[htb]
   \centering
-  \includegraphics[width=1.0\textwidth]{figuras/print-chat.eps}
   \caption[Interface principal do atendimento]{Interface de interação do paciente com o assistente virtual de anamnese.}
+  \includegraphics[width=1.0\textwidth]{figuras/print-chat.eps}
   \fontetcc{o autor (2026).}
   \label{fig:print-chat}
 \end{figure}
@@ -336,18 +336,18 @@ A Figura~\ref{fig:print-chat} apresenta a interface principal de interação. Al
 mensagens, a aplicação permite criar novo atendimento, consultar histórico, finalizar ou
 retomar atendimentos e acionar a geração de relatórios quando houver dados suficientes.
 
-\begin{figure}[H]
+\begin{figure}[htb]
   \centering
-  \includegraphics[width=1.0\textwidth]{figuras/perfil-paciente.eps}
   \caption[Tela de perfil do paciente]{Tela de perfil do paciente autenticado na aplicação.}
+  \includegraphics[width=1.0\textwidth]{figuras/perfil-paciente.eps}
   \fontetcc{o autor (2026).}
   \label{fig:perfil-paciente}
 \end{figure}
 
-\begin{figure}[H]
+\begin{figure}[htb]
   \centering
-  \includegraphics[width=1.0\textwidth]{figuras/detalhes-atendimento.eps}
   \caption[Tela de detalhes do atendimento]{Tela de detalhes de atendimento com histórico persistido de mensagens.}
+  \includegraphics[width=1.0\textwidth]{figuras/detalhes-atendimento.eps}
   \fontetcc{o autor (2026).}
   \label{fig:detalhes-atendimento}
 \end{figure}
@@ -368,10 +368,10 @@ consistência entre implementação e documentação, além de apoiar integraç�
 consumidores da API \cite{openapi2026}.
 A especificação detalhada de todos os contratos HTTP desenvolvidos, incluindo autenticação, paciente, atendimento, relatórios e suporte, encontra-se disponível no Apêndice~\ref{ap:api} deste trabalho.
 
-\begin{figure}[H]
+\begin{figure}[htb]
   \centering
-  \includegraphics[width=1.0\textwidth]{figuras/api-docs.eps}
   \caption[Documentação publicada da API]{Documentação publicada da API em ambiente de produção.}
+  \includegraphics[width=1.0\textwidth]{figuras/api-docs.eps}
   \fontetcc{o autor (2026).}
   \label{fig:api-docs}
 \end{figure}
@@ -438,7 +438,7 @@ permitirem observar aspectos qualitativos do comportamento conversacional que n�
 integralmente cobertos por asserções automatizadas simples, como progressão do diálogo e
 clareza das respostas \cite{fowler2018}.
 
-\begin{table}[H]
+\begin{table}[htb]
 \centering
 \caption{Relação entre requisitos e estratégias de verificação.}
 \label{tab:plano-testes}
@@ -454,6 +454,7 @@ RNF06 & Integração contínua & \textit{Pipeline} com \textit{lint}, testes e \
 RNF08 & Responsividade da interface & Execução manual em diferentes larguras de tela e inspeção das telas de autenticação, chat, perfil e detalhes do atendimento \\
 \hline
 \end{tabularx}
+\fontetcc{o autor (2026).}
 \end{table}
 
 Além dos testes automatizados, a validação técnica incluiu uma bateria de testes exploratórios, desenhados 

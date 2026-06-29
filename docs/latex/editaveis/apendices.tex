@@ -27,10 +27,10 @@ sprints executadas, servindo de base para a síntese do cronograma semanal apres
 trabalho. Esse artefato complementa a descrição metodológica, fornecendo evidência visual da
 condução incremental do projeto.
 
-\begin{figure}[H]
+\begin{figure}[htb]
   \centering
-  \includegraphics[width=1.0\textwidth]{figuras/kanban-trello.eps}
   \caption[Quadro Kanban do projeto]{Quadro Kanban utilizado no Trello para planejamento e acompanhamento das sprints do projeto.}
+  \includegraphics[width=1.0\textwidth]{figuras/kanban-trello.eps}
   \fontetcc{o autor (2026).}
   \label{fig:kanban-trello}
 \end{figure}
@@ -43,11 +43,11 @@ complementando a descrição metodológica apresentada no Capítulo~\ref{cap:met
 \section{Arquivos e Diretórios Principais}
 \label{ap:impl-arquivos}
 
-\begin{table}[htb]
+\begin{table}[H]
 \centering
 \caption{Principais artefatos de implementação do software desenvolvido.}
 \label{tab:artefatos-implementacao}
-\begin{tabular}{p{5.4cm}p{8.1cm}}
+\begin{tabular}{p{6cm}p{9cm}}
 \hline
 Artefato & Papel no sistema \\
 \hline
@@ -63,6 +63,7 @@ Artefato & Papel no sistema \\
 \path{tests} & Testes automatizados de serviços e contratos. \\
 \hline
 \end{tabular}
+\fontetcc{o autor (2026).}
 \end{table}
 
 \section{Modelo de Dados}
@@ -80,7 +81,7 @@ O modelo foi implementado em PostgreSQL e organizado para sustentar autenticaç�
 paciente, histórico conversacional e geração de relatórios clínicos estruturados. A Tabela
 \ref{tab:modelo-dados} resume o papel de cada entidade persistida no sistema.
 
-\begin{table}[H]
+\begin{table}[htb]
 \centering
 \caption{Síntese das entidades do modelo de dados da aplicação.}
 \label{tab:modelo-dados}
@@ -97,6 +98,7 @@ Tabela & Finalidade no sistema \\
 \texttt{report\_items} & Organizar as seções estruturadas de cada relatório, armazenando nome da seção, conteúdo textual e posição de ordenação dentro do documento clínico. \\
 \hline
 \end{tabularx}
+\fontetcc{o autor (2026).}
 \end{table}
 
 Em termos relacionais, o modelo estabelece associação de um-para-muitos entre
@@ -175,6 +177,7 @@ Método & Rota & Finalidade \\
 \texttt{POST} & \rota{/api/auth/logout} & Revogar sessão e remover cookie de autenticação. \\
 \hline
 \end{tabularx}
+\fontetcc{o autor (2026).}
 \end{table}
 
 As rotas de autenticação validam corpo da requisição, retornam erro de entrada inválida com
@@ -194,11 +197,12 @@ Método & Rota & Finalidade \\
 \texttt{PUT} & \rota{/api/patients/me} & Atualizar dados básicos do paciente autenticado. \\
 \hline
 \end{tabularx}
+\fontetcc{o autor (2026).}
 \end{table}
 
 \section{Rotas de Atendimento e Chat}
 
-\begin{table}[htb]
+\begin{table}[H]
 \centering
 \caption{Endpoints de atendimento, mensagens e histórico.}
 \label{tab:api-atendimentos}
@@ -215,6 +219,7 @@ Método & Rota & Finalidade \\
 \texttt{POST} & \rota{/api/attendances/:id/resume} & Retomar atendimento finalizado. \\
 \hline
 \end{tabularx}
+\fontetcc{o autor (2026).}
 \end{table}
 
 \section{Rotas de Relatório}
@@ -234,11 +239,12 @@ Método & Rota & Finalidade \\
 \texttt{GET} & \rota{/api/reports/:id/download} & Obter dados estruturados para visualização e impressão. \\
 \hline
 \end{tabularx}
+\fontetcc{o autor (2026).}
 \end{table}
 
 \section{Rotas de Suporte}
 
-\begin{table}[htb]
+\begin{table}[H]
 \centering
 \caption{Endpoints de suporte, documentação e saúde da aplicação.}
 \label{tab:api-suporte}
@@ -252,6 +258,7 @@ Método & Rota & Finalidade \\
 \texttt{GET} & \rota{/api/users/:id} & Consultar dados básicos de usuário por identificador. \\
 \hline
 \end{tabularx}
+\fontetcc{o autor (2026).}
 \end{table}
 
 \chapter{Artefatos de Teste e Implantação}
@@ -266,15 +273,15 @@ de implantação contínua da aplicação.
 \section{Integração Contínua}
 \label{ap:testes-ci}
 
-O \textit{workflow} de integração contínua está definido em \path{.github/workflows/ci.yml}. O \textit{pipeline}
+O \textit{workflow} de CI está definido em \path{.github/workflows/ci.yml}. O \textit{pipeline}
 executa instalação de dependências, \textit{lint}, testes automatizados e \textit{build} no diretório
 \path{medico_digital}. Esse processo fornece evidência de que alterações submetidas ao
 repositório preservam a compilação e os testes principais do sistema.
 
-\begin{figure}[H]
+\begin{figure}[htb]
   \centering
-  \includegraphics[width=1.0\textwidth]{figuras/github-actions-ci.eps}
   \caption[Execução do \textit{workflow} de integração contínua]{Execução bem-sucedida do \textit{workflow} de integração contínua no GitHub Actions, com etapas de instalação, \textit{lint}, testes e \textit{build}.}
+  \includegraphics[width=1.0\textwidth]{figuras/github-actions-ci.eps}
   \fontetcc{o autor (2026).}
   \label{fig:github-actions-ci}
 \end{figure}
@@ -315,33 +322,29 @@ Arquivo & Cobertura principal \\
 \path{tests/openapi-docs.test.ts} & Consistência básica da documentação OpenAPI. \\
 \hline
 \end{tabularx}
+\fontetcc{o autor (2026).}
 \end{table}
 
 Como evidência complementar da execução local da suíte, a Figura~\ref{fig:testes-automatizados}
 apresenta uma execução bem-sucedida do comando \texttt{npm run test}, destacando a aprovação
 dos casos automatizados associados aos serviços centrais da aplicação.
 
-\begin{figure}[H]
+\begin{figure}[htb]
   \centering
-  \includegraphics[width=1.0\textwidth]{figuras/testes-automatizados.eps}
   \caption[Execução da suíte de testes automatizados]{Execução local da suíte de testes automatizados, com todos os casos concluídos com sucesso.}
+  \includegraphics[width=1.0\textwidth]{figuras/testes-automatizados.eps}
   \fontetcc{o autor (2026).}
   \label{fig:testes-automatizados}
 \end{figure}
 
-A execução apresentada na Figura~\ref{fig:testes-automatizados} ratifica a robustez das regras de negócio implementadas, 
-com a totalidade dos testes passando sem falhas. A suíte reflete a cobertura dos fluxos críticos de atendimento, 
-desde a orquestração do diálogo até a estruturação dos dados clínicos, servindo como uma rede de proteção essencial 
-para assegurar que modificações futuras no código-fonte não introduzam regressões inesperadas no comportamento da aplicação.
-
 \section{Cenários Exploratórios}
 \label{ap:testes-cenarios}
 
-\begin{table}[htb]
+\begin{table}[H]
 \centering
 \caption{Resumo dos cenários exploratórios de avaliação técnica.}
 \label{tab:apendice-testes}
-\begin{tabular}{p{2.0cm}p{6.0cm}p{5.0cm}}
+\begin{tabular}{p{1.0cm}p{5.0cm}p{9.0cm}}
 \hline
 Caso & Objetivo & Resultado observado \\
 \hline
@@ -352,4 +355,5 @@ CT04 & Observar comportamento em sentenças com negação & Em 15 frases contend
 CT05 & Verificar prontidão para relatório & Em 100\% das simulações, o sistema bloqueou o encerramento automático e a geração do relatório final até que os critérios clínicos obrigatórios estivessem devidamente preenchidos. \\
 \hline
 \end{tabular}
+\fontetcc{o autor (2026).}
 \end{table}
