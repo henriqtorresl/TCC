@@ -2,7 +2,7 @@
 \label{cap:trabalhos}
 
 A automação da triagem clínica e da anamnese evoluiu de sistemas de regras para modelos
-probabilísticos e, mais recentemente, para arquiteturas baseadas em Transformers.
+probabilísticos e, mais recentemente, para arquiteturas baseadas em \textit{Transformers}.
 
 \section{A Era Pré-Neural: ELIZA e DOCTOR}
 
@@ -57,7 +57,7 @@ restrição operacional para evitar respostas incoerentes ou pouco confiáveis.
 
 \section{Paradigma RAG}
 
-A estratégia Retrieval-Augmented Generation combina geração e recuperação de conhecimento
+A estratégia \textit{Retrieval-Augmented Generation} combina geração e recuperação de conhecimento
 externo para reduzir alucinações. Essa direção constitui uma possibilidade de evolução
 arquitetural futura para o sistema \cite{lewis2020,aws2026}. Ao desacoplar geração e
 recuperação, o paradigma RAG amplia o potencial de rastreabilidade da resposta e pode ser útil
@@ -91,14 +91,14 @@ automatizada.
 \centering
 \caption{Comparativo entre as abordagens analisadas e o sistema proposto.}
 \label{tab:comparativo-trabalhos}
-\begin{tabularx}{\textwidth}{p{3.7cm}Y Y Y Y}
+\begin{tabularx}{\textwidth}{p{3.5cm}Y Y Y Y}
 \hline
-Abordagem / Sistema & Interação em linguagem natural & Extração estruturada de dados & Mitigação de alucinações & Custo computacional / latência \\
+Abordagem / Sistema & Interação em linguagem natural & Extração estruturada de dados & Mitigação de alucinações & Complexidade Operacional \\
 \hline
-Sistemas simbólicos (ELIZA) & Sim, baseado em padrões & Não & Alta, pois não gera fatos novos & Muito baixo \\
-Sistemas probabilísticos & Não, baseado em opções ou regras & Sim & Alta, por saída determinística & Baixo \\
-LLMs puros / Med-PaLM & Sim, com alta fluidez & Parcial, com risco de falhas na formatação & Baixa, devido ao risco de alucinação & Muito alto \\
-Sistema proposto (híbrido) & Sim, com \textit{Llama-3.1} & Sim, com \textit{Biomedical-NER} & Média/alta, com restrição do componente extrativo & Médio \\
+Sistemas simbólicos (ELIZA) & Sim, baseado em padrões & Não & Alta (determinística) & Mínima \\
+Sistemas probabilísticos & Não (baseado em regras) & Sim & Alta (determinística) & Baixa \\
+LLMs puros / Med-PaLM & Sim (alta fluidez) & Parcial (risco de formatação) & Baixa (risco de alucinação) & Elevada \\
+Sistema proposto (híbrido) & Sim (com \textit{Llama-3.1}) & Sim (com \textit{Biomedical-NER}) & Média/Alta (estratégia híbrida) & Moderada \\
 \hline
 \end{tabularx}
 \fontetcc{o autor (2026).}
