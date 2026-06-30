@@ -15,7 +15,7 @@ organização e disponibilização de informações clínicas iniciais em atendi
 \subsection{Quanto aos Objetivos}
 
 Trata-se de pesquisa exploratória, pois investiga tecnicamente uma solução que
-combina modelos generativos, extração estruturada de informações e aplicação web para apoio
+combina modelos generativos, extração estruturada de informações e aplicação \textit{web} para apoio
 à anamnese.
 
 \subsection{Quanto aos Procedimentos Técnicos}
@@ -39,7 +39,7 @@ do Apêndice~\ref{ap:impl}. No contexto deste trabalho, o Kanban foi empregado c
 tornar o fluxo de trabalho explícito, acompanhar prioridades e manter histórico das entregas concluídas. 
 Essa combinação favoreceu a visibilidade do backlog, a identificação de gargalos e a revisão incremental 
 das atividades ao longo do semestre \cite{atlassiankanban2026}. A solução foi consolidada como uma
-aplicação \textit{fullstack} baseada em Next.js, reunindo interface web, rotas de API e módulos
+aplicação \textit{fullstack} baseada em Next.js, reunindo interface \textit{web}, rotas de API e módulos
 de domínio em uma única base de código. A escolha por Next.js foi motivada pela possibilidade
 de integrar renderização de páginas, tratamento de requisições HTTP e organização modular do
 sistema em um mesmo diretório, reduzindo o custo de sincronização entre componentes distribuídos
@@ -94,7 +94,7 @@ As etapas de desenvolvimento foram organizadas da seguinte forma:
 \section{Arquitetura da Solução}
 
 A arquitetura adotada no sistema é a de um monólito modular implementado com Next.js. Nesse
-modelo, a interface web e a API da aplicação coexistem no mesmo repositório, aproveitando a
+modelo, a interface \textit{web} e a API da aplicação coexistem no mesmo repositório, aproveitando a
 estrutura de rotas do \textit{framework} para concentrar tanto as páginas acessadas pelo usuário quanto os
 \textit{endpoints} HTTP responsáveis pelo processamento das operações do sistema. Essa decisão favorece a
 evolução coordenada entre \textit{frontend} e \textit{backend}, reduz o custo de integração entre projetos
@@ -489,7 +489,7 @@ coletadas.
 
 A presente investigação demonstrou que a adoção de uma arquitetura híbrida de inteligência artificial é uma solução viável e eficaz para a automação da anamnese prévia. Retomando a questão de pesquisa que norteou este estudo, constatou-se que a orquestração entre um modelo generativo (\textit{Llama-3.1-8B-Instruct}) -- focado na condução empática e humanizada do diálogo -- e um modelo extrativo determinístico (\textit{Biomedical-NER}) -- dedicado à estruturação de entidades clínicas -- mitiga severamente os riscos de alucinação factual e perda de informações. A separação de responsabilidades comprovou que é possível unir a fluidez de uma interface conversacional à rigidez estrutural necessária para a geração de relatórios clínicos (Prontuário Eletrônico do Paciente), otimizando o tempo de triagem sem comprometer a confiabilidade dos dados coletados.
 
-A crescente demanda por eficiência nos serviços de saúde exige soluções capazes de otimizar a triagem clínica sem comprometer a qualidade do relato do paciente. Nesse cenário, este trabalho atingiu seu objetivo geral ao consolidar uma aplicação web para anamnese assistida. A solução destaca-se pela adoção de uma arquitetura híbrida de inteligência artificial, que orquestra um modelo generativo para a condução do diálogo e um modelo extrativo para a estruturação das informações. A principal contribuição técnica da pesquisa foi demonstrar a viabilidade de transformar um fluxo conversacional livre em dados estruturados, organizados por paciente, atendimento e relatório de anamnese. Ao associar essa estratégia a boas práticas de Engenharia de Software, o projeto estabelece uma base técnica sólida, rastreável e passível de evolução.
+A crescente demanda por eficiência nos serviços de saúde exige soluções capazes de otimizar a triagem clínica sem comprometer a qualidade do relato do paciente. Nesse cenário, este trabalho atingiu seu objetivo geral ao consolidar uma aplicação \textit{web} para anamnese assistida. A solução destaca-se pela adoção de uma arquitetura híbrida de inteligência artificial, que orquestra um modelo generativo para a condução do diálogo e um modelo extrativo para a estruturação das informações. A principal contribuição técnica da pesquisa foi demonstrar a viabilidade de transformar um fluxo conversacional livre em dados estruturados, organizados por paciente, atendimento e relatório de anamnese. Ao associar essa estratégia a boas práticas de Engenharia de Software, o projeto estabelece uma base técnica sólida, rastreável e passível de evolução.
 
 \section{Limitações Atuais e Trabalhos Futuros}
 
@@ -500,7 +500,7 @@ Além disso, a extração de informações clínicas ainda depende da combinaç�
 Com base na arquitetura consolidada, identificam-se possibilidades concretas de evolução, organizadas nos seguintes eixos de desenvolvimento:
 
 \begin{itemize}
-\item \textbf{Aprimoramento da inteligência artificial:} como evolução futura, pode-se incorporar uma arquitetura do tipo Retrieval-Augmented Generation (RAG), permitindo que o modelo consulte fontes médicas confiáveis antes de formular respostas ou conduzir novas perguntas. Essa abordagem tende a reduzir inconsistências geradas pelo modelo e a aumentar o rigor informacional do processo conversacional.
+\item \textbf{Aprimoramento da inteligência artificial:} como evolução futura, pode-se incorporar uma arquitetura do tipo \textit{Retrieval-Augmented Generation} (RAG), permitindo que o modelo consulte fontes médicas confiáveis antes de formular respostas ou conduzir novas perguntas. Essa abordagem tende a reduzir inconsistências geradas pelo modelo e a aumentar o rigor informacional do processo conversacional.
 
 \item \textbf{Ampliação do apoio à análise clínica:} o registro estruturado de pacientes, atendimentos, mensagens e relatórios cria condições para futuras análises de correlação entre informações clínicas recorrentes. Em uma etapa posterior, esses dados poderão subsidiar mecanismos de apoio à identificação de padrões, sempre sob supervisão profissional e sem substituir o julgamento médico.
 
