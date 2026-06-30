@@ -2,7 +2,7 @@
 \label{cap:metodologia}
 
 Este capítulo apresenta a metodologia adotada, a arquitetura implementada e os
-artefatos utilizados para avaliação técnica do software de anamnese assistida. O
+artefatos utilizados para avaliação técnica do \textit{software}de anamnese assistida. O
 desenvolvimento foi conduzido de forma incremental, e os resultados foram posteriormente consolidados no documento.
 
 \section{Classificação da Pesquisa}
@@ -28,12 +28,12 @@ relatórios clínicos estruturados.
 \section{Metodologia de Desenvolvimento do Software}
 
 O desenvolvimento foi organizado em ciclos curtos, com evolução progressiva da arquitetura e
-do comportamento da aplicação. Esses ciclos foram conduzidos como sprints, permitindo
+do comportamento da aplicação. Esses ciclos foram conduzidos como \textit{sprints}, permitindo
 planejamento incremental, definição de entregas parciais e revisão contínua das prioridades
 ao longo da implementação do sistema. Para apoiar essa organização, foi utilizado o Trello
 como ferramenta de acompanhamento, por meio de um quadro Kanban com colunas compatíveis com
 o fluxo de execução das atividades. Esse quadro foi empregado para distribuir requisitos
-funcionais e não funcionais, registrar tarefas técnicas e monitorar o andamento de cada sprint. 
+funcionais e não funcionais, registrar tarefas técnicas e monitorar o andamento de cada \textit{sprint}. 
 O detalhamento da gestão do projeto e do quadro Kanban pode ser consultado na Seção~\ref{ap:impl-gestao} 
 do Apêndice~\ref{ap:impl}. No contexto deste trabalho, o Kanban foi empregado como abordagem para 
 tornar o fluxo de trabalho explícito, acompanhar prioridades e manter histórico das entregas concluídas. 
@@ -49,7 +49,7 @@ As etapas de desenvolvimento foram organizadas da seguinte forma:
 
 \begin{itemize}
 \item definição dos requisitos funcionais e não funcionais do sistema;
-\item criação do esquema relacional inicial, com migrations versionadas;
+\item criação do esquema relacional inicial, com \textit{migrations} versionadas;
 \item desenvolvimento da API em Next.js, utilizando \textit{Route Handlers};
 \item implementação de autenticação, sessão e proteção de rotas;
 \item criação do módulo de paciente e vinculação dos atendimentos ao paciente autenticado;
@@ -72,8 +72,8 @@ As etapas de desenvolvimento foram organizadas da seguinte forma:
 \item RF06: iniciar novo atendimento e encerrar atendimento ativo anterior.
 \item RF07: listar atendimentos e permitir consulta ao histórico de mensagens.
 \item RF08: finalizar e retomar atendimentos com controle de estado.
-\item RF09: Avaliar a prontidão da conversa e encerrar o atendimento automaticamente ao atingir os critérios clínicos mínimos.
-\item RF10: Permitir o encerramento manual do atendimento pelo usuário para a geração de um relatório parcial, mesmo com dados incompletos.
+\item RF09: avaliar a prontidão da conversa e encerrar o atendimento automaticamente ao atingir os critérios clínicos mínimos.
+\item RF10: permitir o encerramento manual do atendimento pelo usuário para a geração de um relatório parcial, mesmo com dados incompletos.
 \item RF11: gerar, consultar e disponibilizar relatório estruturado de anamnese.
 \item RF12: disponibilizar documentação da API em formato OpenAPI.
 \end{itemize}
@@ -81,7 +81,7 @@ As etapas de desenvolvimento foram organizadas da seguinte forma:
 \subsection{Requisitos Não Funcionais}
 
 \begin{itemize}
-\item RNF01: manter chaves e tokens sensíveis fora do cliente.
+\item RNF01: manter chaves e \textit{tokens} sensíveis fora do cliente.
 \item RNF02: usar sessão baseada em cookie \texttt{httpOnly} para reduzir exposição indevida no \textit{frontend}.
 \item RNF03: persistir dados de usuários, pacientes, atendimentos, mensagens e relatórios em banco relacional.
 \item RNF04: validar entradas de API e retornar erros compatíveis com o tipo de falha observada.
@@ -96,7 +96,7 @@ As etapas de desenvolvimento foram organizadas da seguinte forma:
 A arquitetura adotada no sistema é a de um monólito modular implementado com Next.js. Nesse
 modelo, a interface web e a API da aplicação coexistem no mesmo repositório, aproveitando a
 estrutura de rotas do \textit{framework} para concentrar tanto as páginas acessadas pelo usuário quanto os
-endpoints HTTP responsáveis pelo processamento das operações do sistema. Essa decisão favorece a
+\textit{endpoints} HTTP responsáveis pelo processamento das operações do sistema. Essa decisão favorece a
 evolução coordenada entre \textit{frontend} e \textit{backend}, reduz o custo de integração entre projetos
 separados e simplifica a manutenção da base de código. No padrão de monólito modular, a aplicação
 permanece em uma única unidade de implantação, porém estruturada em módulos com fronteiras bem
@@ -112,10 +112,14 @@ artificial para suportar o fluxo conversacional e a extração de informações 
 
 Essa organização modular preserva coesão por responsabilidade e reduz acoplamento entre interface,
 processamento e persistência. Como o tratamento de autenticação, sessão, validação e integração
-com IA permanece no lado servidor, credenciais e tokens sensíveis não precisam ser expostos ao
-cliente. Para as funcionalidades de inteligência artificial, o sistema realiza chamadas à API da
-Hugging Face, incorporando modelos pré-treinados ao fluxo de negócio da aplicação e mantendo essa
-integração encapsulada na camada de processamento \cite{huggingface2024}.
+com IA permanece no lado servidor, credenciais e \textit{tokens} sensíveis não precisam ser expostos ao
+cliente. 
+
+Para as funcionalidades de inteligência artificial, o sistema realiza chamadas à API da Hugging Face, 
+integrando o modelo \textit{Llama-3.1-8B-Instruct} para a condução do fluxo conversacional e o 
+modelo \textit{Biomedical-NER} para a extração de entidades clínicas. Essa integração permanece 
+encapsulada na camada de processamento, garantindo que os modelos pré-treinados sejam orquestrados 
+diretamente pelo servidor da aplicação \cite{huggingface2024}.
 
 \begin{figure}[htb]
   \centering
@@ -134,7 +138,7 @@ Seção~\ref{ap:impl-arquivos} do Apêndice~\ref{ap:impl} deste trabalho.
 
 \section{Modelagem e Persistência}
 
-O esquema inicial do banco foi versionado por migrations e contempla usuários, sessões,
+O esquema inicial do banco foi versionado por \textit{migrations} e contempla usuários, sessões,
 conversas, mensagens, relatórios e itens de relatório. Durante a evolução do sistema, foi
 adicionada a entidade de paciente para separar a conta de acesso do contexto clínico. Com isso,
 as conversas passaram a ser vinculadas a \texttt{patient\_id}, permitindo que o histórico de
@@ -142,7 +146,7 @@ atendimentos seja organizado sob a perspectiva assistencial. A persistência rel
 implementada com PostgreSQL, acessado a partir do ecossistema Node.js, por ser um SGBD maduro
 para aplicações transacionais e por oferecer suporte consistente a integridade relacional e
 execução transacional, características relevantes para entidades como usuários, sessões,
-atendimentos, mensagens e relatórios \cite{postgresql2026,node2024}. As migrations
+atendimentos, mensagens e relatórios \cite{postgresql2026,node2024}. As \textit{migrations}
 versionadas foram adotadas para tornar a evolução do esquema reprodutível e rastreável,
 evitando alterações manuais não documentadas e facilitando a reprodução do ambiente em
 execuções futuras \cite{geekhuntermigrations2025}. O detalhamento estrutural das entidades, 
@@ -160,7 +164,7 @@ estado do atendimento ao longo do tempo.
 As mensagens trocadas durante cada atendimento são persistidas em \texttt{messages}, com
 identificação do papel emissor, conteúdo textual e um campo \texttt{jsonb} opcional para
 entidades clínicas extraídas durante o processamento. Já o ciclo de relatório é estruturado pelas
-tabelas \texttt{reports} e \texttt{report\_items}. A primeira armazena o resumo, o status e
+tabelas \texttt{reports} e \texttt{report\_items}. A primeira armazena o resumo, o \textit{status} e
 metadados do relatório gerado para uma conversa; a segunda organiza as seções clínicas em ordem
 posicional, permitindo montar a saída estruturada apresentada ao usuário. Esse mapeamento
 relacional é sintetizado por um diagrama entidade-relacionamento, mantido coerente com a evolução
@@ -183,7 +187,7 @@ plataforma Supabase. Essa escolha preserva o uso de um banco Postgres completo, 
 abstração proprietária sobre o modelo relacional, e agrega facilidades operacionais de ambiente
 gerenciado, como administração centralizada do serviço de banco de dados \cite{supabase2026}.
 
-As migrations aplicadas incluem:
+As \textit{migrations} aplicadas incluem:
 
 \begin{itemize}
 \item criação do esquema inicial, com usuários, sessões, conversas, mensagens e relatórios;
@@ -197,7 +201,7 @@ repositório do projeto, no diretório \path{medico_digital/migrations}, dispon�
 
 \section{Autenticação, Sessão e Proteção de Rotas}
 
-O fluxo de autenticação foi implementado com rotas de cadastro, \textit{login} e logout. Após \textit{login}, a
+O fluxo de autenticação foi implementado com rotas de cadastro, \textit{login} e \textit{logout}. Após \textit{login}, a
 sessão é mantida por cookie \texttt{httpOnly}, e o \textit{backend} resolve o usuário autenticado a
 partir do \textit{token} persistido em \texttt{auth\_sessions}. Essa decisão removeu a necessidade de
 enviar identificadores de usuário pelo cliente no fluxo de atendimento, reduzindo o risco de uso
@@ -302,7 +306,7 @@ consolidado para consulta rápida.
 
 \section{Interface do Usuário}
 
-Concebida para ser totalmente responsiva, a interface foi estruturada em módulos funcionais, englobando as telas de autenticação (\textit{login} e cadastro), o ambiente principal de chat — que integra a interface conversacional e a listagem de atendimentos —, a visão de detalhes do atendimento e a página de perfil para edição dos dados cadastrais do paciente.
+Concebida para ser totalmente responsiva, a interface foi estruturada em módulos funcionais, englobando as telas de autenticação (\textit{login} e cadastro), o ambiente principal de \textit{chat} — que integra a interface conversacional e a listagem de atendimentos —, a visão de detalhes do atendimento e a página de perfil para edição dos dados cadastrais do paciente.
 
 \begin{figure}[htb]
   \centering
@@ -354,14 +358,14 @@ retomar atendimentos e acionar a geração de relatórios quando houver dados su
 
 As Figuras~\ref{fig:perfil-paciente} e~\ref{fig:detalhes-atendimento} complementam a visão
 da interface. O perfil permite manter dados cadastrais do paciente vinculados à sessão,
-enquanto a página de detalhes centraliza status do atendimento, horários, volume de mensagens
+enquanto a página de detalhes centraliza \textit{status} do atendimento, horários, volume de mensagens
 e acesso ao relatório correspondente.
 
 \section{Documentação da API}
 
 A aplicação disponibiliza a especificação OpenAPI em \texttt{/api/openapi.json} e uma
 interface de consulta em \texttt{/api/docs}. Essa documentação acompanha os contratos de
-autenticação, paciente, chat, atendimentos e relatórios, apoiando testes manuais,
+autenticação, paciente, \textit{chat}, atendimentos e relatórios, apoiando testes manuais,
 integrações futuras e manutenção da API. A escolha por OpenAPI foi motivada pela necessidade de
 formalizar os contratos HTTP do sistema em um formato amplamente reconhecido, favorecendo
 consistência entre implementação e documentação, além de apoiar integração futura com outros
@@ -377,7 +381,7 @@ A especificação detalhada de todos os contratos HTTP desenvolvidos, incluindo 
 \end{figure}
 
 A Figura~\ref{fig:api-docs} evidencia a documentação navegável da API, publicada junto à
-aplicação, com agrupamento dos endpoints por domínio e acesso ao documento OpenAPI.
+aplicação, com agrupamento dos \textit{endpoints} por domínio e acesso ao documento OpenAPI.
 
 \section{Integração Contínua e Implantação}
 
@@ -410,14 +414,14 @@ descritas na Seção~\ref{ap:testes-implantacao} do Apêndice~\ref{ap:testes}.
 A avaliação técnica combina testes exploratórios e testes automatizados. Os testes
 exploratórios foram usados para observar a coerência da conversa, a extração de entidades e o
 comportamento geral do sistema em cenários representativos. Os testes automatizados foram
-incluídos para reduzir regressões em regras de chat, relatórios e documentação de API. Os
+incluídos para reduzir regressões em regras de \textit{chat}, relatórios e documentação de API. Os
 artefatos completos de teste encontram-se consolidados na Seção~\ref{ap:testes-automatizados} do 
 Apêndice~\ref{ap:testes}. No estado atual do repositório, a suíte automatizada é composta principalmente 
 por testes unitários de funções determinísticas, testes de serviço com uso de dublês para repositório e
 cliente de IA, e um teste de consistência entre rotas implementadas e a especificação OpenAPI.
 Essa composição é coerente com o princípio de privilegiar testes rápidos e de menor granularidade
-na base da estratégia de verificação, preservando ciclos curtos de feedback durante a evolução
-incremental do software \cite{microsofttesting2026,fowler2018,nodejsTestRunner2026}.
+na base da estratégia de verificação, preservando ciclos curtos de \textit{feedback} durante a evolução
+incremental do \textit{software} \cite{microsofttesting2026,fowler2018,nodejsTestRunner2026}.
 
 Os testes unitários foram empregados para validar funções puras relacionadas à extração de
 seções clínicas, cálculo de prontidão, combinação de seções e geração de resumo. Esse tipo de
@@ -431,7 +435,7 @@ serviços externos durante cada execução \cite{microsofttesting2026,fowler2018
 
 Além disso, foi implementado um teste de contrato interno da documentação OpenAPI, cujo papel
 é verificar se as rotas existentes e seus métodos HTTP permanecem alinhados com a especificação
-publicada. Esse teste não substitui testes funcionais HTTP completos dos endpoints, mas
+publicada. Esse teste não substitui testes funcionais HTTP completos dos \textit{endpoints}, mas
 contribui para reduzir divergências entre implementação e documentação, o que é relevante para
 manutenção e futuras integrações. Complementarmente, os testes exploratórios foram mantidos por
 permitirem observar aspectos qualitativos do comportamento conversacional que não ficam
@@ -451,7 +455,7 @@ RF04--RF08 & Fluxo de atendimento e histórico & Testes de serviço, testes expl
 RF09--RF11 & Prontidão, encerramento e geração de relatório & Testes unitários de mapeamento, prontidão, disponibilidade e casos de borda \\
 RF12 & Documentação da API & Teste de consistência OpenAPI e publicação em \texttt{/api/docs} \\
 RNF06 & Integração contínua & \textit{Pipeline} com \textit{lint}, testes e \textit{build} \\
-RNF08 & Responsividade da interface & Execução manual em diferentes larguras de tela e inspeção das telas de autenticação, chat, perfil e detalhes do atendimento \\
+RNF08 & Responsividade da interface & Execução manual em diferentes larguras de tela e inspeção das telas de autenticação, \textit{chat}, perfil e detalhes do atendimento \\
 \hline
 \end{tabularx}
 \fontetcc{o autor (2026).}
