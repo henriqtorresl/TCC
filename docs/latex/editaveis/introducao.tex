@@ -15,7 +15,7 @@ manual, analógica ou pouco estruturada. A entrevista inicial entre médico e pa
 crucial para a coleta da história clínica, consome tempo valioso que poderia ser direcionado à
 análise clínica aprofundada e à humanização do cuidado.
 
-Este trabalho propõe uma solução de engenharia de \textit{software}para otimizar esse gargalo,
+Este trabalho propõe uma solução de engenharia de \textit{software} para otimizar esse gargalo,
 utilizando Modelos de Linguagem de Grande Escala para interação em linguagem natural e
 Reconhecimento de Entidades Nomeadas para estruturação técnica dos dados iniciais coletados
 na anamnese \cite{singhal2023,sang2003}.
@@ -35,8 +35,8 @@ pacientes chegam aos sistemas de saúde de forma difusa e desorganizada, exigind
 cognitivo intenso para filtrar sinais relevantes.
 
 Paralelamente a esse cenário, observa-se uma explosão na disponibilidade de dados e na
-capacidade computacional. A evolução dos modelos generativos baseados em Transformer,
-como as famílias GPT e Llama, permitiu que sistemas computacionais interpretassem e
+capacidade computacional. A evolução dos modelos generativos baseados em \textit{Transformer},
+como as famílias GPT (\textit{Generative Pre-trained Transformer}) e Llama, permitiu que sistemas computacionais interpretassem e
 gerassem linguagem natural com maior fluidez e melhor adequação contextual
 \cite{vaswani2017,metaai2024}.
 
@@ -59,7 +59,7 @@ humana para converter narrativas em dados padronizados gera:
 \item Dados não padronizados, dificultando interoperabilidade e análise posterior.
 \end{itemize}
 
-A questão de pesquisa que norteia este trabalho é: como uma arquitetura de \textit{software}híbrida,
+A questão de pesquisa que norteia este trabalho é: como uma arquitetura de \textit{software} híbrida,
 combinando modelos generativos e extrativos, pode automatizar a anamnese prévia com
 fidelidade dos dados clínicos extraídos?
 
@@ -69,13 +69,13 @@ fidelidade dos dados clínicos extraídos?
 
 Desenvolver e avaliar tecnicamente um \textit{software} de aplicação \textit{web} para anamnese assistida,
 capaz de interagir com o paciente em linguagem natural e entregar ao profissional de saúde um
-relato inicial estruturado, com abordagem baseada em serviços de IA especializados.
+relato inicial estruturado, com abordagem baseada em serviços de Inteligência Artificial (IA) especializados.
 
 \subsection{Objetivos Específicos}
 
 \begin{itemize}
 \item Fundamentar a aplicação de arquiteturas de Inteligência Artificial híbridas na saúde por meio de revisão da literatura sobre modelos de linguagem e extração de entidades nomeadas.
-\item Estabelecer uma arquitetura de \textit{software}modular e escalável, projetando uma API integrada para orquestrar inferências, autenticação de usuários e persistência segura de dados clínicos.
+\item Estabelecer uma arquitetura de \textit{software} modular e escalável, projetando uma API integrada para orquestrar inferências, autenticação de usuários e persistência segura de dados clínicos.
 \item Construir e parametrizar o fluxo de diálogo clínico integrando o modelo Llama-3.1-8B-Instruct com técnicas de engenharia de \textit{prompt}, garantindo o respeito a restrições de comportamento em saúde.
 \item Automatizar a identificação e categorização de sintomas e medicamentos integrando o modelo extrativo especializado Biomedical-NER ao fluxo de processamento de mensagens.
 \item Validar a acurácia da extração de entidades e a confiabilidade do fluxo conversacional por meio da execução de cenários de testes exploratórios, avaliando métricas de latência e aderência aos requisitos clínicos.
@@ -91,7 +91,7 @@ telemedicina, especialmente em cenários de escassez de especialistas.
 No âmbito técnico, a arquitetura híbrida proposta aumenta confiabilidade ao separar conversa
 generativa da extração estruturada de dados, reduzindo impactos de alucinação factual.
 
-No âmbito acadêmico, a solução documenta integração de ferramentas open-source em
+No âmbito acadêmico, a solução documenta integração de ferramentas \textit{open-source} em
 arquitetura auditável e de baixo custo, contribuindo para a continuidade da pesquisa em IA na
 saúde.
 

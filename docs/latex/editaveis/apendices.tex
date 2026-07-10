@@ -37,7 +37,7 @@ condução incremental do projeto.
 
 A Figura~\ref{fig:kanban-trello} sintetiza o fluxo de trabalho adotado ao longo do desenvolvimento, 
 demonstrando a organização das tarefas em \textit{sprints} e a conclusão sistemática das atividades planejadas. 
-Este registro visual serve como evidência do processo de gestão incremental de \textit{software}que orientou a construção da aplicação, 
+Este registro visual serve como evidência do processo de gestão incremental de \textit{software} que orientou a construção da aplicação, 
 complementando a descrição metodológica apresentada no Capítulo~\ref{cap:metodologia}.
 
 \section{Arquivos e Diretórios Principais}
@@ -73,7 +73,7 @@ O banco relacional contempla as tabelas \texttt{users}, \texttt{auth\_sessions},
 \texttt{patients}, \texttt{conversations}, \texttt{messages}, \texttt{reports} e
 \texttt{report\_items}. A entidade \texttt{patients} representa o contexto clínico, enquanto
 \texttt{users} representa a conta de acesso. As conversas são vinculadas ao paciente e as
-mensagens são vinculadas ao atendimento correspondente. No corpo do capítulo metodológico, o DER
+mensagens são vinculadas ao atendimento correspondente. No corpo do capítulo metodológico, o diagrama entidade-relacionamento (DER)
 foi apresentado junto da discussão de modelagem e persistência; neste apêndice, permanecem os
 detalhes complementares de papel e organização das entidades.
 
@@ -92,7 +92,7 @@ Tabela & Finalidade no sistema \\
 \texttt{users} & Armazenar a conta de acesso da aplicação, com identificação, e-mail único, credencial protegida por \textit{hash}, papel de acesso e carimbos de criação e atualização. \\
 \texttt{auth\_sessions} & Controlar sessões autenticadas vinculadas ao usuário, com \textit{refresh token} persistido por hash, prazo de expiração, eventual revogação e data de criação. \\
 \texttt{patients} & Manter o perfil do paciente associado ao usuário autenticado, com nome, data de nascimento e dados cadastrais opcionais, preservando a separação entre acesso e contexto clínico. \\
-\texttt{conversations} & Representar cada atendimento realizado, relacionando usuário e paciente, com título opcional, \textit{status} e marcações temporais de início e encerramento. \\
+\texttt{conversations} & Representar cada atendimento realizado, relacionando usuário e paciente, com título opcional, status e marcações temporais de início e encerramento. \\
 \texttt{messages} & Persistir as interações de cada atendimento, com papel emissor, conteúdo textual, entidades clínicas opcionais em \texttt{jsonb} e momento de criação da mensagem. \\
 \texttt{reports} & Registrar relatórios gerados a partir das conversas, vinculando usuário e atendimento, com resumo textual, estado do relatório, metadados opcionais em \texttt{jsonb} e data de geração. \\
 \texttt{report\_items} & Organizar as seções estruturadas de cada relatório, armazenando nome da seção, conteúdo textual e posição de ordenação dentro do documento clínico. \\
@@ -268,7 +268,7 @@ Este apêndice consolida os principais artefatos de avaliação técnica, o flux
 e as informações de disponibilização do sistema. Os conteúdos aqui apresentados foram organizados para 
 documentar a estratégia de garantia de qualidade — cobrindo regras de chat, relatórios, contratos de API 
 e casos de borda — e para fornecer as evidências operacionais do ambiente de produção e dos mecanismos 
-de implantação contínua da aplicação.
+de publicação contínua da aplicação.
 
 \section{Integração Contínua}
 \label{ap:testes-ci}
@@ -295,7 +295,7 @@ permitindo a detecção precoce de erros e assegurando que apenas código valida
 \section{Implantação}
 \label{ap:testes-implantacao}
 
-A aplicação está configurada para implantação contínua na Vercel a partir da branch
+A aplicação está configurada para publicação contínua na Vercel a partir da branch
 \texttt{main}. A versão publicada da aplicação está disponível em
 \url{https://medicodigital.vercel.app/}, e a documentação pública da API está disponível em
 \url{https://medicodigital.vercel.app/api/docs}. O código-fonte e o histórico de desenvolvimento

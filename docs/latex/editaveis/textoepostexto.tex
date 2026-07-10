@@ -2,7 +2,7 @@
 \label{cap:metodologia}
 
 Este capítulo apresenta a metodologia adotada, a arquitetura implementada e os
-artefatos utilizados para avaliação técnica do \textit{software}de anamnese assistida. O
+artefatos utilizados para avaliação técnica do \textit{software} de anamnese assistida. O
 desenvolvimento foi conduzido de forma incremental, e os resultados foram posteriormente consolidados no documento.
 
 \section{Classificação da Pesquisa}
@@ -22,7 +22,7 @@ combina modelos generativos, extração estruturada de informações e aplicaç�
 
 Foram empregados levantamento bibliográfico, desenvolvimento incremental e avaliação técnica
 por meio de testes exploratórios e automatizados. A abordagem adotada permitiu observar a
-integração entre interface, serviços de aplicação, persistência, modelos de IA e geração de
+integração entre interface, serviços de aplicação, persistência, modelos de Inteligência Artificial (IA) e geração de
 relatórios clínicos estruturados.
 
 \section{Metodologia de Desenvolvimento do Software}
@@ -143,7 +143,7 @@ conversas, mensagens, relatórios e itens de relatório. Durante a evolução do
 adicionada a entidade de paciente para separar a conta de acesso do contexto clínico. Com isso,
 as conversas passaram a ser vinculadas a \texttt{patient\_id}, permitindo que o histórico de
 atendimentos seja organizado sob a perspectiva assistencial. A persistência relacional foi
-implementada com PostgreSQL, acessado a partir do ecossistema Node.js, por ser um SGBD maduro
+implementada com PostgreSQL, acessado a partir do ecossistema Node.js, por ser um Sistema Gerenciador de Banco de Dados (SGBD) maduro
 para aplicações transacionais e por oferecer suporte consistente a integridade relacional e
 execução transacional, características relevantes para entidades como usuários, sessões,
 atendimentos, mensagens e relatórios \cite{postgresql2026,node2024}. As \textit{migrations}
@@ -151,7 +151,7 @@ versionadas foram adotadas para tornar a evolução do esquema reprodutível e r
 evitando alterações manuais não documentadas e facilitando a reprodução do ambiente em
 execuções futuras \cite{geekhuntermigrations2025}. O detalhamento estrutural das entidades, 
 a organização dos arquivos e diretórios do projeto e os artefatos complementares 
-de implementação podem ser consultados na na Seção~\ref{ap:impl-modelo} do Apêndice~\ref{ap:impl}.
+de implementação podem ser consultados na Seção~\ref{ap:impl-modelo} do Apêndice~\ref{ap:impl}.
 
 No modelo de dados consolidado, a tabela \texttt{users} representa a conta de acesso do sistema
 e se relaciona com \texttt{auth\_sessions}, responsável pelo controle de sessões autenticadas por
@@ -164,7 +164,7 @@ estado do atendimento ao longo do tempo.
 As mensagens trocadas durante cada atendimento são persistidas em \texttt{messages}, com
 identificação do papel emissor, conteúdo textual e um campo \texttt{jsonb} opcional para
 entidades clínicas extraídas durante o processamento. Já o ciclo de relatório é estruturado pelas
-tabelas \texttt{reports} e \texttt{report\_items}. A primeira armazena o resumo, o \textit{status} e
+tabelas \texttt{reports} e \texttt{report\_items}. A primeira armazena o resumo, o status e
 metadados do relatório gerado para uma conversa; a segunda organiza as seções clínicas em ordem
 posicional, permitindo montar a saída estruturada apresentada ao usuário. Esse mapeamento
 relacional é sintetizado por um diagrama entidade-relacionamento, mantido coerente com a evolução
@@ -270,7 +270,7 @@ estruturada, alinhando a solução ao uso de modelos especializados para minera�
 biomédico \cite{d4data2024,lee2020}. Para garantir a precisão na extração de entidades e a 
 estruturação das informações coletadas para o relatório, o sistema utiliza instruções específicas 
 de extração, cujos detalhes técnicos e a estrutura do \textit{prompt} aplicado podem ser consultados 
-na Seção~\ref{ap:prompt-relatorio} do Apêndice~\ref{ap:prompt}..
+na Seção~\ref{ap:prompt-relatorio} do Apêndice~\ref{ap:prompt}.
 No entanto, é importante registrar uma limitação técnica:
 o modelo citado foi treinado para reconhecimento de entidades biomédicas em inglês, o que
 impõe cautela na interpretação de seu desempenho quando aplicado a mensagens em português
@@ -324,7 +324,7 @@ Concebida para ser totalmente responsiva, a interface foi estruturada em módulo
   \label{fig:cadastro}
 \end{figure}
 
-As Figuras~\ref{fig:login} e~\ref{fig:cadastro} apresentam a camada de autenticação da
+As figuras~\ref{fig:login} e~\ref{fig:cadastro} apresentam a camada de autenticação da
 aplicação, responsável por iniciar a sessão protegida do usuário e viabilizar a criação de
 novas contas sem depender de ferramentas externas ao fluxo principal.
 
@@ -356,9 +356,9 @@ retomar atendimentos e acionar a geração de relatórios quando houver dados su
   \label{fig:detalhes-atendimento}
 \end{figure}
 
-As Figuras~\ref{fig:perfil-paciente} e~\ref{fig:detalhes-atendimento} complementam a visão
+As figuras~\ref{fig:perfil-paciente} e~\ref{fig:detalhes-atendimento} complementam a visão
 da interface. O perfil permite manter dados cadastrais do paciente vinculados à sessão,
-enquanto a página de detalhes centraliza \textit{status} do atendimento, horários, volume de mensagens
+enquanto a página de detalhes centraliza o \textit{status} do atendimento, horários, volume de mensagens
 e acesso ao relatório correspondente.
 
 \section{Documentação da API}
@@ -396,7 +396,7 @@ mantém coerência com a base tecnológica da aplicação e com o executor nativ
 adotado no projeto \cite{node2024}. O detalhamento da configuração deste fluxo de integração contínua 
 e a evidência de sua execução podem ser consultados na Seção~\ref{ap:testes-ci} do Apêndice~\ref{ap:testes}.
 
-A implantação contínua ocorre pela configuração do projeto na Vercel. A cada alteração
+A publicação contínua ocorre pela configuração do projeto na Vercel. A cada alteração
 integrada à branch \texttt{main}, a aplicação é publicada automaticamente no ambiente
 disponível em \url{https://medicodigital.vercel.app/}. A documentação da API publicada fica
 disponível em \url{https://medicodigital.vercel.app/api/docs}. A escolha por Vercel foi
@@ -464,7 +464,7 @@ RNF08 & Responsividade da interface & Execução manual em diferentes larguras d
 Além dos testes automatizados, a validação técnica incluiu uma bateria de testes exploratórios, desenhados 
 para avaliar a consistência da interação conversacional e a fidelidade da extração de entidades em situações de uso real. 
 O detalhamento desses cenários, contendo os objetivos definidos para cada caso de teste e os resultados observados 
-durante as avaliações, encontra-se documentado documentado na Seção~\ref{ap:testes-cenarios} do Apêndice~\ref{ap:testes} deste trabalho.
+durante as avaliações, encontra-se documentado na Seção~\ref{ap:testes-cenarios} do Apêndice~\ref{ap:testes} deste trabalho.
 
 \section{Resultados Técnicos Observados}
 
