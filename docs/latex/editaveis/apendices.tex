@@ -103,48 +103,157 @@ Artefato & Papel no sistema \\
 \fontetcc{o autor (2026).}
 \end{table}
 
-\section{Modelo de Dados}
-\label{ap:impl-modelo}
+\section{Dicionário de Dados}
+\label{ap:impl-dicionario}
 
-O banco relacional contempla as tabelas \texttt{users}, \texttt{auth\_sessions},
-\texttt{patients}, \texttt{conversations}, \texttt{messages}, \texttt{reports} e
-\texttt{report\_items}. A entidade \texttt{patients} representa o contexto clínico, enquanto
-\texttt{users} representa a conta de acesso. As conversas são vinculadas ao paciente e as
-mensagens são vinculadas ao atendimento correspondente. No corpo do capítulo metodológico, o esquema relacional do banco de dados
-foi apresentado junto da discussão de modelagem e persistência; neste apêndice, permanecem os
-detalhes complementares de papel e organização das entidades.
-
-O modelo foi implementado em PostgreSQL e organizado para sustentar autenticação, perfil de
-paciente, histórico conversacional e geração de relatórios clínicos estruturados. A Tabela
-\ref{tab:modelo-dados} resume o papel de cada entidade persistida no sistema.
+O dicionário de dados abaixo detalha as colunas das tabelas persistidas pela aplicação. Para
+preservar a legibilidade, foi adotado um formato mais enxuto, com nome da coluna, tipo de dados,
+restrições e descrição. O valor padrão foi incorporado à descrição quando relevante.
 
 \begin{table}[htb]
 \centering
-\caption{Síntese das entidades do modelo de dados da aplicação.}
-\label{tab:modelo-dados}
-\begin{tabularx}{\textwidth}{p{3.3cm}Y}
+\small
+\caption{Dicionário de dados da tabela \texttt{users}.}
+\label{tab:dd-users}
+\begin{tabularx}{\textwidth}{p{3.2cm}p{2.8cm}p{3.1cm}X}
 \hline
-Tabela & Finalidade no sistema \\
+Nome da coluna & Tipo de dados & Restrições & Descrição \\
 \hline
-\texttt{users} & Armazenar a conta de acesso da aplicação, com identificação, e-mail único, credencial protegida por \textit{hash}, papel de acesso e carimbos de criação e atualização. \\
-\texttt{auth\_sessions} & Controlar sessões autenticadas vinculadas ao usuário, com \textit{refresh token} persistido por hash, prazo de expiração, eventual revogação e data de criação. \\
-\texttt{patients} & Manter o perfil do paciente associado ao usuário autenticado, com nome, data de nascimento e dados cadastrais opcionais, preservando a separação entre acesso e contexto clínico. \\
-\texttt{conversations} & Representar cada atendimento realizado, relacionando usuário e paciente, com título opcional, status e marcações temporais de início e encerramento. \\
-\texttt{messages} & Persistir as interações de cada atendimento, com papel emissor, conteúdo textual, entidades clínicas opcionais em \texttt{jsonb} e momento de criação da mensagem. \\
-\texttt{reports} & Registrar relatórios gerados a partir das conversas, vinculando usuário e atendimento, com resumo textual, estado do relatório, metadados opcionais em \texttt{jsonb} e data de geração. \\
-\texttt{report\_items} & Organizar as seções estruturadas de cada relatório, armazenando nome da seção, conteúdo textual e posição de ordenação dentro do documento clínico. \\
+\texttt{id} & BIGSERIAL & PK, NOT NULL & Identificador único do usuário. \\
+\texttt{full\_name} & TEXT & NOT NULL & Nome completo do usuário. \\
+\texttt{email} & TEXT & NOT NULL, UNIQUE & Endereço de e-mail utilizado no acesso. \\
+\texttt{password\_hash} & TEXT & NOT NULL & Hash da senha armazenada de forma segura. \\
+\texttt{role} & TEXT & NOT NULL & Papel de acesso atribuído ao usuário. Valor padrão: \texttt{patient}. \\
+\texttt{created\_at} & TIMESTAMPTZ & NOT NULL & Data e hora de criação do registro. Valor padrão: \texttt{NOW()}. \\
+\texttt{updated\_at} & TIMESTAMPTZ & NOT NULL & Data e hora da última atualização do registro. Valor padrão: \texttt{NOW()}. \\
 \hline
 \end{tabularx}
 \fontetcc{o autor (2026).}
 \end{table}
 
-Em termos relacionais, o modelo estabelece associação de um-para-muitos entre
-\texttt{users} e \texttt{auth\_sessions}, entre \texttt{conversations} e \texttt{messages}, e
-entre \texttt{reports} e \texttt{report\_items}. Também mantém vínculo entre
-\texttt{conversations} e \texttt{patients}, permitindo que múltiplos atendimentos sejam
-organizados sob o mesmo contexto clínico. Além disso, a restrição de unicidade em
-\texttt{patients.user\_id} modela um vínculo individual entre conta autenticada e perfil de
-paciente no estado atual da aplicação.
+\begin{table}[htb]
+\centering
+\small
+\caption{Dicionário de dados da tabela \texttt{auth\_sessions}.}
+\label{tab:dd-auth-sessions}
+\begin{tabularx}{\textwidth}{p{3.2cm}p{2.8cm}p{3.1cm}X}
+\hline
+Nome da coluna & Tipo de dados & Restrições & Descrição \\
+\hline
+\texttt{id} & BIGSERIAL & PK, NOT NULL & Identificador único da sessão autenticada. \\
+\texttt{user\_id} & BIGINT & NOT NULL, FK & Referência ao usuário associado à sessão. \\
+\texttt{refresh\_token\_hash} & TEXT & NOT NULL & Hash do \textit{refresh token} da sessão. \\
+\texttt{expires\_at} & TIMESTAMPTZ & NOT NULL & Momento em que a sessão expira. \\
+\texttt{revoked\_at} & TIMESTAMPTZ & NULL & Momento de revogação da sessão, quando aplicável. \\
+\texttt{created\_at} & TIMESTAMPTZ & NOT NULL & Data e hora de criação da sessão. Valor padrão: \texttt{NOW()}. \\
+\hline
+\end{tabularx}
+\fontetcc{o autor (2026).}
+\end{table}
+
+\begin{table}[htb]
+\centering
+\small
+\caption{Dicionário de dados da tabela \texttt{patients}.}
+\label{tab:dd-patients}
+\begin{tabularx}{\textwidth}{p{3.2cm}p{2.8cm}p{3.1cm}X}
+\hline
+Nome da coluna & Tipo de dados & Restrições & Descrição \\
+\hline
+\texttt{id} & BIGSERIAL & PK, NOT NULL & Identificador único do paciente. \\
+\texttt{user\_id} & BIGINT & NOT NULL, UNIQUE, FK & Associação individual entre usuário e paciente. \\
+\texttt{full\_name} & TEXT & NOT NULL & Nome completo do paciente. \\
+\texttt{birth\_date} & DATE & NULL & Data de nascimento do paciente. \\
+\texttt{cpf} & TEXT & NULL & CPF do paciente, quando informado. \\
+\texttt{phone} & TEXT & NULL & Telefone de contato do paciente. \\
+\texttt{gender} & TEXT & NULL, CHECK & Gênero do paciente, conforme valores aceitos no esquema. \\
+\texttt{created\_at} & TIMESTAMPTZ & NOT NULL & Data e hora de criação do cadastro. Valor padrão: \texttt{NOW()}. \\
+\texttt{updated\_at} & TIMESTAMPTZ & NOT NULL & Data e hora da última atualização do cadastro. Valor padrão: \texttt{NOW()}. \\
+\hline
+\end{tabularx}
+\fontetcc{o autor (2026).}
+\end{table}
+
+\begin{table}[htb]
+\centering
+\small
+\caption{Dicionário de dados da tabela \texttt{conversations}.}
+\label{tab:dd-conversations}
+\begin{tabularx}{\textwidth}{p{3.2cm}p{2.8cm}p{3.1cm}X}
+\hline
+Nome da coluna & Tipo de dados & Restrições & Descrição \\
+\hline
+\texttt{id} & BIGSERIAL & PK, NOT NULL & Identificador único do atendimento. \\
+\texttt{user\_id} & BIGINT & NOT NULL, FK & Usuário responsável pelo atendimento. \\
+\texttt{patient\_id} & BIGINT & NOT NULL, FK & Paciente vinculado ao atendimento. \\
+\texttt{title} & TEXT & NULL & Título opcional da conversa. \\
+\texttt{status} & TEXT & NOT NULL & Estado atual do atendimento. Valor padrão: \texttt{active}. \\
+\texttt{started\_at} & TIMESTAMPTZ & NOT NULL & Data e hora de início do atendimento. Valor padrão: \texttt{NOW()}. \\
+\texttt{ended\_at} & TIMESTAMPTZ & NULL & Data e hora de encerramento do atendimento. \\
+\hline
+\end{tabularx}
+\fontetcc{o autor (2026).}
+\end{table}
+
+\begin{table}[htb]
+\centering
+\small
+\caption{Dicionário de dados da tabela \texttt{messages}.}
+\label{tab:dd-messages}
+\begin{tabularx}{\textwidth}{p{3.2cm}p{2.8cm}p{3.1cm}X}
+\hline
+Nome da coluna & Tipo de dados & Restrições & Descrição \\
+\hline
+\texttt{id} & BIGSERIAL & PK, NOT NULL & Identificador único da mensagem. \\
+\texttt{conversation\_id} & BIGINT & NOT NULL, FK & Atendimento ao qual a mensagem pertence. \\
+\texttt{role} & TEXT & NOT NULL, CHECK & Papel do emissor, como sistema, usuário ou assistente. \\
+\texttt{content} & TEXT & NOT NULL & Conteúdo textual da mensagem. \\
+\texttt{entities} & JSONB & NULL & Entidades clínicas extraídas do texto. \\
+\texttt{created\_at} & TIMESTAMPTZ & NOT NULL & Data e hora de criação da mensagem. Valor padrão: \texttt{NOW()}. \\
+\hline
+\end{tabularx}
+\fontetcc{o autor (2026).}
+\end{table}
+
+\begin{table}[htb]
+\centering
+\small
+\caption{Dicionário de dados da tabela \texttt{reports}.}
+\label{tab:dd-reports}
+\begin{tabularx}{\textwidth}{p{3.2cm}p{2.8cm}p{3.1cm}X}
+\hline
+Nome da coluna & Tipo de dados & Restrições & Descrição \\
+\hline
+\texttt{id} & BIGSERIAL & PK, NOT NULL & Identificador único do relatório. \\
+\texttt{user\_id} & BIGINT & NOT NULL, FK & Usuário que gerou o relatório. \\
+\texttt{conversation\_id} & BIGINT & NOT NULL, FK & Atendimento origem do relatório. \\
+\texttt{summary} & TEXT & NOT NULL & Resumo textual consolidado do atendimento. \\
+\texttt{status} & TEXT & NOT NULL & Estado do relatório. Valor padrão: \texttt{draft}. \\
+\texttt{metadata} & JSONB & NULL & Metadados complementares do relatório. \\
+\texttt{generated\_at} & TIMESTAMPTZ & NOT NULL & Data e hora de geração do relatório. Valor padrão: \texttt{NOW()}. \\
+\hline
+\end{tabularx}
+\fontetcc{o autor (2026).}
+\end{table}
+
+\begin{table}[htb]
+\centering
+\small
+\caption{Dicionário de dados da tabela \texttt{report\_items}.}
+\label{tab:dd-report-items}
+\begin{tabularx}{\textwidth}{p{3.2cm}p{2.8cm}p{3.1cm}X}
+\hline
+Nome da coluna & Tipo de dados & Restrições & Descrição \\
+\hline
+\texttt{id} & BIGSERIAL & PK, NOT NULL & Identificador único do item do relatório. \\
+\texttt{report\_id} & BIGINT & NOT NULL, FK & Relatório ao qual o item pertence. \\
+\texttt{section} & TEXT & NOT NULL & Nome da seção estruturada do relatório. \\
+\texttt{content} & TEXT & NOT NULL & Conteúdo textual da seção. \\
+\texttt{position} & INTEGER & NOT NULL & Posição de ordenação dentro do relatório. Valor padrão: \texttt{0}. \\
+\hline
+\end{tabularx}
+\fontetcc{o autor (2026).}
+\end{table}
 
 \chapter{Estrutura dos \textit{Prompts} de Sistema}
 \label{ap:prompt}
