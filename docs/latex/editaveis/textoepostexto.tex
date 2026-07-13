@@ -41,7 +41,7 @@ Essa combinação favoreceu a visibilidade do backlog, a identificação de garg
 das atividades ao longo do semestre \cite{atlassiankanban2026}. A solução foi consolidada como uma
 aplicação \textit{fullstack} baseada em Next.js, reunindo interface \textit{web}, rotas de API e módulos
 de domínio em uma única base de código. A escolha por Next.js foi motivada pela possibilidade
-de integrar renderização de páginas, tratamento de requisições HTTP e organização modular do
+de integrar renderização de páginas, tratamento de requisições da API e organização modular do
 sistema em um mesmo diretório, reduzindo o custo de sincronização entre componentes distribuídos
 e favorecendo a evolução coordenada das funcionalidades \cite{nextjsroutehandlers2026,jovanovic2024}.
 
@@ -96,7 +96,7 @@ As etapas de desenvolvimento foram organizadas da seguinte forma:
 A arquitetura adotada no sistema é a de um monólito modular implementado com Next.js. Nesse
 modelo, a interface \textit{web} e a API da aplicação coexistem no mesmo repositório, aproveitando a
 estrutura de rotas do \textit{framework} para concentrar tanto as páginas acessadas pelo usuário quanto os
-\textit{endpoints} HTTP responsáveis pelo processamento das operações do sistema. Essa decisão favorece a
+\textit{endpoints} da API responsáveis pelo processamento das operações do sistema. Essa decisão favorece a
 evolução coordenada entre \textit{frontend} e \textit{backend}, reduz o custo de integração entre projetos
 separados e simplifica a manutenção da base de código. No padrão de monólito modular, a aplicação
 permanece em uma única unidade de implantação, porém estruturada em módulos com fronteiras bem
@@ -217,7 +217,7 @@ tratada de forma isolada, sem depender de contexto mantido em memória entre cha
 a interação de autenticação do sistema seja \textit{stateful} no nível de negócio, o estado da
 sessão precisou ser delegado integralmente ao banco de dados relacional. Assim, a tabela
 \texttt{auth\_sessions} atua como mecanismo persistente de controle de sessão, enquanto o cookie
-\texttt{httpOnly} funciona como identificador enviado a cada nova interação HTTP.
+\texttt{httpOnly} funciona como identificador enviado a cada nova interação com a aplicação.
 
 O \textit{middleware} da aplicação foi dividido em dois guardas: um para rotas de API e outro para
 páginas. As páginas protegidas redirecionam usuários sem sessão para o \textit{login}, preservando a
@@ -367,10 +367,10 @@ A aplicação disponibiliza a especificação OpenAPI em \texttt{/api/openapi.js
 interface de consulta em \texttt{/api/docs}. Essa documentação acompanha os contratos de
 autenticação, paciente, \textit{chat}, atendimentos e relatórios, apoiando testes manuais,
 integrações futuras e manutenção da API. A escolha por OpenAPI foi motivada pela necessidade de
-formalizar os contratos HTTP do sistema em um formato amplamente reconhecido, favorecendo
+formalizar os contratos da API do sistema em um formato amplamente reconhecido, favorecendo
 consistência entre implementação e documentação, além de apoiar integração futura com outros
 consumidores da API \cite{openapi2026}.
-A especificação detalhada de todos os contratos HTTP desenvolvidos, incluindo autenticação, paciente, atendimento, relatórios e suporte, encontra-se disponível no Apêndice~\ref{ap:api} deste trabalho.
+A especificação detalhada de todos os contratos da API desenvolvidos, incluindo autenticação, paciente, atendimento, relatórios e suporte, encontra-se disponível no Apêndice~\ref{ap:api} deste trabalho.
 
 \begin{figure}[htb]
   \centering
@@ -434,8 +434,8 @@ de dublês tornou possível validar comportamento de negócio sem depender de ba
 serviços externos durante cada execução \cite{microsofttesting2026,fowler2018}.
 
 Além disso, foi implementado um teste de contrato interno da documentação OpenAPI, cujo papel
-é verificar se as rotas existentes e seus métodos HTTP permanecem alinhados com a especificação
-publicada. Esse teste não substitui testes funcionais HTTP completos dos \textit{endpoints}, mas
+é verificar se as rotas existentes e seus métodos permanecem alinhados com a especificação
+publicada. Esse teste não substitui testes funcionais completos dos \textit{endpoints}, mas
 contribui para reduzir divergências entre implementação e documentação, o que é relevante para
 manutenção e futuras integrações. Complementarmente, os testes exploratórios foram mantidos por
 permitirem observar aspectos qualitativos do comportamento conversacional que não ficam

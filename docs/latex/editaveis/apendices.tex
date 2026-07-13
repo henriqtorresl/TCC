@@ -158,7 +158,7 @@ use null.
 \label{ap:api}
 
 Este apêndice resume o contrato de interface da API implementada
-na aplicação \texttt{medico\_digital}. A comunicação é realizada via HTTP, com dados em JSON.
+na aplicação \texttt{medico\_digital}. A comunicação é realizada via HTTPS, com dados em JSON.
 A especificação completa é publicada em \texttt{/api/openapi.json} e pode ser consultada pela
 interface \texttt{/api/docs}.
 
@@ -173,7 +173,7 @@ interface \texttt{/api/docs}.
 Método & Rota & Finalidade \\
 \hline
 \texttt{POST} & \rota{/api/auth/register} & Criar conta de usuário com nome, e-mail e senha. \\
-\texttt{POST} & \rota{/api/auth/login} & Autenticar usuário e criar sessão por cookie \texttt{httpOnly}. \\
+\texttt{POST} & \rota{/api/auth/login} & Autenticar usuário e criar sessão por cookie \texttt{httpOnly}, com comunicação segura via HTTPS. \\
 \texttt{POST} & \rota{/api/auth/logout} & Revogar sessão e remover cookie de autenticação. \\
 \hline
 \end{tabularx}
