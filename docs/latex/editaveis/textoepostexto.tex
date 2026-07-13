@@ -1,7 +1,7 @@
 \chapter{Metodologia e Desenvolvimento}
 \label{cap:metodologia}
 
-Este capítulo apresenta a metodologia adotada, a arquitetura implementada e os
+Com a revisão teórica e a análise de trabalhos relacionados já consolidadas, este capítulo apresenta a metodologia adotada, a arquitetura implementada e os
 artefatos utilizados para avaliação técnica do \textit{software} de anamnese assistida. O
 desenvolvimento foi conduzido de forma incremental, e os resultados foram posteriormente consolidados no documento.
 
@@ -45,7 +45,7 @@ de integrar renderização de páginas, tratamento de requisições da API e org
 sistema em um mesmo diretório, reduzindo o custo de sincronização entre componentes distribuídos
 e favorecendo a evolução coordenada das funcionalidades \cite{jovanovic2024,nextjsroutehandlers2026}.
 
-As etapas de desenvolvimento foram organizadas da seguinte forma:
+As atividades de desenvolvimento foram organizadas da seguinte forma:
 
 \begin{itemize}
 \item definição dos requisitos funcionais e não funcionais do sistema;
@@ -151,7 +151,7 @@ versionadas foram adotadas para tornar a evolução do esquema reprodutível e r
 evitando alterações manuais não documentadas e facilitando a reprodução do ambiente em
 execuções futuras \cite{geekhuntermigrations2025}. O detalhamento estrutural das entidades, 
 a organização dos arquivos e diretórios do projeto e os artefatos complementares 
-de implementação podem ser consultados na Seção~\ref{ap:impl-modelo} do Apêndice~\ref{ap:impl}.
+de implementação podem ser consultados nas Seções~\ref{ap:impl-arquivos} e~\ref{ap:impl-dicionario} do Apêndice~\ref{ap:impl}.
 
 No modelo de dados consolidado, a tabela \texttt{users} representa a conta de acesso do sistema
 e se relaciona com \texttt{auth\_sessions}, responsável pelo controle de sessões autenticadas por
