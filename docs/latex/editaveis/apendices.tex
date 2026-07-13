@@ -23,8 +23,8 @@ módulos de domínio (camada de lógica de negócio), acesso a banco de dados e 
 O desenvolvimento foi acompanhado por meio de quadro Kanban no Trello, utilizado para organizar
 o backlog semanal, registrar atividades concluídas e acompanhar a evolução das \textit{sprints} ao longo
 da implementação. Os cards consolidados na coluna \textit{Pronto} funcionaram como histórico das
-sprints executadas, servindo de base para a síntese do cronograma semanal apresentada no corpo do
-trabalho. Esse artefato complementa a descrição metodológica, fornecendo evidência visual da
+sprints executadas, servindo de base para a síntese do cronograma semanal apresentada na Seção~\ref{ap:impl-cronograma}.
+Esse artefato complementa a descrição metodológica, fornecendo evidência visual da
 condução incremental do projeto.
 
 \begin{figure}[htb]
@@ -39,6 +39,43 @@ A Figura~\ref{fig:kanban-trello} sintetiza o fluxo de trabalho adotado ao longo 
 demonstrando a organização das tarefas em \textit{sprints} e a conclusão sistemática das atividades planejadas. 
 Este registro visual serve como evidência do processo de gestão incremental de \textit{software} que orientou a construção da aplicação, 
 complementando a descrição metodológica apresentada no Capítulo~\ref{cap:metodologia}.
+
+\section{Cronograma Semanal}
+\label{ap:impl-cronograma}
+
+O cronograma semanal abaixo foi consolidado a partir das tarefas que compõem o estado atual da
+lista \textit{Pronto} do quadro Kanban exportado do projeto. A organização segue a evolução
+incremental descrita no capítulo metodológico e permite localizar, por semana, as principais
+entregas concluídas ao longo do desenvolvimento.
+
+\begin{table}[htb]
+\centering
+\caption{Síntese do cronograma semanal de desenvolvimento.}
+\label{tab:cronograma-semanal}
+\begin{tabularx}{\textwidth}{p{3.7cm}X}
+\hline
+Semana & Atividades principais \\
+\hline
+Semana 1 (02/03 a 08/03) & Fechar escopo oficial do TCC2, criar o board de execução, terminar as correções do TCC1 e migrar o template do TCC para o template da FGA. \\
+Semana 2 (09/03 a 15/03) & Modelagem do banco, estrutura base do \textit{backend}, criação de \textit{migrations} e organização das camadas de \textit{auth}, \textit{chat}, relatório e usuários. \\
+Semana 3 (16/03 a 22/03) & Implementar cadastro, \textit{login}, \textit{logout}, \textit{JWT}/sessão e \textit{hash} de senha, além de proteger rotas privadas e criar \textit{middleware} de autorização. \\
+Semana 4 (23/03 a 29/03) & Implementar \textit{frontend} de autenticação, com telas de \textit{login} e cadastro, fluxo completo com persistência de sessão e guarda de rota. \\
+Semana 5 (30/03 a 05/04) & Refatorar o \textit{chat} para operar por usuário autenticado e persistir o histórico de conversas por atendimento. \\
+Semana 6 (06/04 a 12/04) & Criar o módulo de pacientes e dados cadastrais básicos, vinculando atendimentos aos pacientes. \\
+Semana 7 (13/04 a 19/04) & Gerar relatório clínico estruturado ao final da conversa e definir \textit{template} de relatório com campos padronizados. \\
+Semana 8 (20/04 a 26/04) & Implementar exportação de relatório em PDF e JSON ou PDF e TXT, além de adicionar \textit{endpoint} e botão de download no \textit{frontend}. \\
+Semana 9 (27/04 a 03/05) & Criar \textit{dashboard} de atendimentos com listagem, paginação e filtro por data, além de adicionar visualização de detalhes do atendimento. \\
+Semana 10 (04/05 a 10/05) & Adicionar funcionalidades extras, como status do atendimento, \textit{tags} e observações manuais, além de incluir edição controlada de metadados do caso. \\
+Semana 11 (11/05 a 17/05) & Tratar segurança e robustez com validação de \textit{payload}, tratamento global de erro, \textit{rate limit}, \textit{logs} estruturados e trilha mínima de auditoria. \\
+Semana 12 (18/05 a 24/05) & Executar testes de integração e testes de fluxo ponta a ponta, além de corrigir \textit{bugs} críticos e melhorar a experiência de uso. \\
+Semana 13 (25/05 a 31/05) & Congelar funcionalidades, rodar validação com usuários em pequeno piloto e coletar \textit{feedback}. \\
+Semana 14 (01/06 a 07/06) & Aplicar ajustes finais de usabilidade e estabilidade e preparar a documentação técnica do sistema e o manual de uso. \\
+Semana 15 (08/06 a 14/06) & Realizar \textit{deploy} de homologação e produção, configurar variáveis de ambiente, domínio, HTTPS e monitoramento básico. \\
+Semana 16 (15/06 a 18/06) & Reservar \textit{buffer} final para correções pós-\textit{deploy}, validação final em produção, fechamento do TCC e submissão final até 18/06/2026. \\
+\hline
+\end{tabularx}
+\fontetcc{o autor (2026).}
+\end{table}
 
 \section{Arquivos e Diretórios Principais}
 \label{ap:impl-arquivos}
