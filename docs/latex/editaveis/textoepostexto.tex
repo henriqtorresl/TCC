@@ -43,7 +43,7 @@ aplicação \textit{fullstack} baseada em Next.js, reunindo interface \textit{we
 de domínio em uma única base de código. A escolha por Next.js foi motivada pela possibilidade
 de integrar renderização de páginas, tratamento de requisições da API e organização modular do
 sistema em um mesmo diretório, reduzindo o custo de sincronização entre componentes distribuídos
-e favorecendo a evolução coordenada das funcionalidades \cite{nextjsroutehandlers2026,jovanovic2024}.
+e favorecendo a evolução coordenada das funcionalidades \cite{jovanovic2024,nextjsroutehandlers2026}.
 
 As etapas de desenvolvimento foram organizadas da seguinte forma:
 
@@ -101,7 +101,7 @@ evolução coordenada entre \textit{frontend} e \textit{backend}, reduz o custo 
 separados e simplifica a manutenção da base de código. No padrão de monólito modular, a aplicação
 permanece em uma única unidade de implantação, porém estruturada em módulos com fronteiras bem
 definidas e baixo acoplamento, o que melhora a coesão interna e preserva a possibilidade de
-evolução arquitetural gradual \cite{nextjsroutehandlers2026,jovanovic2024}.
+evolução arquitetural gradual \cite{jovanovic2024,nextjsroutehandlers2026}.
 
 Internamente, o sistema está organizado por domínios e camadas. A camada de apresentação reúne
 páginas e componentes de interface executados no navegador, enquanto a camada de processamento
@@ -146,7 +146,7 @@ atendimentos seja organizado sob a perspectiva assistencial. A persistência rel
 implementada com PostgreSQL, acessado a partir do ecossistema Node.js, por ser um Sistema Gerenciador de Banco de Dados (SGBD) maduro
 para aplicações transacionais e por oferecer suporte consistente a integridade relacional e
 execução transacional, características relevantes para entidades como usuários, sessões,
-atendimentos, mensagens e relatórios \cite{postgresql2026,node2024}. As \textit{migrations}
+atendimentos, mensagens e relatórios \cite{node2024,postgresql2026}. As \textit{migrations}
 versionadas foram adotadas para tornar a evolução do esquema reprodutível e rastreável,
 evitando alterações manuais não documentadas e facilitando a reprodução do ambiente em
 execuções futuras \cite{geekhuntermigrations2025}. O detalhamento estrutural das entidades, 
@@ -213,7 +213,7 @@ exposição da credencial de autenticação na camada cliente \cite{mdnsetcookie
 Do ponto de vista da infraestrutura, as rotas da API executadas pela aplicação seguem o modelo
 \textit{stateless} típico de arquiteturas \textit{serverless}, no qual cada requisição deve ser
 tratada de forma isolada, sem depender de contexto mantido em memória entre chamadas
-\cite{redhatstateless2025,vercelfunctions2026,nextjsroutehandlers2026}. Por esse motivo, embora
+\cite{nextjsroutehandlers2026,redhatstateless2025,vercelfunctions2026}. Por esse motivo, embora
 a interação de autenticação do sistema seja \textit{stateful} no nível de negócio, o estado da
 sessão precisou ser delegado integralmente ao banco de dados relacional. Assim, a tabela
 \texttt{auth\_sessions} atua como mecanismo persistente de controle de sessão, enquanto o cookie
@@ -255,7 +255,7 @@ conversacional de forma controlada, sem exigir comparação exaustiva entre mode
 trata de um modelo instruído, sua
 adoção foi coerente com a necessidade de conduzir um diálogo progressivo, orientado por
 restrições de comportamento, como perguntar uma informação por vez e evitar emitir diagnósticos
-conclusivos \cite{metaai2024,llama3herd2024}. A configuração comportamental detalhada do modelo, 
+conclusivos \cite{llama3herd2024,metaai2024}. A configuração comportamental detalhada do modelo, 
 que viabiliza essa condução sequencial da anamnese através de diretrizes de \textit{System Prompt}, 
 encontra-se documentada na Seção~\ref{ap:prompt-chat} do Apêndice~\ref{ap:prompt}.
 O acesso a esse modelo foi realizado por meio do cliente \texttt{@huggingface/inference}, 
@@ -405,7 +405,7 @@ simplificando a publicação contínua da aplicação sem a necessidade de geren
 própria \cite{vercelgit2026}. Esse modelo também se beneficia da execução por funções
 \textit{serverless}, o que favorece escalabilidade operacional para componentes \textit{stateless}
 e reforça a decisão de concentrar a persistência de sessões, atendimentos e relatórios no banco
-PostgreSQL \cite{vercelfunctions2026,redhatstateless2025}. As informações detalhadas sobre o ambiente 
+PostgreSQL \cite{redhatstateless2025,vercelfunctions2026}. As informações detalhadas sobre o ambiente 
 de produção, incluindo os endereços de acesso à aplicação e à documentação da API, encontram-se 
 descritas na Seção~\ref{ap:testes-implantacao} do Apêndice~\ref{ap:testes}.
 
@@ -421,7 +421,7 @@ por testes unitários de funções determinísticas, testes de serviço com uso 
 cliente de IA, e um teste de consistência entre rotas implementadas e a especificação OpenAPI.
 Essa composição é coerente com o princípio de privilegiar testes rápidos e de menor granularidade
 na base da estratégia de verificação, preservando ciclos curtos de \textit{feedback} durante a evolução
-incremental do \textit{software} \cite{microsofttesting2026,fowler2018,nodejsTestRunner2026}.
+incremental do \textit{software} \cite{fowler2018,microsofttesting2026,nodejsTestRunner2026}.
 
 Os testes unitários foram empregados para validar funções puras relacionadas à extração de
 seções clínicas, cálculo de prontidão, combinação de seções e geração de resumo. Esse tipo de
@@ -431,7 +431,7 @@ verificação objetiva das regras implementadas e rápida identificação de reg
 do fluxo de mensagens, o tratamento de falhas na avaliação de prontidão, a sanitização de
 respostas do provedor de IA e a normalização de parâmetros de paginação. Nesses casos, o uso
 de dublês tornou possível validar comportamento de negócio sem depender de banco real ou de
-serviços externos durante cada execução \cite{microsofttesting2026,fowler2018}.
+serviços externos durante cada execução \cite{fowler2018,microsofttesting2026}.
 
 Além disso, foi implementado um teste de contrato interno da documentação OpenAPI, cujo papel
 é verificar se as rotas existentes e seus métodos permanecem alinhados com a especificação
