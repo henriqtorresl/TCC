@@ -5,10 +5,10 @@
 \chapter{Artefatos de Implementação}
 \label{ap:impl}
 
-Os códigos-fonte do \textit{software} desenvolvido estão concentrados no repositório \url{https://github.com/henriqtorresl/TCC}, 
+Os códigos-fonte do software desenvolvido estão concentrados no repositório \url{https://github.com/henriqtorresl/TCC},
 com a implementação principal organizada no diretório \path{medico_digital}.
 A aplicação foi organizada por camadas e domínios, com separação entre rotas de API,
-componentes de interface, módulos de domínio, acesso a banco e scripts de apoio.
+componentes de interface, módulos de domínio, acesso a banco e \textit{scripts} de apoio.
 
 A organização do projeto reflete o padrão de monólito modular, onde o código é particionado em domínios de negócio com fronteiras bem definidas, 
 visando o baixo acoplamento entre as camadas de interface, processamento e persistência. 
@@ -21,7 +21,7 @@ módulos de domínio (camada de lógica de negócio), acesso a banco de dados e 
 \label{ap:impl-gestao}
 
 O desenvolvimento foi acompanhado por meio de quadro Kanban no Trello, utilizado para organizar
-o backlog semanal, registrar atividades concluídas e acompanhar a evolução das \textit{sprints} ao longo
+o \textit{backlog} semanal, registrar atividades concluídas e acompanhar a evolução das \textit{sprints} ao longo
 da implementação. As tarefas consolidadas na coluna \textit{Pronto} funcionaram como histórico das
 sprints executadas, servindo de base para a síntese do cronograma semanal apresentada na Seção~\ref{ap:impl-cronograma}.
 Esse artefato complementa a descrição metodológica, fornecendo evidência visual da
@@ -37,7 +37,7 @@ condução incremental do projeto.
 
 A Figura~\ref{fig:kanban-trello} sintetiza o fluxo de trabalho adotado ao longo do desenvolvimento, 
 demonstrando a organização das tarefas em \textit{sprints} e a conclusão sistemática das atividades planejadas. 
-Este registro visual serve como evidência do processo de gestão incremental de \textit{software} que orientou a construção da aplicação, 
+Este registro visual serve como evidência do processo de gestão incremental de software que orientou a construção da aplicação,
 complementando a descrição metodológica apresentada no Capítulo~\ref{cap:metodologia}.
 
 \section{Cronograma Semanal}
@@ -63,7 +63,7 @@ Semana 4 (23/03 a 29/03) & Implementar \textit{frontend} de autenticação, com 
 Semana 5 (30/03 a 05/04) & Refatorar o \textit{chat} para operar por usuário autenticado e persistir o histórico de conversas por atendimento. \\
 Semana 6 (06/04 a 12/04) & Criar o módulo de pacientes e dados cadastrais básicos, vinculando atendimentos aos pacientes. \\
 Semana 7 (13/04 a 19/04) & Gerar relatório clínico estruturado ao final da conversa e definir \textit{template} de relatório com campos padronizados. \\
-Semana 8 (20/04 a 26/04) & Implementar exportação de relatório em PDF e JSON ou PDF e TXT, além de adicionar \textit{endpoint} e botão de download no \textit{frontend}. \\
+Semana 8 (20/04 a 26/04) & Implementar exportação de relatório em PDF e JSON ou PDF e TXT, além de adicionar \textit{endpoint} e botão de \textit{download} no \textit{frontend}. \\
 Semana 9 (27/04 a 03/05) & Criar \textit{dashboard} de atendimentos com listagem, paginação e filtro por data, além de adicionar visualização de detalhes do atendimento. \\
 Semana 10 (04/05 a 10/05) & Adicionar funcionalidades extras, como status do atendimento, \textit{tags} e observações manuais, além de incluir edição controlada de metadados do caso. \\
 Semana 11 (11/05 a 17/05) & Tratar segurança e robustez com validação de \textit{payload}, tratamento global de erro, \textit{rate limit}, \textit{logs} estruturados e trilha mínima de auditoria. \\
@@ -82,7 +82,7 @@ Semana 16 (15/06 a 18/06) & Reservar \textit{buffer} final para correções pós
 
 \begin{table}[H]
 \centering
-\caption{Principais artefatos de implementação do \textit{software} desenvolvido.}
+\caption{Principais artefatos de implementação do software desenvolvido.}
 \label{tab:artefatos-implementacao}
 \begin{tabular}{p{6cm}p{9cm}}
 \hline
@@ -122,7 +122,7 @@ Nome da coluna & Tipo de dados & Restrições & Descrição \\
 \texttt{id} & BIGSERIAL & PK, NOT NULL & Identificador único do usuário. \\
 \texttt{full\_name} & TEXT & NOT NULL & Nome completo do usuário. \\
 \texttt{email} & TEXT & NOT NULL, UNIQUE & Endereço de e-mail utilizado no acesso. \\
-\texttt{password\_hash} & TEXT & NOT NULL & Hash da senha armazenada de forma segura. \\
+\texttt{password\_hash} & TEXT & NOT NULL & \textit{Hash} da senha armazenada de forma segura. \\
 \texttt{role} & TEXT & NOT NULL & Papel de acesso atribuído ao usuário. Valor padrão: \texttt{patient}. \\
 \texttt{created\_at} & TIMESTAMPTZ & NOT NULL & Data e hora de criação do registro. Valor padrão: \texttt{NOW()}. \\
 \texttt{updated\_at} & TIMESTAMPTZ & NOT NULL & Data e hora da última atualização do registro. Valor padrão: \texttt{NOW()}. \\
@@ -142,7 +142,7 @@ Nome da coluna & Tipo de dados & Restrições & Descrição \\
 \hline
 \texttt{id} & BIGSERIAL & PK, NOT NULL & Identificador único da sessão autenticada. \\
 \texttt{user\_id} & BIGINT & NOT NULL, FK & Referência ao usuário associado à sessão. \\
-\texttt{refresh\_token\_hash} & TEXT & NOT NULL & Hash do \textit{refresh token} da sessão. \\
+\texttt{refresh\_token\_hash} & TEXT & NOT NULL & \textit{Hash} do \textit{refresh token} da sessão. \\
 \texttt{expires\_at} & TIMESTAMPTZ & NOT NULL & Momento em que a sessão expira. \\
 \texttt{revoked\_at} & TIMESTAMPTZ & NULL & Momento de revogação da sessão, quando aplicável. \\
 \texttt{created\_at} & TIMESTAMPTZ & NOT NULL & Data e hora de criação da sessão. Valor padrão: \texttt{NOW()}. \\
@@ -319,8 +319,8 @@ interface \texttt{/api/docs}.
 Método & Rota & Finalidade \\
 \hline
 \texttt{POST} & \rota{/api/auth/register} & Criar conta de usuário com nome, e-mail e senha. \\
-\texttt{POST} & \rota{/api/auth/login} & Autenticar usuário e criar sessão por cookie \texttt{httpOnly}, com comunicação segura via HTTPS. \\
-\texttt{POST} & \rota{/api/auth/logout} & Revogar sessão e remover cookie de autenticação. \\
+\texttt{POST} & \rota{/api/auth/login} & Autenticar usuário e criar sessão por \textit{cookie} \texttt{httpOnly}, com comunicação segura via HTTPS. \\
+\texttt{POST} & \rota{/api/auth/logout} & Revogar sessão e remover \textit{cookie} de autenticação. \\
 \hline
 \end{tabularx}
 \fontetcc{o autor (2026).}
@@ -379,7 +379,7 @@ Método & Rota & Finalidade \\
 Método & Rota & Finalidade \\
 \hline
 \texttt{GET} & \rota{/api/reports/readiness} & Avaliar prontidão da conversa para geração de relatório. \\
-\texttt{GET} & \rota{/api/reports/availability} & Verificar se há relatório atual disponível para download. \\
+\texttt{GET} & \rota{/api/reports/availability} & Verificar se há relatório atual disponível para \textit{download}. \\
 \texttt{POST} & \rota{/api/reports/generate} & Gerar relatório de anamnese. \\
 \texttt{GET} & \rota{/api/reports/:id} & Consultar relatório por identificador. \\
 \texttt{GET} & \rota{/api/reports/:id/download} & Obter dados estruturados para visualização e impressão. \\
@@ -412,7 +412,7 @@ Método & Rota & Finalidade \\
 
 Este apêndice consolida os principais artefatos de avaliação técnica, o fluxo de integração contínua 
 e as informações de disponibilização do sistema. Os conteúdos aqui apresentados foram organizados para 
-documentar a estratégia de garantia de qualidade — cobrindo regras de chat, relatórios, contratos de API 
+documentar a estratégia de garantia de qualidade — cobrindo regras de \textit{chat}, relatórios, contratos de API
 e casos de borda — e para fornecer as evidências operacionais do ambiente de produção e dos mecanismos 
 de publicação contínua da aplicação.
 
@@ -441,7 +441,7 @@ permitindo a detecção precoce de erros e assegurando que apenas código valida
 \section{Implantação}
 \label{ap:testes-implantacao}
 
-A aplicação está configurada para publicação contínua na Vercel a partir da branch
+A aplicação está configurada para publicação contínua na Vercel a partir da \textit{branch}
 \texttt{main}. A versão publicada da aplicação está disponível em
 \url{https://medicodigital.vercel.app/}, e a documentação pública da API está disponível em
 \url{https://medicodigital.vercel.app/api/docs}. O código-fonte e o histórico de desenvolvimento

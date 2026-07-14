@@ -3,14 +3,14 @@
 
 Com a revisão teórica e a análise comparativa de trabalhos relacionados já consolidadas, este capítulo
 apresenta a metodologia adotada, a arquitetura implementada e os artefatos utilizados para avaliação
-técnica do \textit{software} de anamnese assistida. O desenvolvimento foi conduzido de forma incremental,
+técnica do software de anamnese assistida. O desenvolvimento foi conduzido de forma incremental
 e os resultados foram posteriormente consolidados no documento.
 
 \section{Classificação da Pesquisa}
 
 Esta classificação é pertinente porque o trabalho parte de uma questão de pesquisa e utiliza
 procedimentos sistemáticos para investigar uma solução técnica. Embora o produto principal seja um
-\textit{software}, sua construção e avaliação foram conduzidas como parte de uma pesquisa aplicada e
+software, sua construção e avaliação foram conduzidas como parte de uma pesquisa aplicada e
 exploratória, e não apenas como uma sequência de atividades de implementação.
 
 \subsection{Quanto à Natureza}
@@ -43,7 +43,7 @@ funcionais e não funcionais, registrar tarefas técnicas e monitorar o andament
 O detalhamento da gestão do projeto e do quadro Kanban pode ser consultado na Seção~\ref{ap:impl-gestao} 
 do Apêndice~\ref{ap:impl}. No contexto deste trabalho, o Kanban foi empregado como abordagem para 
 tornar o fluxo de trabalho explícito, acompanhar prioridades e manter histórico das entregas concluídas. 
-Essa combinação favoreceu a visibilidade do backlog, a identificação de gargalos e a revisão incremental 
+Essa combinação favoreceu a visibilidade do \textit{backlog}, a identificação de gargalos e a revisão incremental
 das atividades ao longo do semestre \cite{atlassiankanban2026}. A solução foi consolidada como uma
 aplicação \textit{fullstack} baseada em Next.js, reunindo interface \textit{web}, rotas de API e módulos
 de domínio em uma única base de código. A escolha por Next.js foi motivada pela possibilidade
@@ -66,7 +66,7 @@ As atividades de desenvolvimento foram organizadas da seguinte forma:
 \item criação do módulo de paciente e vinculação dos atendimentos ao paciente autenticado;
 \item implementação do fluxo de atendimento, histórico de mensagens e ciclo de vida dos atendimentos;
 \item implementação do ciclo de relatórios, com prontidão, encerramento automático por critérios mínimos, encerramento manual e exportação;
-\item criação de testes automatizados para regras de chat, relatórios e contratos de API;
+\item criação de testes automatizados para regras de \textit{chat}, relatórios e contratos de API;
 \item configuração de integração contínua e disponibilização da aplicação em ambiente Vercel.
 \end{itemize}
 
@@ -93,7 +93,7 @@ As atividades de desenvolvimento foram organizadas da seguinte forma:
 
 \begin{itemize}
 \item RNF01: manter chaves e \textit{tokens} sensíveis fora do cliente.
-\item RNF02: usar sessão baseada em cookie \texttt{httpOnly} para reduzir exposição indevida no \textit{frontend}.
+\item RNF02: usar sessão baseada em \textit{cookie} \texttt{httpOnly} para reduzir exposição indevida no \textit{frontend}.
 \item RNF03: persistir dados de usuários, pacientes, atendimentos, mensagens e relatórios em banco relacional.
 \item RNF04: validar entradas de API e retornar erros compatíveis com o tipo de falha observada.
 \item RNF05: documentar os endpoints e os formatos de requisição e resposta da API para apoiar testes, manutenção e integração.
@@ -116,7 +116,7 @@ observada na versão avaliada do sistema.
 \textbf{Req.} & \textbf{Implementação} & \textbf{Evidência de verificação} & \textbf{Status} \\
 \hline
 RNF01 & Chaves e \textit{tokens} mantidos em variáveis de ambiente no servidor. & Inspeção da arquitetura e do código-fonte. & Atendido \\
-RNF02 & Sessão baseada em cookie \texttt{httpOnly}, com atributos de segurança adequados ao ambiente. & Inspeção do serviço de autenticação e dos cookies de sessão. & Atendido \\
+RNF02 & Sessão baseada em \textit{cookie} \texttt{httpOnly}, com atributos de segurança adequados ao ambiente. & Inspeção do serviço de autenticação e dos \textit{cookies} de sessão. & Atendido \\
 RNF03 & Persistência de usuários, pacientes, atendimentos, mensagens e relatórios em PostgreSQL. & Inspeção das migrations, repositórios e esquema relacional. & Atendido \\
 RNF04 & Validação dos dados recebidos pela API e tratamento de erros por categoria. & Testes de entradas inválidas e inspeção das respostas da API. & Atendido \\
 RNF05 & Endpoints e formatos de requisição e resposta documentados por meio da especificação OpenAPI. & Consulta a \texttt{/api/openapi.json} e à interface \texttt{/api/docs}. & Atendido \\
@@ -173,10 +173,10 @@ diretamente pelo servidor da aplicação \cite{huggingface2024}.
   \label{fig:arquitetura-solucao}
 \end{figure}
 
-A Figura~\ref{fig:arquitetura-solucao} sintetiza a organizacao geral da aplicacao. O usuario
+A Figura~\ref{fig:arquitetura-solucao} sintetiza a organização geral da aplicação. O usuário
 interage com o sistema por meio do navegador, enquanto o monólito modular centraliza a camada de
-apresentacao, a camada de processamento, o acesso ao banco de dados e a integracao com a API
-externa de inteligencia artificial, provida pela Hugging Face. A implementação técnica dessa arquitetura, 
+apresentação, a camada de processamento, o acesso ao banco de dados e a integração com a API
+externa de inteligência artificial, provida pela Hugging Face. A implementação técnica dessa arquitetura,
 incluindo a organização dos módulos de domínio e a estrutura de diretórios, encontra-se detalhada na 
 Seção~\ref{ap:impl-arquivos} do Apêndice~\ref{ap:impl} deste trabalho.
 
@@ -239,17 +239,17 @@ As \textit{migrations} aplicadas incluem:
 \item vinculação de conversas a pacientes, com preenchimento inicial dos dados existentes.
 \end{itemize}
 
-Os scripts versionados responsáveis por essas evoluções do esquema podem ser consultados no
+Os \textit{scripts} versionados responsáveis por essas evoluções do esquema podem ser consultados no
 repositório do projeto, no diretório \path{medico_digital/migrations}, disponível em
 \url{https://github.com/henriqtorresl/TCC/tree/main/medico_digital/migrations}.
 
 \section{Autenticação, Sessão e Proteção de Rotas}
 
 O fluxo de autenticação foi implementado com rotas de cadastro, \textit{login} e \textit{logout}. Após \textit{login}, a
-sessão é mantida por cookie \texttt{httpOnly}, e o \textit{backend} resolve o usuário autenticado a
+sessão é mantida por \textit{cookie} \texttt{httpOnly}, e o \textit{backend} resolve o usuário autenticado a
 partir do \textit{token} persistido em \texttt{auth\_sessions}. Essa decisão removeu a necessidade de
 enviar identificadores de usuário pelo cliente no fluxo de atendimento, reduzindo o risco de uso
-indevido de identificadores. O uso de cookie \texttt{httpOnly}, associado no projeto a
+indevido de identificadores. O uso de \textit{cookie} \texttt{httpOnly}, associado no projeto a
 atributos de expiração, \texttt{SameSite} e proteção por ambiente de produção, foi escolhido
 para restringir o acesso direto do JavaScript do navegador ao \textit{token} de sessão e reduzir a
 exposição da credencial de autenticação na camada cliente \cite{mdnsetcookie2026,owasp2026}.
@@ -260,7 +260,7 @@ tratada de forma isolada, sem depender de contexto mantido em memória entre cha
 \cite{redhatstateless2025,nextjsroutehandlers2026,vercelfunctions2026}. Por esse motivo, embora
 a interação de autenticação do sistema seja \textit{stateful} no nível de negócio, o estado da
 sessão precisou ser delegado integralmente ao banco de dados relacional. Assim, a tabela
-\texttt{auth\_sessions} atua como mecanismo persistente de controle de sessão, enquanto o cookie
+\texttt{auth\_sessions} atua como mecanismo persistente de controle de sessão, enquanto o \textit{cookie}
 \texttt{httpOnly} funciona como identificador enviado a cada nova interação com a aplicação.
 
 O \textit{middleware} da aplicação foi dividido em dois guardas: um para rotas de API e outro para
@@ -457,7 +457,7 @@ adotado no projeto \cite{node2024}. O detalhamento da configuração deste fluxo
 e a evidência de sua execução podem ser consultados na Seção~\ref{ap:testes-ci} do Apêndice~\ref{ap:testes}.
 
 A implantação contínua ocorre pela configuração do projeto na Vercel. A cada alteração
-integrada à branch \texttt{main}, a aplicação é implantada automaticamente no ambiente
+integrada à \textit{branch} \texttt{main}, a aplicação é implantada automaticamente no ambiente
 disponível em \url{https://medicodigital.vercel.app/}. A documentação da API publicada fica
 disponível em \url{https://medicodigital.vercel.app/api/docs}. A escolha por Vercel foi
 motivada pela integração direta com repositórios Git e pela afinidade com aplicações Next.js,
@@ -481,7 +481,7 @@ por testes unitários de funções determinísticas, testes de serviço com uso 
 cliente de IA, e um teste de consistência entre rotas implementadas e a especificação OpenAPI.
 Essa composição é coerente com o princípio de privilegiar testes rápidos e de menor granularidade
 na base da estratégia de verificação, preservando ciclos curtos de \textit{feedback} durante a evolução
-incremental do \textit{software} \cite{microsofttesting2026,nodejsTestRunner2026,fowler2018}.
+incremental do software \cite{microsofttesting2026,nodejsTestRunner2026,fowler2018}.
 
 Os testes unitários foram empregados para validar funções puras relacionadas à extração de
 seções clínicas, cálculo de prontidão, combinação de seções e geração de resumo. Esse tipo de
