@@ -122,7 +122,7 @@ RNF04 & Validação dos dados recebidos pela API e tratamento de erros por categ
 RNF05 & Endpoints e formatos de requisição e resposta documentados por meio da especificação OpenAPI. & Consulta a \texttt{/api/openapi.json} e à interface \texttt{/api/docs}. & Atendido \\
 RNF06 & Execução automatizada de \textit{lint}, testes e \textit{build} no fluxo de integração contínua. & Execução do \textit{workflow} de CI no GitHub Actions. & Atendido \\
 RNF07 & Tratamento de falhas temporárias do provedor de IA sem interromper o fluxo principal. & Testes de serviço com falha na avaliação de prontidão e uso de dublês do cliente de IA. & Atendido \\
-RNF08 & Interface adaptável a diferentes tamanhos de tela e dispositivos. & Inspeção manual das telas em diferentes larguras de \textit{viewport}. & Atendido \\
+RNF08 & Interface adaptável a diferentes tamanhos de tela e dispositivos. & Comparação das visualizações em tela ampla e estreita, apresentadas nas Figuras~\ref{fig:responsividade-ampla} e~\ref{fig:responsividade-estreita}. & Atendido \\
 \hline
 \end{tabularx}
 \fontetcc{o autor (2026).}
@@ -350,7 +350,23 @@ consolidado para consulta rápida.
 
 \section{Interface do Usuário}
 
-Concebida para ser totalmente responsiva, a interface foi estruturada em módulos funcionais, englobando as telas de autenticação (\textit{login} e cadastro), o ambiente principal de \textit{chat} — que integra a interface conversacional e a listagem de atendimentos —, a visão de detalhes do atendimento e a página de perfil para edição dos dados cadastrais do paciente.
+Concebida para ser totalmente responsiva, a interface foi estruturada em módulos funcionais, englobando as telas de autenticação (\textit{login} e cadastro), o ambiente principal de \textit{chat} — que integra a interface conversacional e a listagem de atendimentos —, a visão de detalhes do atendimento e a página de perfil para edição dos dados cadastrais do paciente. As Figuras~\ref{fig:responsividade-ampla} e~\ref{fig:responsividade-estreita} apresentam o mesmo fluxo de atendimento em diferentes larguras de tela, servindo como evidência visual da adaptação da interface.
+
+\begin{figure}[htb]
+  \centering
+  \caption[Interface em tela ampla]{Interface do atendimento em tela ampla, com navegação lateral, histórico de atendimentos e área principal de conversa.}
+  \includegraphics[width=0.95\textwidth]{figuras/responsividade-tela-ampla.eps}
+  \fontetcc{o autor (2026).}
+  \label{fig:responsividade-ampla}
+\end{figure}
+
+\begin{figure}[htb]
+  \centering
+  \caption[Interface em tela estreita]{Interface do atendimento em tela estreita, com navegação compacta e adaptação do conteúdo conversacional.}
+  \includegraphics[width=0.35\textwidth]{figuras/responsividade-tela-estreita.eps}
+  \fontetcc{o autor (2026).}
+  \label{fig:responsividade-estreita}
+\end{figure}
 
 \begin{figure}[htb]
   \centering
