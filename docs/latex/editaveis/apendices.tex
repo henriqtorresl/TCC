@@ -372,16 +372,16 @@ Método & Rota & Finalidade \\
 \fontetcc{o autor (2026).}
 \end{table}
 
-As rotas privadas da aplicação exigem sessão autenticada e obtêm, no servidor, a identificação do
-usuário a partir da sessão, sem confiar em identificadores de usuário enviados pelo cliente. Nas
-rotas que acessam dados clínicos, como pacientes, mensagens, atendimentos e relatórios, as consultas
-também restringem os registros ao usuário ou paciente autenticado. Na rota
+Nas rotas privadas do fluxo clínico, a aplicação exige sessão autenticada e obtém, no servidor, a
+identificação do usuário a partir da sessão, sem confiar em identificadores enviados pelo cliente.
+Nas rotas que acessam dados clínicos, como pacientes, mensagens, atendimentos e relatórios, as
+consultas também restringem os registros ao usuário ou paciente autenticado. Na rota
 \rota{/api/attendances/:id}, por exemplo, o identificador do atendimento é consultado em conjunto
 com o campo \texttt{patient\_id}; assim, um identificador válido de outro usuário não permite acesso
 aos dados e resulta em atendimento não encontrado. Essa regra de autorização é aplicada ao conjunto
-de rotas privadas que manipulam dados do usuário e reduz o risco de exposição indevida por alteração
-de identificadores nas URLs. As rotas de autenticação, documentação, especificação OpenAPI e saúde
-da aplicação permanecem públicas por sua finalidade operacional.
+de rotas privadas do fluxo clínico e reduz o risco de exposição indevida por alteração de
+identificadores nas URLs. As rotas de autenticação, documentação, especificação OpenAPI e saúde da
+aplicação permanecem públicas por sua finalidade operacional.
 
 \section{Rotas de Relatório}
 
