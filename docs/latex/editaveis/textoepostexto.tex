@@ -216,16 +216,15 @@ incremental das regras de autenticação, atendimento e geração de relatórios
 
 \begin{figure}[htb]
   \centering
-  \caption[Diagrama de entidade-relacionamento do banco de dados]{Diagrama de entidade-relacionamento (DER) do banco de dados da aplicação, representado no padrão Crow's Foot.}
+  \caption[Diagrama do banco de dados da aplicação]{Diagrama do banco de dados da aplicação, representado no padrão Crow's Foot.}
   \includegraphics[width=0.8\textwidth]{figuras/diagrama-entidade-relacionamento.eps}
   \fontetcc{o autor (2026).}
   \label{fig:der-banco}
 \end{figure}
 
-A Figura~\ref{fig:der-banco} apresenta um diagrama de entidade-relacionamento (DER) no padrão
-Crow's Foot, evidenciando a separação entre conta de acesso, perfil de paciente, atendimento,
-mensagens, sessões autenticadas e relatórios, além dos vínculos que sustentam a rastreabilidade
-do fluxo clínico persistido.
+A Figura~\ref{fig:der-banco} apresenta o diagrama do banco de dados da aplicação, evidenciando a
+separação entre conta de acesso, perfil de paciente, atendimento, mensagens, sessões autenticadas
+e relatórios, além dos vínculos que sustentam a rastreabilidade do fluxo clínico persistido.
 
 Em produção, a persistência é disponibilizada por uma instância gerenciada de PostgreSQL na
 plataforma Supabase. Essa escolha preserva o uso de um banco Postgres completo, sem camada de
