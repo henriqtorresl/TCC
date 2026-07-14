@@ -91,6 +91,40 @@ As atividades de desenvolvimento foram organizadas da seguinte forma:
 \item RNF08: a interface do sistema deve ser responsiva, adaptando-se adequadamente a diferentes tamanhos de tela e dispositivos.
 \end{itemize}
 
+Para tornar explícita a relação entre cada requisito não funcional e a
+implementação correspondente, foi realizada uma verificação individual dos
+requisitos. A coluna de status registra a situação observada na versão avaliada
+do sistema, enquanto a coluna de evidência indica como o atendimento foi
+verificado.
+
+\begin{table}[htb]
+\centering
+\caption{Verificação dos requisitos não funcionais.}
+\label{tab:verificacao-rnf}
+\begin{tabularx}{\textwidth}{p{1.2cm}p{5.0cm}Yp{2.0cm}}
+\hline
+\textbf{Req.} & \textbf{Implementação} & \textbf{Evidência de verificação} & \textbf{Status} \\
+\hline
+RNF01 & Chaves e \textit{tokens} mantidos em variáveis de ambiente no servidor. & Inspeção da arquitetura e do código-fonte. & Atendido \\
+RNF02 & Sessão baseada em cookie \texttt{httpOnly}, com atributos de segurança adequados ao ambiente. & Inspeção do serviço de autenticação e dos cookies de sessão. & Atendido \\
+RNF03 & Persistência de usuários, pacientes, atendimentos, mensagens e relatórios em PostgreSQL. & Inspeção das migrations, repositórios e esquema relacional. & Atendido \\
+RNF04 & Validação dos dados recebidos pela API e tratamento de erros por categoria. & Testes de entradas inválidas e inspeção das respostas HTTP. & Atendido \\
+RNF05 & Contratos HTTP documentados por meio da especificação OpenAPI. & Consulta a \texttt{/api/openapi.json} e à interface \texttt{/api/docs}. & Atendido \\
+RNF06 & Execução automatizada de \textit{lint}, testes e \textit{build} no fluxo de integração contínua. & Execução do \textit{workflow} de CI no GitHub Actions. & Atendido \\
+RNF07 & Tratamento de falhas temporárias do provedor de IA sem interromper o fluxo principal. & Testes de serviço com falha na avaliação de prontidão e uso de dublês do cliente de IA. & Atendido \\
+RNF08 & Interface adaptável a diferentes tamanhos de tela e dispositivos. & Inspeção manual das telas em diferentes larguras de \textit{viewport}. & Atendido \\
+\hline
+\end{tabularx}
+\fontetcc{o autor (2026).}
+\end{table}
+
+Com base nas verificações realizadas, os oito requisitos não funcionais foram
+considerados atendidos na versão avaliada. Os requisitos de segurança,
+persistência e tratamento de falhas foram verificados por inspeção do código e
+por testes automatizados. Os requisitos relacionados à integração contínua e à
+responsividade foram verificados, respectivamente, pela execução do \textit{workflow}
+de CI e pela inspeção manual das interfaces em diferentes larguras de tela.
+
 \section{Arquitetura da Solução}
 
 A arquitetura adotada no sistema é a de um monólito modular implementado com Next.js. Nesse
