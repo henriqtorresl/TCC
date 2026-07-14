@@ -11,8 +11,8 @@ A intersecção entre Medicina e Computação não é um fenômeno recente, mas 
 transformações profundas que alteram a prática clínica. Historicamente, desde os primeiros 
 sistemas especialistas da era simbólica até a atual consolidação do aprendizado de máquina, 
 o objetivo central da área tem sido apoiar a decisão clínica, buscando proporcionar maior 
-consistência, escalabilidade e precisão no diagnóstico e tratamento \cite{shortliffe1975,
-richens2020}. Esse processo evolutivo é marcado pela transição de modelos estáticos para 
+consistência, escalabilidade e precisão no diagnóstico e tratamento \cite{richens2020,
+shortliffe1975}. Esse processo evolutivo é marcado pela transição de modelos estáticos para
 sistemas dinâmicos.
 
 \subsection{Sistemas Baseados em Regras e a Era Simbólica}
@@ -81,7 +81,7 @@ várias mensagens depois \cite{vaswani2017}.
 \subsection{Modelos de Linguagem de Grande Escala}
 Modelos de Linguagem de Grande Escala (LLMs) operam por previsão do próximo \textit{token} e passam por ciclo de pré-treinamento e ajuste
 fino. Em saúde, o alinhamento comportamental é essencial para reduzir respostas inadequadas
-\cite{ouyang2022,singhal2023,metaai2024}.
+\cite{metaai2024,ouyang2022,singhal2023}.
 
 A aplicação prática desses Modelos de Linguagem de Grande Escala (LLMs) diretamente ao usuário 
 final frequentemente se dá por meio de agentes conversacionais, comumente chamados de Chatbots. 
@@ -102,7 +102,7 @@ A proposta desenvolvida adota um LLM por priorizar qualidade de condução
 conversacional e capacidade de manter contexto clínico ao longo da anamnese. A escolha do
 Llama-3.1-8B-Instruct foi motivada por disponibilidade aberta, integração viável com a
 infraestrutura utilizada e alinhamento com o objetivo de construir uma solução auditável
-\cite{huggingface2024,llama3herd2024,metaai2024}.
+\cite{llama3herd2024,huggingface2024,metaai2024}.
 
 \subsection{Reconhecimento de Entidades Nomeadas}
 O Reconhecimento de Entidades Nomeadas — do inglês, \textit{Named Entity Recognition} (NER) — 
@@ -110,7 +110,7 @@ O Reconhecimento de Entidades Nomeadas — do inglês, \textit{Named Entity Reco
 automaticamente elementos textuais em categorias predefinidas. Tecnicamente, esse processo 
 opera por meio da classificação de cada unidade léxica (\textit{token}) presente em uma sentença, 
 permitindo que o sistema converta dados não estruturados em informações codificadas e 
-semanticamente relevantes \cite{devlin2018,sang2003,lee2020}.
+semanticamente relevantes \cite{devlin2018,lee2020,sang2003}.
 
 No escopo desta pesquisa, a aplicação do NER é fundamental para a viabilização da anamnese 
 assistida por IA. O assistente virtual não atua apenas como um conversador fluido, mas como 
@@ -127,11 +127,11 @@ capturadas com alta fidelidade para suporte à decisão do profissional de saúd
 
 \subsection{Sistema de Triagem de Manchester}
 
-O Sistema de Triagem de Manchester (STM) é um protocolo internacionalmente reconhecido que classifica o risco clínico dos pacientes por meio de cinco níveis de prioridade, representados por cores (vermelho, laranja, amarelo, verde e azul), onde cada um é associado a um tempo máximo seguro para a espera do atendimento médico. O processo é guiado por fluxogramas e discriminadores específicos (como nível de dor, temperatura corporal e histórico recente) que padronizam a urgência da queixa. Em uma arquitetura de Inteligência Artificial, o foco da aplicação não é realizar a classificação final de cor — o que configuraria risco ético —, mas sim atuar na etapa prévia, coletando ativamente os discriminadores úteis ao profissional de saúde sem substituir a decisão médica. Dessa forma, o sistema entrega um relato rico e organizado, otimizando o tempo da triagem humana \cite{shortliffe1975,richens2020}.
+O Sistema de Triagem de Manchester (STM) é um protocolo internacionalmente reconhecido que classifica o risco clínico dos pacientes por meio de cinco níveis de prioridade, representados por cores (vermelho, laranja, amarelo, verde e azul), onde cada um é associado a um tempo máximo seguro para a espera do atendimento médico. O processo é guiado por fluxogramas e discriminadores específicos (como nível de dor, temperatura corporal e histórico recente) que padronizam a urgência da queixa. Em uma arquitetura de Inteligência Artificial, o foco da aplicação não é realizar a classificação final de cor — o que configuraria risco ético —, mas sim atuar na etapa prévia, coletando ativamente os discriminadores úteis ao profissional de saúde sem substituir a decisão médica. Dessa forma, o sistema entrega um relato rico e organizado, otimizando o tempo da triagem humana \cite{richens2020,shortliffe1975}.
 
 \subsection{Anamnese no Modelo SOAP}
 
-O método SOAP é um padrão de documentação amplamente utilizado na prática médica para organizar o registro clínico de forma sistemática em quatro blocos: Subjetivo (a queixa principal e o histórico relatados pelo paciente), Objetivo (os dados mensuráveis, como sinais vitais e exames físicos), Avaliação (o raciocínio clínico e o diagnóstico provável) e Plano (a conduta terapêutica a ser seguida). Devido à natureza puramente conversacional do assistente virtual, a proposta deste trabalho concentra-se exclusivamente no componente Subjetivo. O objetivo do sistema é registrar a história da moléstia atual e os antecedentes do paciente de forma padronizada, capturando a perspectiva do usuário com alta fidelidade. Ao estruturar esse relato inicial, a aplicação visa apoiar e agilizar as etapas clínicas subsequentes (Objetivo, Avaliação e Plano), que permanecem sob total responsabilidade do profissional humano \cite{shortliffe1975,richens2020}.
+O modelo SOAP, sigla de \textit{Subjective, Objective, Assessment and Plan}, é um padrão de documentação amplamente utilizado na prática médica para organizar o registro clínico de forma sistemática em quatro blocos: Subjetivo (a queixa principal e o histórico relatados pelo paciente), Objetivo (os dados mensuráveis, como sinais vitais e exames físicos), Avaliação (o raciocínio clínico e o diagnóstico provável) e Plano (a conduta terapêutica a ser seguida). Devido à natureza puramente conversacional do assistente virtual, a proposta deste trabalho concentra-se exclusivamente no componente Subjetivo. O objetivo do sistema é registrar a história da moléstia atual e os antecedentes do paciente de forma padronizada, capturando a perspectiva do usuário com alta fidelidade. Ao estruturar esse relato inicial, a aplicação visa apoiar e agilizar as etapas clínicas subsequentes (Objetivo, Avaliação e Plano), que permanecem sob total responsabilidade do profissional humano \cite{richens2020,shortliffe1975}.
 
 \section{Aspectos Éticos e Legais na Saúde Digital}
 
@@ -139,3 +139,8 @@ O tratamento de dados de saúde exige conformidade com a Lei Geral de Proteção
 Design}. Na arquitetura adotada, a camada servidor da aplicação atua como ponto de controle
 para desidentificação e governança antes de chamadas a serviços externos de inferência
 \cite{brasil2018}.
+
+Assim, o referencial teórico estabelece os conceitos necessários para analisar as soluções
+relacionadas e delimitar a contribuição deste trabalho. O capítulo seguinte compara abordagens
+anteriores de interação conversacional, triagem e processamento clínico, preparando a justificativa
+da arquitetura híbrida apresentada na metodologia.

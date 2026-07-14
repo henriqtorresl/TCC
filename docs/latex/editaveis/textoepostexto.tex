@@ -1,11 +1,17 @@
 \chapter{Metodologia e Desenvolvimento}
 \label{cap:metodologia}
 
-Com a revisão teórica e a análise de trabalhos relacionados já consolidadas, este capítulo apresenta a metodologia adotada, a arquitetura implementada e os
-artefatos utilizados para avaliação técnica do \textit{software} de anamnese assistida. O
-desenvolvimento foi conduzido de forma incremental, e os resultados foram posteriormente consolidados no documento.
+Com a revisão teórica e a análise comparativa de trabalhos relacionados já consolidadas, este capítulo
+apresenta a metodologia adotada, a arquitetura implementada e os artefatos utilizados para avaliação
+técnica do \textit{software} de anamnese assistida. O desenvolvimento foi conduzido de forma incremental,
+e os resultados foram posteriormente consolidados no documento.
 
 \section{Classificação da Pesquisa}
+
+Esta classificação é pertinente porque o trabalho parte de uma questão de pesquisa e utiliza
+procedimentos sistemáticos para investigar uma solução técnica. Embora o produto principal seja um
+\textit{software}, sua construção e avaliação foram conduzidas como parte de uma pesquisa aplicada e
+exploratória, e não apenas como uma sequência de atividades de implementação.
 
 \subsection{Quanto à Natureza}
 
@@ -44,6 +50,11 @@ de domínio em uma única base de código. A escolha por Next.js foi motivada pe
 de integrar renderização de páginas, tratamento de requisições da API e organização modular do
 sistema em um mesmo diretório, reduzindo o custo de sincronização entre componentes distribuídos
 e favorecendo a evolução coordenada das funcionalidades \cite{jovanovic2024,nextjsroutehandlers2026}.
+
+Os objetivos específicos apresentados no Capítulo~\ref{cap:introducao} definem os resultados que o
+trabalho pretende alcançar. Eles não correspondem diretamente às fases do desenvolvimento: as fases
+representam a sequência operacional utilizada para alcançar esses objetivos, desde a definição dos
+requisitos até a implantação e a avaliação técnica.
 
 As atividades de desenvolvimento foram organizadas da seguinte forma:
 
@@ -156,7 +167,7 @@ diretamente pelo servidor da aplicação \cite{huggingface2024}.
 
 \begin{figure}[htb]
   \centering
-  \caption[Arquitetura do sistema]{Arquitetura do sistema, estruturada como monólito modular com camadas de apresentacao e processamento.}
+  \caption[Arquitetura do sistema]{Arquitetura do sistema, estruturada como monólito modular com camadas de apresentação e processamento.}
   \includegraphics[width=0.8\textwidth]{figuras/arquitetura-monolito.eps}
   \fontetcc{o autor (2026).}
   \label{fig:arquitetura-solucao}
@@ -205,15 +216,16 @@ incremental das regras de autenticação, atendimento e geração de relatórios
 
 \begin{figure}[htb]
   \centering
-  \caption[Esquema relacional do banco de dados da aplicação]{Diagrama do esquema relacional do banco de dados da aplicação.}
+  \caption[Diagrama de entidade-relacionamento do banco de dados]{Diagrama de entidade-relacionamento (DER) do banco de dados da aplicação, representado no padrão Crow's Foot.}
   \includegraphics[width=0.8\textwidth]{figuras/diagrama-entidade-relacionamento.eps}
   \fontetcc{o autor (2026).}
   \label{fig:der-banco}
 \end{figure}
 
-A Figura~\ref{fig:der-banco} evidencia a separação entre conta de acesso, perfil de paciente,
-atendimento, mensagens, sessões autenticadas e relatórios, além dos vínculos que sustentam a
-rastreabilidade do fluxo clínico persistido.
+A Figura~\ref{fig:der-banco} apresenta um diagrama de entidade-relacionamento (DER) no padrão
+Crow's Foot, evidenciando a separação entre conta de acesso, perfil de paciente, atendimento,
+mensagens, sessões autenticadas e relatórios, além dos vínculos que sustentam a rastreabilidade
+do fluxo clínico persistido.
 
 Em produção, a persistência é disponibilizada por uma instância gerenciada de PostgreSQL na
 plataforma Supabase. Essa escolha preserva o uso de um banco Postgres completo, sem camada de
@@ -246,7 +258,7 @@ exposição da credencial de autenticação na camada cliente \cite{mdnsetcookie
 Do ponto de vista da infraestrutura, as rotas da API executadas pela aplicação seguem o modelo
 \textit{stateless} típico de arquiteturas \textit{serverless}, no qual cada requisição deve ser
 tratada de forma isolada, sem depender de contexto mantido em memória entre chamadas
-\cite{nextjsroutehandlers2026,redhatstateless2025,vercelfunctions2026}. Por esse motivo, embora
+\cite{redhatstateless2025,nextjsroutehandlers2026,vercelfunctions2026}. Por esse motivo, embora
 a interação de autenticação do sistema seja \textit{stateful} no nível de negócio, o estado da
 sessão precisou ser delegado integralmente ao banco de dados relacional. Assim, a tabela
 \texttt{auth\_sessions} atua como mecanismo persistente de controle de sessão, enquanto o cookie
@@ -429,8 +441,8 @@ mantém coerência com a base tecnológica da aplicação e com o executor nativ
 adotado no projeto \cite{node2024}. O detalhamento da configuração deste fluxo de integração contínua 
 e a evidência de sua execução podem ser consultados na Seção~\ref{ap:testes-ci} do Apêndice~\ref{ap:testes}.
 
-A publicação contínua ocorre pela configuração do projeto na Vercel. A cada alteração
-integrada à branch \texttt{main}, a aplicação é publicada automaticamente no ambiente
+A implantação contínua ocorre pela configuração do projeto na Vercel. A cada alteração
+integrada à branch \texttt{main}, a aplicação é implantada automaticamente no ambiente
 disponível em \url{https://medicodigital.vercel.app/}. A documentação da API publicada fica
 disponível em \url{https://medicodigital.vercel.app/api/docs}. A escolha por Vercel foi
 motivada pela integração direta com repositórios Git e pela afinidade com aplicações Next.js,
@@ -454,7 +466,7 @@ por testes unitários de funções determinísticas, testes de serviço com uso 
 cliente de IA, e um teste de consistência entre rotas implementadas e a especificação OpenAPI.
 Essa composição é coerente com o princípio de privilegiar testes rápidos e de menor granularidade
 na base da estratégia de verificação, preservando ciclos curtos de \textit{feedback} durante a evolução
-incremental do \textit{software} \cite{fowler2018,microsofttesting2026,nodejsTestRunner2026}.
+incremental do \textit{software} \cite{microsofttesting2026,nodejsTestRunner2026,fowler2018}.
 
 Os testes unitários foram empregados para validar funções puras relacionadas à extração de
 seções clínicas, cálculo de prontidão, combinação de seções e geração de resumo. Esse tipo de
@@ -464,7 +476,7 @@ verificação objetiva das regras implementadas e rápida identificação de reg
 do fluxo de mensagens, o tratamento de falhas na avaliação de prontidão, a sanitização de
 respostas do provedor de IA e a normalização de parâmetros de paginação. Nesses casos, o uso
 de dublês tornou possível validar comportamento de negócio sem depender de banco real ou de
-serviços externos durante cada execução \cite{fowler2018,microsofttesting2026}.
+serviços externos durante cada execução \cite{microsofttesting2026,fowler2018}.
 
 Além disso, foi implementado um teste de contrato interno da documentação OpenAPI, cujo papel
 é verificar se as rotas existentes e seus métodos permanecem alinhados com a especificação

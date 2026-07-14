@@ -1,9 +1,9 @@
 \chapter{Trabalhos Relacionados}
 \label{cap:trabalhos}
 
-Com a base teórica apresentada no capítulo anterior, este capítulo situa a automação da triagem
-clínica e da anamnese em uma evolução que vai de sistemas de regras para modelos
-probabilísticos e, mais recentemente, para arquiteturas baseadas em \textit{Transformers}.
+Com a base teórica apresentada no capítulo anterior, este capítulo compara soluções relacionadas
+à automação da triagem clínica e da anamnese, situando sua evolução desde sistemas de regras e
+modelos probabilísticos até aplicações baseadas na arquitetura \textit{Transformer}.
 
 \section{A Era Pré-Neural: ELIZA e DOCTOR}
 
@@ -52,7 +52,7 @@ aderência a protocolos clínicos, robustez de comportamento e segurança na ger
 \subsection{Modelos Generalistas}
 
 Modelos generalistas apresentam forte capacidade de linguagem, porém trazem desafios de custo,
-governança e risco de alucinação factual em aplicações críticas \cite{ouyang2022,metaai2024}.
+governança e risco de alucinação factual em aplicações críticas \cite{metaai2024,ouyang2022}.
 Quando aplicados à saúde, esses modelos exigem estratégias adicionais de alinhamento e
 restrição operacional para evitar respostas incoerentes ou pouco confiáveis.
 
@@ -60,7 +60,7 @@ restrição operacional para evitar respostas incoerentes ou pouco confiáveis.
 
 A estratégia \textit{Retrieval-Augmented Generation} combina geração e recuperação de conhecimento
 externo para reduzir alucinações. Essa direção constitui uma possibilidade de evolução
-arquitetural futura para o sistema \cite{lewis2020,aws2026}. Ao desacoplar geração e
+arquitetural futura para o sistema \cite{aws2026,lewis2020}. Ao desacoplar geração e
 recuperação, o paradigma RAG amplia o potencial de rastreabilidade da resposta e pode ser útil
 em cenários nos quais o modelo precisa consultar fontes confiáveis antes de formular uma saída.
 
@@ -76,7 +76,7 @@ conversacional, exigindo que o paciente interaja com formulários engessados. Po
 uso direto de LLMs generalistas ou de modelos biomédicos mais robustos para a coleta de dados
 esbarra no alto custo de inferência, na latência e, criticamente, no risco de alucinação
 factual e geração de dados não estruturados, o que dificulta a integração com os Prontuários
-Eletrônicos do Paciente (PEP) \cite{richens2020,singhal2023,metaai2024}.
+Eletrônicos do Paciente (PEP) \cite{metaai2024,richens2020,singhal2023}.
 
 Diante desse cenário, o presente trabalho se diferencia ao propor uma arquitetura híbrida.
 Conforme sumarizado na Tabela~\ref{tab:comparativo-trabalhos}, a solução desenvolvida
@@ -104,3 +104,8 @@ Sistema proposto (híbrido) & Sim (com \textit{Llama-3.1}) & Sim (com \textit{Bi
 \end{tabularx}
 \fontetcc{o autor (2026).}
 \end{table}
+
+A comparação evidencia que a solução proposta combina a flexibilidade conversacional dos modelos
+de linguagem com a estruturação produzida por um modelo extrativo especializado. Essa síntese
+orienta as decisões de arquitetura, persistência, segurança e avaliação apresentadas no próximo
+capítulo, dedicado à metodologia e ao desenvolvimento do sistema.
