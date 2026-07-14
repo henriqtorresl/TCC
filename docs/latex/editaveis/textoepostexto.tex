@@ -85,7 +85,7 @@ As atividades de desenvolvimento foram organizadas da seguinte forma:
 \item RNF02: usar sessão baseada em cookie \texttt{httpOnly} para reduzir exposição indevida no \textit{frontend}.
 \item RNF03: persistir dados de usuários, pacientes, atendimentos, mensagens e relatórios em banco relacional.
 \item RNF04: validar entradas de API e retornar erros compatíveis com o tipo de falha observada.
-\item RNF05: documentar contratos HTTP para apoiar testes, manutenção e integração.
+\item RNF05: documentar os endpoints e os formatos de requisição e resposta da API para apoiar testes, manutenção e integração.
 \item RNF06: manter execução automatizada de \textit{lint}, testes e \textit{build} no fluxo de integração contínua.
 \item RNF07: tratar falhas temporárias de serviços externos sem interromper indevidamente o fluxo principal.
 \item RNF08: a interface do sistema deve ser responsiva, adaptando-se adequadamente a diferentes tamanhos de tela e dispositivos.
@@ -107,8 +107,8 @@ observada na versão avaliada do sistema.
 RNF01 & Chaves e \textit{tokens} mantidos em variáveis de ambiente no servidor. & Inspeção da arquitetura e do código-fonte. & Atendido \\
 RNF02 & Sessão baseada em cookie \texttt{httpOnly}, com atributos de segurança adequados ao ambiente. & Inspeção do serviço de autenticação e dos cookies de sessão. & Atendido \\
 RNF03 & Persistência de usuários, pacientes, atendimentos, mensagens e relatórios em PostgreSQL. & Inspeção das migrations, repositórios e esquema relacional. & Atendido \\
-RNF04 & Validação dos dados recebidos pela API e tratamento de erros por categoria. & Testes de entradas inválidas e inspeção das respostas HTTP. & Atendido \\
-RNF05 & Contratos HTTP documentados por meio da especificação OpenAPI. & Consulta a \texttt{/api/openapi.json} e à interface \texttt{/api/docs}. & Atendido \\
+RNF04 & Validação dos dados recebidos pela API e tratamento de erros por categoria. & Testes de entradas inválidas e inspeção das respostas da API. & Atendido \\
+RNF05 & Endpoints e formatos de requisição e resposta documentados por meio da especificação OpenAPI. & Consulta a \texttt{/api/openapi.json} e à interface \texttt{/api/docs}. & Atendido \\
 RNF06 & Execução automatizada de \textit{lint}, testes e \textit{build} no fluxo de integração contínua. & Execução do \textit{workflow} de CI no GitHub Actions. & Atendido \\
 RNF07 & Tratamento de falhas temporárias do provedor de IA sem interromper o fluxo principal. & Testes de serviço com falha na avaliação de prontidão e uso de dublês do cliente de IA. & Atendido \\
 RNF08 & Interface adaptável a diferentes tamanhos de tela e dispositivos. & Inspeção manual das telas em diferentes larguras de \textit{viewport}. & Atendido \\
