@@ -51,6 +51,10 @@ de integrar renderização de páginas, tratamento de requisições da API e org
 sistema em um mesmo diretório, reduzindo o custo de sincronização entre componentes distribuídos
 e favorecendo a evolução coordenada das funcionalidades \cite{jovanovic2024,nextjsroutehandlers2026}.
 
+O cronograma semanal das atividades e entregas está apresentado na Seção~\ref{ap:impl-cronograma}
+do Apêndice~\ref{ap:impl}, permitindo relacionar a sequência de desenvolvimento às etapas descritas
+neste capítulo.
+
 Os objetivos específicos apresentados no Capítulo~\ref{cap:introducao} definem os resultados que o
 trabalho pretende alcançar. Eles não correspondem diretamente às fases do desenvolvimento: as fases
 representam a sequência operacional utilizada para alcançar esses objetivos, desde a definição dos
@@ -219,10 +223,10 @@ incremental das regras de autenticação, atendimento e geração de relatórios
   \caption[Diagrama do banco de dados da aplicação]{Diagrama do banco de dados da aplicação, representado no padrão Crow's Foot.}
   \includegraphics[width=0.8\textwidth]{figuras/diagrama-entidade-relacionamento.eps}
   \fontetcc{o autor (2026).}
-  \label{fig:der-banco}
+  \label{fig:diagrama-banco}
 \end{figure}
 
-A Figura~\ref{fig:der-banco} apresenta o diagrama do banco de dados da aplicação, evidenciando a
+A Figura~\ref{fig:diagrama-banco} apresenta o diagrama do banco de dados da aplicação, evidenciando a
 separação entre conta de acesso, perfil de paciente, atendimento, mensagens, sessões autenticadas
 e relatórios, além dos vínculos que sustentam a rastreabilidade do fluxo clínico persistido.
 
@@ -291,6 +295,14 @@ enviá-lo novamente à interface. Esse fluxo assegura rastreabilidade das intera
 servidor a orquestração entre persistência e serviços externos.
 
 \section{Estratégia de Inteligência Artificial Híbrida}
+
+No escopo deste trabalho, a Inteligência Artificial atua como mecanismo de esclarecimento e
+organização da história clínica, e não como substituta da avaliação profissional. O componente
+generativo conduz a entrevista por perguntas progressivas, ajudando a esclarecer informações
+incompletas ou ambíguas e a orientar o paciente na construção do relato. Em paralelo, o componente
+extrativo identifica entidades clínicas e organiza os dados coletados em um relatório inicial.
+Esse resultado oferece suporte ao caminho de análise do profissional de saúde, que permanece
+responsável pela interpretação clínica, pela decisão e pela definição da conduta.
 
 O componente generativo utiliza o modelo \texttt{meta-llama/Llama-3.1-8B-Instruct} para
 conduzir a conversa clínica. A escolha foi motivada por disponibilidade de integração via API,
