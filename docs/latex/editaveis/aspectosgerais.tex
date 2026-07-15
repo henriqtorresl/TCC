@@ -53,7 +53,7 @@ bruto em representações numéricas densas. Técnicas de \textit{embeddings} pe
 as relações latentes entre termos clínicos, um diferencial fundamental para o domínio biomédico 
 \cite{devlin2018,lee2020}. Para viabilizar esse processamento sem que o vocabulário se torne 
 excessivamente vasto ao lidar com terminologias médicas raras, modelos como o Llama empregam a 
-tokenização por subpalavras, notadamente o algoritmo BPE (\textit{Byte Pair Encoding}). Essa 
+tokenização por subpalavras, notadamente o algoritmo \textit{Byte Pair Encoding} (BPE). Essa
 estratégia possibilita a decomposição eficiente de termos complexos, mantendo a integridade do 
 significado sem comprometer a eficiência computacional \cite{llama3herd2024,metaai2024}.
 
@@ -92,7 +92,7 @@ de decisão simples para se tornarem assistentes dinâmicos, capazes de conduzir
 inferir intenções em tempo real e reter o contexto da conversa, características essenciais para a 
 coleta de dados de saúde \cite{fitzpatrick2017,ouyang2022}.
 
-\subsection{LLMs, SLMs e Critério de Escolha do Modelo}
+\subsection{Modelos de Linguagem de Grande Escala (LLMs) e Modelos de Linguagem de Pequena Escala (SLMs)}
 Neste trabalho, a sigla LLM refere-se a \textit{Large Language Model}, isto é, modelos com
 grande capacidade paramétrica e ampla competência de linguagem natural. Já a sigla SLM
 refere-se a \textit{Small Language Model}, categoria útil quando o objetivo é reduzir custo
@@ -129,9 +129,9 @@ capturadas com alta fidelidade para suporte à decisão do profissional de saúd
 
 O Sistema de Triagem de Manchester (STM) é um protocolo internacionalmente reconhecido que classifica o risco clínico dos pacientes por meio de cinco níveis de prioridade, representados por cores (vermelho, laranja, amarelo, verde e azul), onde cada um é associado a um tempo máximo seguro para a espera do atendimento médico. O processo é guiado por fluxogramas e discriminadores específicos (como nível de dor, temperatura corporal e histórico recente) que padronizam a urgência da queixa. Em uma arquitetura de Inteligência Artificial, o foco da aplicação não é realizar a classificação final de cor — o que configuraria risco ético —, mas sim atuar na etapa prévia, coletando ativamente os discriminadores úteis ao profissional de saúde sem substituir a decisão médica. Dessa forma, o sistema entrega um relato rico e organizado, otimizando o tempo da triagem humana \cite{richens2020,shortliffe1975}.
 
-\subsection{Anamnese no Modelo SOAP}
+\subsection{Anamnese no Modelo \textit{Subjective, Objective, Assessment and Plan} (SOAP)}
 
-O modelo SOAP, sigla de \textit{Subjective, Objective, Assessment and Plan}, é um padrão de documentação amplamente utilizado na prática médica para organizar o registro clínico de forma sistemática em quatro blocos: Subjetivo (a queixa principal e o histórico relatados pelo paciente), Objetivo (os dados mensuráveis, como sinais vitais e exames físicos), Avaliação (o raciocínio clínico e o diagnóstico provável) e Plano (a conduta terapêutica a ser seguida). Devido à natureza puramente conversacional do assistente virtual, a proposta deste trabalho concentra-se exclusivamente no componente Subjetivo. O objetivo do sistema é registrar a história da moléstia atual e os antecedentes do paciente de forma padronizada, capturando a perspectiva do usuário com alta fidelidade. Ao estruturar esse relato inicial, a aplicação visa apoiar e agilizar as etapas clínicas subsequentes (Objetivo, Avaliação e Plano), que permanecem sob total responsabilidade do profissional humano \cite{richens2020,shortliffe1975}.
+O modelo \textit{Subjective, Objective, Assessment and Plan} (SOAP) é um padrão de documentação amplamente utilizado na prática médica para organizar o registro clínico de forma sistemática em quatro blocos: Subjetivo (a queixa principal e o histórico relatados pelo paciente), Objetivo (os dados mensuráveis, como sinais vitais e exames físicos), Avaliação (o raciocínio clínico e o diagnóstico provável) e Plano (a conduta terapêutica a ser seguida). Devido à natureza puramente conversacional do assistente virtual, a proposta deste trabalho concentra-se exclusivamente no componente Subjetivo. O objetivo do sistema é registrar a história da moléstia atual e os antecedentes do paciente de forma padronizada, capturando a perspectiva do usuário com alta fidelidade. Ao estruturar esse relato inicial, a aplicação visa apoiar e agilizar as etapas clínicas subsequentes (Objetivo, Avaliação e Plano), que permanecem sob total responsabilidade do profissional humano \cite{richens2020,shortliffe1975}.
 
 \section{Aspectos Éticos e Legais na Saúde Digital}
 

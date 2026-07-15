@@ -45,7 +45,7 @@ do Apêndice~\ref{ap:impl}. No contexto deste trabalho, o Kanban foi empregado c
 tornar o fluxo de trabalho explícito, acompanhar prioridades e manter histórico das entregas concluídas. 
 Essa combinação favoreceu a visibilidade do \textit{backlog}, a identificação de gargalos e a revisão incremental
 das atividades ao longo do semestre \cite{atlassiankanban2026}. A solução foi consolidada como uma
-aplicação \textit{fullstack} baseada em Next.js, reunindo interface \textit{web}, rotas de API e módulos
+aplicação \textit{fullstack} baseada em Next.js, reunindo interface \textit{web}, rotas de \textit{Application Programming Interface} (API) e módulos
 de domínio em uma única base de código. A escolha por Next.js foi motivada pela possibilidade
 de integrar renderização de páginas, tratamento de requisições da API e organização modular do
 sistema em um mesmo diretório, reduzindo o custo de sincronização entre componentes distribuídos
@@ -78,6 +78,8 @@ As atividades de desenvolvimento foram organizadas da seguinte forma:
 
 \subsection{Requisitos Funcionais}
 
+Os requisitos funcionais (RF) descrevem as funcionalidades que o sistema deve oferecer.
+
 \begin{itemize}
 \item RF01: permitir cadastro, \textit{login} e \textit{logout} de usuários.
 \item RF02: manter sessão autenticada para proteger páginas e rotas da aplicação.
@@ -94,6 +96,9 @@ As atividades de desenvolvimento foram organizadas da seguinte forma:
 \end{itemize}
 
 \subsection{Requisitos Não Funcionais}
+
+Os requisitos não funcionais (RNF) descrevem as características de qualidade e as restrições
+aplicáveis à solução.
 
 \begin{itemize}
 \item RNF01: manter chaves e \textit{tokens} sensíveis fora do cliente.
@@ -124,7 +129,7 @@ RNF02 & Sessão baseada em \textit{cookie} \texttt{httpOnly}, com atributos de s
 RNF03 & Persistência de usuários, pacientes, atendimentos, mensagens e relatórios em PostgreSQL. & Inspeção das migrations, repositórios e esquema relacional. & Atendido \\
 RNF04 & Validação dos dados recebidos pela API e tratamento de erros por categoria. & Testes de entradas inválidas e inspeção das respostas da API. & Atendido \\
 RNF05 & Endpoints e formatos de requisição e resposta documentados por meio da especificação OpenAPI. & Consulta a \texttt{/api/openapi.json} e à interface \texttt{/api/docs}. & Atendido \\
-RNF06 & Execução automatizada de \textit{lint}, testes e \textit{build} no fluxo de integração contínua. & Execução do \textit{workflow} de CI no GitHub Actions. & Atendido \\
+RNF06 & Execução automatizada de \textit{lint}, testes e \textit{build} no fluxo de integração contínua (CI). & Execução do \textit{workflow} de CI no GitHub Actions. & Atendido \\
 RNF07 & Tratamento de falhas temporárias do provedor de IA sem interromper o fluxo principal. & Testes de serviço com falha na avaliação de prontidão e uso de dublês do cliente de IA. & Atendido \\
 RNF08 & Interface adaptável a diferentes tamanhos de tela e dispositivos. & Comparação das visualizações em tela ampla e estreita, apresentadas na Figura~\ref{fig:responsividade-ampla} e na Figura~\ref{fig:responsividade-estreita}. & Atendido \\
 \hline
@@ -345,7 +350,7 @@ mantém a indicação dos itens pendentes, permitindo decisão explícita sobre 
 coleta ou geração de relatório incompleto.
 
 O relatório gerado contém resumo estruturado, metadados de prontidão e dados do
-atendimento. A visualização em página própria permite impressão ou salvamento em PDF pelo
+atendimento. A visualização em página própria permite impressão ou salvamento em \textit{Portable Document Format} (PDF) pelo
 navegador.
 
 \begin{figure}[htb]

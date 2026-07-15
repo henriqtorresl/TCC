@@ -58,19 +58,19 @@ Semana & Atividades principais \\
 \hline
 Semana 1 (02/03 a 08/03) & Fechar escopo oficial do TCC2, criar o board de execução, terminar as correções do TCC1 e migrar o template do TCC para o template da FGA. \\
 Semana 2 (09/03 a 15/03) & Modelagem do banco, estrutura base do \textit{backend}, criação de \textit{migrations} e organização das camadas de \textit{auth}, \textit{chat}, relatório e usuários. \\
-Semana 3 (16/03 a 22/03) & Implementar cadastro, \textit{login}, \textit{logout}, \textit{JWT}/sessão e \textit{hash} de senha, além de proteger rotas privadas e criar \textit{middleware} de autorização. \\
+Semana 3 (16/03 a 22/03) & Implementar cadastro, \textit{login}, \textit{logout}, \textit{JSON Web Token} (JWT)/sessão e \textit{hash} de senha, além de proteger rotas privadas e criar \textit{middleware} de autorização. \\
 Semana 4 (23/03 a 29/03) & Implementar \textit{frontend} de autenticação, com telas de \textit{login} e cadastro, fluxo completo com persistência de sessão e guarda de rota. \\
 Semana 5 (30/03 a 05/04) & Refatorar o \textit{chat} para operar por usuário autenticado e persistir o histórico de conversas por atendimento. \\
 Semana 6 (06/04 a 12/04) & Criar o módulo de pacientes e dados cadastrais básicos, vinculando atendimentos aos pacientes. \\
 Semana 7 (13/04 a 19/04) & Gerar relatório clínico estruturado ao final da conversa e definir \textit{template} de relatório com campos padronizados. \\
-Semana 8 (20/04 a 26/04) & Implementar exportação de relatório em PDF e JSON ou PDF e TXT, além de adicionar \textit{endpoint} e botão de \textit{download} no \textit{frontend}. \\
+Semana 8 (20/04 a 26/04) & Implementar exportação de relatório em \textit{JavaScript Object Notation} (JSON) ou em PDF e TXT, além de adicionar \textit{endpoint} e botão de \textit{download} no \textit{frontend}. \\
 Semana 9 (27/04 a 03/05) & Criar \textit{dashboard} de atendimentos com listagem, paginação e filtro por data, além de adicionar visualização de detalhes do atendimento. \\
 Semana 10 (04/05 a 10/05) & Adicionar funcionalidades extras, como status do atendimento, \textit{tags} e observações manuais, além de incluir edição controlada de metadados do caso. \\
 Semana 11 (11/05 a 17/05) & Tratar segurança e robustez com validação de \textit{payload}, tratamento global de erro, \textit{rate limit}, \textit{logs} estruturados e trilha mínima de auditoria. \\
 Semana 12 (18/05 a 24/05) & Executar testes de integração e testes de fluxo ponta a ponta, além de corrigir \textit{bugs} críticos e melhorar a experiência de uso. \\
 Semana 13 (25/05 a 31/05) & Congelar funcionalidades, rodar validação com usuários em pequeno piloto e coletar \textit{feedback}. \\
 Semana 14 (01/06 a 07/06) & Aplicar ajustes finais de usabilidade e estabilidade e preparar a documentação técnica do sistema e o manual de uso. \\
-Semana 15 (08/06 a 14/06) & Realizar \textit{deploy} de homologação e produção, configurar variáveis de ambiente, domínio, HTTPS e monitoramento básico. \\
+Semana 15 (08/06 a 14/06) & Realizar \textit{deploy} de homologação e produção, configurar variáveis de ambiente, domínio e comunicação segura por \textit{Hypertext Transfer Protocol Secure} (HTTPS), além do monitoramento básico. \\
 Semana 16 (15/06 a 18/06) & Reservar \textit{buffer} final para correções pós-\textit{deploy}, validação final em produção, fechamento do TCC e submissão final até 18/06/2026. \\
 \hline
 \end{tabularx}
@@ -96,7 +96,7 @@ Artefato & Papel no sistema \\
 \path{src/components/chat} & Componentes da interface de conversa e painel de atendimentos. \\
 \path{src/components/patients} & Formulário de perfil do paciente. \\
 \path{src/components/shared} & Estrutura compartilhada da interface autenticada e da navegação interna. \\
-\path{migrations} & \textit{Migrations} SQL versionadas do banco de dados. \\
+\path{migrations} & \textit{Migrations} em \textit{Structured Query Language} (SQL) versionadas do banco de dados. \\
 \path{tests} & Testes automatizados de serviços e contratos. \\
 \hline
 \end{tabular}
@@ -304,10 +304,10 @@ Use strings curtas e objetivas. Se não houver evidência suficiente,
 use null.
 \end{verbatim}
 
-\chapter{Especificação da API REST}
+\chapter{Especificação da API}
 \label{ap:api}
 
-Este apêndice resume o contrato de interface da API implementada
+Este apêndice resume o contrato de interface da API \textit{Representational State Transfer} (REST) implementada
 na aplicação \texttt{medico\_digital}. A comunicação é realizada via HTTPS, com dados em JSON.
 A especificação completa é publicada em \texttt{/api/openapi.json} e pode ser consultada pela
 interface \texttt{/api/docs}.
@@ -500,6 +500,8 @@ dos casos automatizados associados aos serviços centrais da aplicação.
 
 \section{Cenários Exploratórios}
 \label{ap:testes-cenarios}
+
+Os casos de teste (CT) utilizados na avaliação são identificados sequencialmente nas tabelas a seguir.
 
 \begin{table}[H]
 \centering
