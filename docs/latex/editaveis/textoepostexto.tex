@@ -126,7 +126,7 @@ RNF04 & Validação dos dados recebidos pela API e tratamento de erros por categ
 RNF05 & Endpoints e formatos de requisição e resposta documentados por meio da especificação OpenAPI. & Consulta a \texttt{/api/openapi.json} e à interface \texttt{/api/docs}. & Atendido \\
 RNF06 & Execução automatizada de \textit{lint}, testes e \textit{build} no fluxo de integração contínua. & Execução do \textit{workflow} de CI no GitHub Actions. & Atendido \\
 RNF07 & Tratamento de falhas temporárias do provedor de IA sem interromper o fluxo principal. & Testes de serviço com falha na avaliação de prontidão e uso de dublês do cliente de IA. & Atendido \\
-RNF08 & Interface adaptável a diferentes tamanhos de tela e dispositivos. & Comparação das visualizações em tela ampla e estreita, apresentadas nas Figuras~\ref{fig:responsividade-ampla} e~\ref{fig:responsividade-estreita}. & Atendido \\
+RNF08 & Interface adaptável a diferentes tamanhos de tela e dispositivos. & Comparação das visualizações em tela ampla e estreita, apresentadas na Figura~\ref{fig:responsividade-ampla} e na Figura~\ref{fig:responsividade-estreita}. & Atendido \\
 \hline
 \end{tabularx}
 \fontetcc{o autor (2026).}
@@ -362,7 +362,7 @@ consolidado para consulta rápida.
 
 \section{Interface do Usuário}
 
-Concebida para ser totalmente responsiva, a interface foi estruturada em módulos funcionais, englobando as telas de autenticação (\textit{login} e cadastro), o ambiente principal de \textit{chat} — que integra a interface conversacional e a listagem de atendimentos —, a visão de detalhes do atendimento e a página de perfil para edição dos dados cadastrais do paciente. As Figuras~\ref{fig:responsividade-ampla} e~\ref{fig:responsividade-estreita} apresentam o mesmo fluxo de atendimento em diferentes larguras de tela, servindo como evidência visual da adaptação da interface.
+Concebida para ser totalmente responsiva, a interface foi estruturada em módulos funcionais, englobando as telas de autenticação (\textit{login} e cadastro), o ambiente principal de \textit{chat} — que integra a interface conversacional e a listagem de atendimentos —, a visão de detalhes do atendimento e a página de perfil para edição dos dados cadastrais do paciente. A Figura~\ref{fig:responsividade-ampla} e a Figura~\ref{fig:responsividade-estreita} apresentam o mesmo fluxo de atendimento em diferentes larguras de tela, servindo como evidência visual da adaptação da interface.
 
 \begin{figure}[htb]
   \centering
@@ -396,7 +396,7 @@ Concebida para ser totalmente responsiva, a interface foi estruturada em módulo
   \label{fig:cadastro}
 \end{figure}
 
-As figuras~\ref{fig:login} e~\ref{fig:cadastro} apresentam a camada de autenticação da
+A Figura~\ref{fig:login} e a Figura~\ref{fig:cadastro} apresentam a camada de autenticação da
 aplicação, responsável por iniciar a sessão protegida do usuário e viabilizar a criação de
 novas contas sem depender de ferramentas externas ao fluxo principal.
 
@@ -428,7 +428,7 @@ retomar atendimentos e acionar a geração de relatórios quando houver dados su
   \label{fig:detalhes-atendimento}
 \end{figure}
 
-As figuras~\ref{fig:perfil-paciente} e~\ref{fig:detalhes-atendimento} complementam a visão
+A Figura~\ref{fig:perfil-paciente} e a Figura~\ref{fig:detalhes-atendimento} complementam a visão
 da interface. O perfil permite manter dados cadastrais do paciente vinculados à sessão,
 enquanto a página de detalhes centraliza o status do atendimento, horários, volume de mensagens
 e acesso ao relatório correspondente.
